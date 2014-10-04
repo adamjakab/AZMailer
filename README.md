@@ -1,2 +1,2 @@
-AZMailer - An advanced Joomla mailer component
+AZMailer - An advanced Joomla mailer component.
 
