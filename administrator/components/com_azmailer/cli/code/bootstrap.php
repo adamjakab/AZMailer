@@ -36,7 +36,6 @@ if(!file_exists(JPATH_BASE."/configuration.php")) {
 	die();
 }
 
-
 // Import the platform(s).
 require_once JPATH_BASE . '/libraries/import.php';
 require_once JPATH_BASE . '/includes/defines.php';
@@ -46,7 +45,7 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 //Import Azmailer defines
 require_once JPATH_COMPONENT_ADMINISTRATOR . '/includes/defines.php';
 
-
+$jVersion = new \JVersion();
 
 
 //Load JApp classes for J!3
@@ -54,7 +53,11 @@ if(IS_J3) {
 	JLoader::import('joomla.input.input');//(JInput)
 	JLoader::import('joomla.table.table');//(JTable)
 	JLoader::import('cms.installer.installer');//(JInstaller)
-	JLoader::import('cms.component.helper');//(JComponentHelper)
+	if(version_compare( $jVersion->RELEASE, '3.1.6', '<=')) {
+		JLoader::import('legacy.component.helper');//(JComponentHelper)
+	} else {
+		JLoader::import('cms.component.helper');//(JComponentHelper)
+	}
 	JLoader::import('joomla.uri.uri');//(JUri)
 } else {
 	JLoader::import('joomla.application.input');//(JInput)
