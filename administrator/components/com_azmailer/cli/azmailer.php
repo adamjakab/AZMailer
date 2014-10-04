@@ -1,5 +1,8 @@
 <?php
-//execute as: ./azmailer -exec
+/**
+ * Main file to be called from crontab with something like:
+ * *\/5 * * * * /usr/bin/php [WEB-SITE-ROOT]/administrator/components/com_azmailer/cli/azmailer.php
+ */
 
 // Bootstrap the application(setup paths, libraries and class loader)
 require_once ("code/bootstrap.php");
