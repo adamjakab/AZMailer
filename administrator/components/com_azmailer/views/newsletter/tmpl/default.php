@@ -6,6 +6,10 @@ global $AZMAILER;
 
 use AZMailer\Helpers\AZMailerDateHelper;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
+
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn = $this->escape($this->state->get('list.direction'));
+
 ?>
 
 <?php echo AZMailerAdminInterfaceHelper::displaySubmenu(); ?>
