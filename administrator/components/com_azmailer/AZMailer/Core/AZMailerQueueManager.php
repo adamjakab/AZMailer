@@ -17,6 +17,10 @@ use AZMailer\Entities\AZMailerQueueItem;
  */
 defined('_JEXEC') or die('Restricted access');
 
+/**
+ * Class AZMailerQueueManager
+ * @package AZMailer\Core
+ */
 class AZMailerQueueManager {
 	private $MQID = 1;//the mail queue ID in db
 	private $maxQueueBlockedTime = 300;//if queue has been blocked for longer than this Secs we unblock it - PARAM(mq_max_blocked_time_sec)
@@ -277,10 +281,13 @@ class AZMailerQueueManager {
 	 * @param AZMailerQueueItem $MQI
 	 */
 	private function elaborateHtmlBody___embedImages($POSTMAN, $MQI) {
-		/** @var AZMailerCore $AZMAILER */
+		/** @var \AZMailer\AZMailerCore $AZMAILER */
 		global $AZMAILER;
 		$html = $POSTMAN->getMailData("html");
-		/*Since images in html already have Joomla installation subfolder in front we need to remove it */
+		/**
+		 * Since image paths in html already have Joomla deployment subfolder(if any) in front, we need to remove it from JPATH_ROOT
+		 * So we get something like /var/www/vhost even if joomla is installed in /var/www/vhost/joomla_subfolder.
+		 */
 		$pathToVhost = str_replace($AZMAILER->getOption('j_deploy_folder'), '' , JPATH_ROOT);
 		if (!$html) return;
 		$regex_all_tags = '#<[^/][^>]+(?=background-image|src)[^>]+(?=\.(jpe?g|png|gif)[\"\'])[^>]*>#i';//only opening rags
@@ -295,7 +302,7 @@ class AZMailerQueueManager {
 					preg_match_all($regex_img_url, $TAG, $IMGURL);
 					if (isset($IMGURL[1][0])) {
 						$IMGURL = $IMGURL[1][0];
-						$FULLIMGPATH = $pathToVhost.(substr($IMGURL,0,1)!=DS?DS:'').$IMGURL;
+						$FULLIMGPATH = $pathToVhost.(substr($IMGURL,0,1)!="/"?"/":"").$IMGURL;
 						if (file_exists($FULLIMGPATH)) {
 							$IMGINFO = pathinfo($FULLIMGPATH);
 							$uniqueID = AZMailerMimeHelper::unique();
@@ -315,7 +322,7 @@ class AZMailerQueueManager {
 					preg_match_all($regex_img_url, $TAG, $IMGURL);
 					if (isset($IMGURL[1][0])) {
 						$IMGURL = $IMGURL[1][0];
-						$FULLIMGPATH = $pathToVhost.(substr($IMGURL,0,1)!=DS?DS:'').$IMGURL;
+						$FULLIMGPATH = $pathToVhost.(substr($IMGURL,0,1)!="/"?"/":"").$IMGURL;
 						if (file_exists($FULLIMGPATH)) {
 							$IMGINFO = pathinfo($FULLIMGPATH);
 							$uniqueID = AZMailerMimeHelper::unique();
@@ -326,8 +333,6 @@ class AZMailerQueueManager {
 								$MODIMGTAG = preg_replace('#src=[\"\'][^\"\']*[\"\']#i', 'src="'.$CIDRES.'"', $TAG);
 								$html = str_replace($TAG, $MODIMGTAG, $html);
 							}
-						} else {
-							//$html .= "<br />UNABLE TO ATTACH IMG: " . $FULLIMGPATH;
 						}
 					}
 				}

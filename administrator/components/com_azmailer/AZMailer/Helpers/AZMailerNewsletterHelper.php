@@ -40,8 +40,9 @@ class AZMailerNewsletterHelper {
 		return($cnt);
     }
 
+
 	public static function getNewsletterSubstitutedContentFromTemplate($tpl_id=0, $tpl_subst=null) {
-		/** @var AZMailerCore $AZMAILER  */
+		/** @var \AZMailer\AZMailerCore $AZMAILER  */
 		global $AZMAILER;
 		if (!empty($tpl_id)) {
 			//$tpl = AZMailerTemplateHelper::getTemplateById($tpl_id);
@@ -57,6 +58,8 @@ class AZMailerNewsletterHelper {
 			@$doc->loadHTML($html);
 			$xpath = new \DOMXPath($doc);
 			//
+			$deployFolder = $AZMAILER->getOption('j_deploy_folder');
+			//
 			foreach($SUBSTITUTIONS as $SK => $SV) {
 				/** @var \DOMElement $xEl */
 				$xEl = $xpath->query('//*[@id="'.$SK.'"]')->item(0);
@@ -64,7 +67,7 @@ class AZMailerNewsletterHelper {
 					//if (substr($SK,0,5) == 'image') {
 					if($xEl->tagName == "img") {
 						//When Joomla is installed in subfolder we need to prefix image path with it
-						$imgSrc = $AZMAILER->getOption('j_deploy_folder') . $SV;
+						$imgSrc = $deployFolder . (substr($SV,0,1)!="/"?"/":"") . $SV;
 						$xEl->setAttribute("src", $imgSrc);
 						//adding real image width and height to img tag
 						if (file_exists(JPATH_SITE . $SV)) {
@@ -271,6 +274,7 @@ class AZMailerNewsletterHelper {
 	 * @return mixed
 	 */
 	public static function changeNewsletterEditableImage($file) {
+		/** @var \AZMailer\AZMailerCore $AZMAILER */
 		global $AZMAILER;
 		jimport('joomla.filesystem.file');
 		$NLIMGCACHEBASE = $AZMAILER->getOption("newsletter_cache_image_base");// = /images/newsletter/cache
@@ -310,7 +314,7 @@ class AZMailerNewsletterHelper {
 									$file->NEWFILEURI = '/' . $NLIMGCACHEBASE . '/' . $file->FILENAME;
 									//ok now let's get rid of the old file
 									if (strpos($file->elcurrsrc,$NLIMGCACHEBASE . '/') !== false) {
-										$oldfilename = str_replace($AZMAILER->getOption('j_deploy_folder')."/".$NLIMGCACHEBASE . '/','',$file->elcurrsrc);
+										$oldfilename = str_replace($AZMAILER->getOption('j_deploy_folder')."/".$NLIMGCACHEBASE.'/','',$file->elcurrsrc);
 										$oldfilepath = $file->IMAGEFOLDER.DS.$oldfilename;
 										\JFile::delete($oldfilepath);
 										$file->removedOld=$oldfilepath;
