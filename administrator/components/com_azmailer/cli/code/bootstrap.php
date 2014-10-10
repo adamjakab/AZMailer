@@ -44,7 +44,6 @@ require_once JPATH_CONFIGURATION . '/configuration.php';
 
 //Import Azmailer defines
 require_once JPATH_COMPONENT_ADMINISTRATOR . '/includes/defines.php';
-
 $jVersion = new \JVersion();
 
 
