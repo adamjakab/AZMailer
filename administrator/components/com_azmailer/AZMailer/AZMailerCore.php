@@ -41,18 +41,35 @@ if (!class_exists('AZMailerCore')) {
 			//set component name
 			$this->setOption('com_name', 'com_azmailer');
 
-			//default uri: ("/path_to_joomla/[administrator]/components/com_xxx")
 			//we only need this in web environment and will throw warning when AZMailer is called by cli
 			if(php_sapi_name() != 'cli') {
 				$j_uri = \JUri::getInstance();
-				$uriHost = ($j_uri->isSSL()?"https://":"http://") . $j_uri->getHost();
-				$uriBase = str_replace($uriHost, '', $j_uri->base());
-				$this->setOption('com_uri', $uriBase . 'components/' . $this->getOption('com_name'));
-				$this->setOption('com_uri_admin', $uriBase . ($uriBase!='/administrator/'?'administrator/':'') . 'components/' . $this->getOption('com_name'));
 
-				//Joomla subfolder - some people put Joomla in vhost's subfolder...
-				$uriSiteBase = str_replace("/administrator/","", str_replace($uriHost, '', $j_uri->base()));
-				$this->setOption('j_deploy_folder', $uriSiteBase);
+				/**
+				 * The base path: [deployFolder]/(""|"administrator")
+				 * @var string $uriBase
+				 */
+				$uriBase = $j_uri->base(true);
+				echo "<pre>uriBase : $uriBase</pre>";
+
+				/**
+				 * The path to the subfolder where joomla is deployed
+				 */
+				$deployFolder = str_replace('/administrator','', $uriBase);
+				$this->setOption('j_deploy_folder', $deployFolder);
+				echo "<pre>deployFolder : $deployFolder</pre>";
+
+				/**
+				 * The front-end path to the component folder: [deployFolder]/components/com_azmailer
+				 */
+				$this->setOption('com_uri', $deployFolder . '/components/' . $this->getOption('com_name'));
+				echo "<pre>com_uri : ".$this->getOption('com_uri')."</pre>";
+
+				/**
+				 * The back-end path to the component folder: [deployFolder]/administrator/components/com_azmailer
+				 */
+				$this->setOption('com_uri_admin', $deployFolder . '/administrator/components/' . $this->getOption('com_name'));
+				echo "<pre>com_uri_admin : ".$this->getOption('com_uri_admin')."</pre>";
 			}
 
 
