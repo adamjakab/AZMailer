@@ -37,7 +37,7 @@ class AZMailerModelCp extends AZMailerModel {
 	$answer = array();
 	//
 	$linkbase = 'index.php?option='.$AZMAILER->getOption('com_name').'&';
-	$iconpos = $AZMAILER->getOption("com_uri")."/assets/images/48x48/";
+	$iconpos = $AZMAILER->getOption("com_uri_admin")."/assets/images/48x48/";
 	//
 	$answer[] = array(
 		"link"=>$linkbase . 'task=newsletter.display',

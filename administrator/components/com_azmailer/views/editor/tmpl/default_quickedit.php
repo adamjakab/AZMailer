@@ -6,7 +6,7 @@ JHtml::_('behavior.tooltip');
 global $AZMAILER;
 $langCode = 'en';//@JACK - for now we force EN version of editor
 $elFinderUrl = 'index.php?option='.$AZMAILER->getOption("com_name").'&task=editor.elfinder&tmpl=component';
-$tinymceBase = $AZMAILER->getOption("com_uri").'/assets/js/tiny_mce/';
+$tinymceBase = $AZMAILER->getOption("com_uri_admin").'/assets/js/tiny_mce/';
 AZMailerAdminInterfaceHelper::addAdditionalHeaderIncludes("js","/assets/js/tiny_mce/jquery.tinymce.js");
 ?>
 
@@ -25,7 +25,7 @@ AZMailerAdminInterfaceHelper::addAdditionalHeaderIncludes("js","/assets/js/tiny_
 	#editor_buttons{position:relative; height: 50px; width:778px;}
 	button{cursor:pointer;}
 	button[name=close]{position: absolute; bottom:3px;left:30px;}
-	button[name=accept]{position: absolute; bottom:0px;right:30px; font-size: 18px !important;}
+	button[name=accept]{position: absolute; bottom:0;right:30px; font-size: 18px !important;}
 </style>
 
 

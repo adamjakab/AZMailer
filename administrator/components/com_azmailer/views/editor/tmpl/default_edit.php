@@ -9,7 +9,7 @@ global $AZMAILER;
 $item = &$this->item;
 $langCode = 'en';//@JACK - for now we force EN version of editor
 $elFinderUrl = 'index.php?option='.$AZMAILER->getOption("com_name").'&task=editor.elfinder&tmpl=component';
-$tinymceBase = $AZMAILER->getOption("com_uri").'/assets/js/tiny_mce/';
+$tinymceBase = $AZMAILER->getOption("com_uri_admin").'/assets/js/tiny_mce/';
 AZMailerAdminInterfaceHelper::addAdditionalHeaderIncludes("js","/assets/js/tiny_mce/jquery.tinymce.js");
 $BLOB = $item->htmlblob;
 ?>
