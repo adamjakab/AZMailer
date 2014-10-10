@@ -34,7 +34,8 @@ class AZMailerController extends \JControllerLegacy {
 		global $AZMAILER;
 		$view = $this->getView($AZMAILER->getOption("controller"), 'html', '');
 		$tmpl = JRequest::getVar('tmpl', 'default');
-		if (($model = $this->getModel($AZMAILER->getOption("controller")))) {
+		if ( ($model = $this->getModel($AZMAILER->getOption("controller"))) ) {
+			/** @var \JModelLegacy $model */
 			$view->setModel($model, true);
 		}
 		$view->setLayout($tmpl);

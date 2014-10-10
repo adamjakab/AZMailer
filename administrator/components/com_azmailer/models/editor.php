@@ -7,7 +7,6 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerModel;
-use JComponentHelper;
 
 /**
  * Template Model
