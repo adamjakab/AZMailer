@@ -51,7 +51,6 @@ class AZMailerViewNewsletter extends AZMailerView {
 		$JI = \JFactory::getApplication()->input;
 		$id = $JI->getInt("cid", 0);
 		$this->item = new AZMailerNewsletter($model->getSpecificItem($id));
-		$this->TITLE = ($this->item->get("id") ? "Editing newsletter:" . $this->item->get("nl_title") : "Creating new newsletter");
 		$this->state = $this->get('State');
 		parent::display("edit");
 		//

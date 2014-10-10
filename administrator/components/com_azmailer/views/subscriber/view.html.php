@@ -55,7 +55,6 @@ class AZMailerViewSubscriber extends AZMailerView {
 		$JI = \JFactory::getApplication()->input;
 		$id = $JI->getInt("cid", 0);
 		$this->item = new AZMailerSubscriber($model->getSpecificItem($id));
-		$this->TITLE = ($this->item->get("id") ? "Editing subscriber:" . $this->item->get("nls_email") : "Creating new subscriber");
 		$this->state = $this->get('State');
 		parent::display("edit");
 		//

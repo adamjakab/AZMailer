@@ -14,10 +14,19 @@ defined('_JEXEC') or die('Restricted access');
  * @package AZMailer\Helpers
  */
 class AZMailerDBUpdaterHelper {
+	/** @var string */
 	private $tableClassesFolder = null;
+
+	/** @var \JDatabaseDriver */
 	private $db;
+
+	/** @var bool */
 	private $verbose = true;
+
+	/** @var array */
 	private $AZMailerTables = array();
+
+	/** @var \stdClass  */
 	private $currentTable = null;
 
 	/**

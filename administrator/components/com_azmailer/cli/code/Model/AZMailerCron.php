@@ -12,10 +12,16 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Cli\Model
  */
 class AZMailerCron {
-	/** @var Registry  */
+	/** @var \JRegistry|Registry  */
 	private $config;
+
+	/** @var array */
 	private $cronVars;
+
+	/** @var array  */
 	private $taskList = array();
+
+	/** @var \stdClass  */
 	private $currentTask = null;
 
 	/**
@@ -34,6 +40,11 @@ class AZMailerCron {
 		$this->log("info", "-------------------------------------------------------------------------------------");
 	}
 
+	/**
+	 * @param string $type
+	 * @param string $msg
+	 * @param bool $addToPrevious
+	 */
 	private function log($type, $msg, $addToPrevious = false) {
 		if ($addToPrevious) {
 			$msgObj = &$this->cronVars["messages"][count($this->cronVars["messages"])];
@@ -45,7 +56,7 @@ class AZMailerCron {
 			$msgObj->msg = $msg;
 			$this->cronVars["messages"][] = $msgObj;
 		}
-		//
+
 		if ($this->config->get('verbose')) {
 			fwrite(STDOUT, AZMailerDateHelper::convertToHumanReadableFormat($msgObj->ts, "Y-m-d h:i:s") . "[" . $msgObj->type . "]: " . $msgObj->msg . "\n");
 		}
@@ -63,8 +74,10 @@ class AZMailerCron {
 	}
 
 
-	//todo: this error_triggering business is v. stupid and inelegant - find a better way
-
+	/**
+	 * Get list of tasks to execute
+	 * @return mixed
+	 */
 	private function getCronTasksList() {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -75,6 +88,7 @@ class AZMailerCron {
 		return ($db->loadObjectList());
 	}
 
+	//todo: this error_triggering business is v. stupid and inelegant - find a better way
 	private function executeCurrentTask() {
 		$errRepLevel = error_reporting();//save error reporting level
 		error_reporting(0);

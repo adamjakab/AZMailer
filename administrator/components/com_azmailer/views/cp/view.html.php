@@ -13,6 +13,13 @@ use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
  * ControlPanel View
  */
 class AZMailerViewCp extends AZMailerView {
+	/** @var  array */
+	protected $cpbuttons;
+
+	/** @var  array */
+	protected $cpinfo;
+
+
 	/**
 	 * @param array $config
 	 */
@@ -30,9 +37,11 @@ class AZMailerViewCp extends AZMailerView {
 			JError::raiseError(500, implode('<br />', $errors));
 			return false;
 		}
+		/** @var AZMailerModelCp $model */
+		$model = $this->getModel();
 
-		$this->cpbuttons = $this->get('CpButtons');
-		$this->cpinfo = $this->get('CpInfo');
+		$this->cpbuttons = $model->getCpButtons();
+		$this->cpinfo = $model->getCpInfo();
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_CP"), "azmailer");
 		return (parent::display($tpl));
 	}

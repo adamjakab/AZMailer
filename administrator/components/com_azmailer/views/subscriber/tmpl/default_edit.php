@@ -11,10 +11,14 @@ JHtml::_('behavior.tooltip');
 global $AZMAILER;
 /** @var $item AZMailerSubscriber */
 $item = &$this->item;
+
+
+$TITLE = ($item->get("id") ? "Editing subscriber:" . $item->get("nls_email") : "Creating new subscriber");
+
 ?>
 <form action="<?php echo JRoute::_('index.php'); ?>" method="post" name="adminForm" id="adminForm">
 	<fieldset class="adminform">
-		<legend><?php echo(isset($this->TITLE) ? $this->TITLE : ''); ?></legend>
+		<legend><?php echo(isset($TITLE) ? $TITLE : ''); ?></legend>
 		<table class="adminlist edittable" style="width:100%;">
 			<?php
 			echo AZMailerAdminInterfaceHelper::getInputFileldRow(JText::_('COM_AZMAILER_SUBSCR_TIT_EMAIL'), "nls_email", $item->get("nls_email"), 60, 128);

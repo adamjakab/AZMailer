@@ -17,6 +17,11 @@ jimport('joomla.application.component.modellist');
  * @package AZMailer\Core
  */
 class AZMailerModel extends \JModelList {
+	/** @var string */
+	protected $event_before_save;
+
+	/** @var string */
+	protected $event_after_save;
 
 	/**
 	 * Override of Method to get a AZMailerPagination(JPagination) object for the data set. - REMOVING ALL option
@@ -72,6 +77,11 @@ class AZMailerModel extends \JModelList {
 		}
 	}
 
+	/**
+	 * @param array $data
+	 * @return bool
+	 * @throws \Exception
+	 */
 	protected function _saveSpecificItem($data) {
 		// Initialise variables;
 		$dispatcher = \JDispatcher::getInstance();
