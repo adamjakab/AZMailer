@@ -50,26 +50,22 @@ if (!class_exists('AZMailerCore')) {
 				 * @var string $uriBase
 				 */
 				$uriBase = $j_uri->base(true);
-				echo "<pre>uriBase : $uriBase</pre>";
 
 				/**
 				 * The path to the subfolder where joomla is deployed
 				 */
 				$deployFolder = str_replace('/administrator','', $uriBase);
 				$this->setOption('j_deploy_folder', $deployFolder);
-				echo "<pre>deployFolder : $deployFolder</pre>";
 
 				/**
 				 * The front-end path to the component folder: [deployFolder]/components/com_azmailer
 				 */
 				$this->setOption('com_uri', $deployFolder . '/components/' . $this->getOption('com_name'));
-				echo "<pre>com_uri : ".$this->getOption('com_uri')."</pre>";
 
 				/**
 				 * The back-end path to the component folder: [deployFolder]/administrator/components/com_azmailer
 				 */
 				$this->setOption('com_uri_admin', $deployFolder . '/administrator/components/' . $this->getOption('com_name'));
-				echo "<pre>com_uri_admin : ".$this->getOption('com_uri_admin')."</pre>";
 			}
 
 
