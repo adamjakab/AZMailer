@@ -66,6 +66,7 @@ class AZMailerViewEditor extends AZMailerView {
 	 */
 	public function save($tpl = null, $closeEdit = true) {
 		$model = $this->getModel();
+		$JI = \JFactory::getApplication()->input;
 		$data = JRequest::get('post');
 		$data["htmlblob"] = JRequest::getVar('htmlblob', '', 'post', 'string', JREQUEST_ALLOWHTML);
 		$model->saveSpecificItem($data);
@@ -79,7 +80,7 @@ class AZMailerViewEditor extends AZMailerView {
 	 */
 	public function cancel() {
 		global $AZMAILER;
-		$redirectUrl = base64_decode(JRequest::getVar('return_uri', null));
+		$redirectUrl = base64_decode(\JFactory::getApplication()->input->getString('return_uri', ""));
 		$AZMAILER->getController()->setRedirect($redirectUrl);
 	}
 

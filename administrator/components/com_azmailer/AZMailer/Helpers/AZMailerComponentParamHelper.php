@@ -504,7 +504,7 @@ class AZMailerComponentParamHelper {
 			$query->set('a.params = ' . $db->quote((string)$params));
 			$query->where('a.element = "com_azmailer"');
 			$db->setQuery($query);
-			$db->query();
+			$db->execute();
 			$answer = true;
 		}
 		return ($answer);

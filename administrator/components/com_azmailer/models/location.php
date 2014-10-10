@@ -107,7 +107,7 @@ class AZMailerModelLocation extends AZMailerModel {
 			if ($id != 0) {
 				if (!empty($name)) {
 					$data = array();
-					$data["id"] = JRequest::getVar('id', 0, 'post', 'int');
+					$data["id"] = \JFactory::getApplication()->input->getInt('id', 0);
 					$data[$change_what . "_name"] = $name;
 					$data[$change_what . "_sigla"] = $sigla;
 					$table = \JTable::getInstance('azmailer_' . $change_what, 'Table');

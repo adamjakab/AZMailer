@@ -43,11 +43,12 @@ class AZMailerControllerLocation extends AZMailerController {
 
 
 	public function addNew() {
-		$add_what = JRequest::getVar('add_what', '', 'post', 'string');
-		$name = JRequest::getVar('name', '', 'post', 'string');
-		$sigla = strtoupper(JRequest::getVar('sigla', '', 'post', 'string'));
-		$country_id = JRequest::getVar('country_id', '', 'post', 'int');
-		$region_id = JRequest::getVar('region_id', '', 'post', 'int');
+		$JI = JFactory::getApplication()->input;
+		$add_what = $JI->getString('add_what');
+		$name = $JI->getString('name');
+		$sigla = strtoupper($JI->getString('sigla',''));
+		$country_id = $JI->getInt('country_id');
+		$region_id = $JI->getInt('region_id');
 		$answer = new stdClass();
 		$answer->result = $this->model->addNew($add_what, $name, $sigla, $country_id, $region_id);
 		$answer->errors = $this->model->getErrors();
@@ -55,10 +56,11 @@ class AZMailerControllerLocation extends AZMailerController {
 	}
 
 	public function changeName() {
-		$change_what = JRequest::getVar('change_what', '', 'post', 'string');
-		$name = JRequest::getVar('name', '', 'post', 'string');
-		$sigla = strtoupper(JRequest::getVar('sigla', '', 'post', 'string'));
-		$id = JRequest::getVar('id', '', 'post', 'int');
+		$JI = JFactory::getApplication()->input;
+		$change_what = $JI->getString('change_what');
+		$name = $JI->getString('name');
+		$sigla = strtoupper($JI->getString('sigla', ''));
+		$id = $JI->getInt('id');
 		$answer = new stdClass();
 		$answer->result = $this->model->changeName($change_what, $name, $sigla, $id);
 		$answer->errors = $this->model->getErrors();
@@ -66,22 +68,12 @@ class AZMailerControllerLocation extends AZMailerController {
 	}
 
 	public function delete() {
-		$delete_what = JRequest::getVar('delete_what', '', 'post', 'string');
-		$id = JRequest::getVar('id', '', 'post', 'int');
+		$JI = JFactory::getApplication()->input;
+		$delete_what = $JI->getString('delete_what');
+		$id = $JI->getInt('id');
 		$answer = new stdClass();
 		$answer->result = $this->model->delete($delete_what, $id);
 		$answer->errors = $this->model->getErrors();
 		echo json_encode($answer);
 	}
-
-	/*
-	public function setDefaultOption() {
-	$cat_index = JRequest::getVar('cat_index','','post','int');
-	$id = JRequest::getVar('id','','post','int');
-	$is_default = JRequest::getVar('is_default','0','post','int');
-	$answer = new stdClass();
-	$answer->result = $this->model->setDefaultOption($cat_index, $id, $is_default);
-	$answer->errors = $this->model->getErrors();
-	echo json_encode($answer);
-	}*/
 }

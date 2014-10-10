@@ -43,8 +43,9 @@ class AZMailerControllerCategory extends AZMailerController {
 
 
 	public function addNew() {
-		$cat_index = \JRequest::getVar('cat_index', '', 'post', 'int');
-		$name = \JRequest::getVar('name', '', 'post', 'string');
+		$JI = JFactory::getApplication()->input;
+		$cat_index = $JI->getInt("cat_index");
+		$name = $JI->getString("name");
 		$answer = new stdClass();
 		$answer->result = $this->model->addNew($cat_index, $name);
 		$answer->errors = $this->model->getErrors();
@@ -52,9 +53,10 @@ class AZMailerControllerCategory extends AZMailerController {
 	}
 
 	public function changeName() {
-		$cat_index = \JRequest::getVar('cat_index', '', 'post', 'int');
-		$name = \JRequest::getVar('name', '', 'post', 'string');
-		$id = \JRequest::getVar('id', '', 'post', 'int');
+		$JI = JFactory::getApplication()->input;
+		$cat_index = $JI->getInt("cat_index");
+		$name = $JI->getString("name");
+		$id = $JI->getInt("id");
 		$answer = new stdClass();
 		$answer->result = $this->model->changeName($cat_index, $name, $id);
 		$answer->errors = $this->model->getErrors();
@@ -62,8 +64,9 @@ class AZMailerControllerCategory extends AZMailerController {
 	}
 
 	public function delete() {
-		$cat_index = \JRequest::getVar('cat_index', '', 'post', 'int');
-		$id = \JRequest::getVar('id', '', 'post', 'int');
+		$JI = JFactory::getApplication()->input;
+		$cat_index = $JI->getInt("cat_index");
+		$id = $JI->getInt("id");
 		$answer = new stdClass();
 		$answer->result = $this->model->delete($cat_index, $id);
 		$answer->errors = $this->model->getErrors();
@@ -71,9 +74,10 @@ class AZMailerControllerCategory extends AZMailerController {
 	}
 
 	public function setDefaultOption() {
-		$cat_index = \JRequest::getVar('cat_index', '', 'post', 'int');
-		$id = \JRequest::getVar('id', '', 'post', 'int');
-		$is_default = \JRequest::getVar('is_default', '0', 'post', 'int');
+		$JI = JFactory::getApplication()->input;
+		$cat_index = $JI->getInt("cat_index");
+		$id = $JI->getInt("id");
+		$is_default = $JI->getInt("is_default", 0);
 		$answer = new stdClass();
 		$answer->result = $this->model->setDefaultOption($cat_index, $id, $is_default);
 		$answer->errors = $this->model->getErrors();
@@ -81,8 +85,9 @@ class AZMailerControllerCategory extends AZMailerController {
 	}
 
 	public function saveOrderedItems() {
-		$cat_index = \JRequest::getVar('cat_index', '', 'post', 'int');
-		$serialized = \JRequest::getVar('serialized', '', 'post', 'string');
+		$JI = JFactory::getApplication()->input;
+		$cat_index = $JI->getInt("cat_index");
+		$serialized = $JI->getString("serialized");
 		$answer = new stdClass();
 		$answer->result = $this->model->saveOrderedItems($cat_index, $serialized);
 		$answer->errors = $this->model->getErrors();
