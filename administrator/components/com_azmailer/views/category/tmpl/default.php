@@ -5,7 +5,8 @@ global $AZMAILER;
 use AZMailer\Helpers\AZMailerSubscriberHelper;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 
-/** @var \JRegistry AZMailer Settings params */
+
+/** @var \Joomla\Registry\Registry $params - AZMailer Settings params */
 $params = $this->state->get('params');
 
 //BUTTONS TO SELECT 5 CATEGORIES
@@ -16,7 +17,7 @@ for ($i = 1; $i <= 5; $i++) {
 	$SWName = $params->get("category_name_" . $i);
 	//
 	$SHOW_WHAT_BUTTONS .= '<li style="float:left; margin: 0 5px 0 0;">'
-		. '<input type="button"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '/>'
+		. '<button class="btn btn-info" ' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '>'.$SWName.'</button>'
 		. '</li>';
 }
 $SHOW_WHAT_BUTTONS .= '</ul>';
@@ -41,7 +42,7 @@ $CURRENT_CATNAME = $params->get("category_name_" . $this->state->get('filter.cat
 		</div>
 	</fieldset>
 
-	<table class="adminlist">
+	<table class="adminlist table table-striped table-bordered">
 		<thead>
 		<th><?php echo JText::_('COM_AZMAILER_CATEGORY_TIT_ELEMENT_NAME'); ?></th>
 		<th width="30"><?php echo JText::_('COM_AZMAILER_CATEGORY_TIT_ELEMENT_PREDEF'); ?></th>

@@ -15,6 +15,12 @@ jimport('joomla.application.component.view');
  * @package AZMailer\Core
  */
 class AZMailerView extends \JViewLegacy {
+	/** @var mixed $items */
+	protected $items;
+
+	/** @var mixed $state */
+	protected $state;
+
 	/**
 	 * @param array $config
 	 */
@@ -28,10 +34,6 @@ class AZMailerView extends \JViewLegacy {
 	 * @return mixed|void
 	 */
 	function display($tpl = null) {
-		//global $AZMAILER;
-		//AZMailerAdminInterfaceHelper::setHeaderTitle($AZMAILER->getOption('controller'),"azmailer");
-		//AZMailerAdminInterfaceHelper::displaySubmenu($AZMAILER->getOption('controller'));
 		return(parent::display($tpl));
     }
-
 }

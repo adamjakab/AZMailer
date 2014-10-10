@@ -8,7 +8,7 @@
   <authorUrl>http://devshed.jakabadambalazs.com</authorUrl>
   <copyright>Copyright (C) Adam Jakab. All rights reserved.</copyright>
   <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-  <version>1.5.2</version>
+  <version>1.5.2.1</version>
   <description>COM_AZMAILER_XML_DESCRIPTION</description>
   <scriptfile>install/script.php</scriptfile>
   <install>

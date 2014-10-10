@@ -8,26 +8,32 @@
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerView;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
-use \JError;
-use \JText;
+use \AZMailer\Core\AZMailerException;
 
+/**
+ * Class AZMailerViewCategory
+ */
 class AZMailerViewCategory extends AZMailerView {
 
+	/**
+	 * @param null $tpl
+	 * @return mixed|void
+	 * @throws AZMailerException
+	 */
     function display($tpl = null) {
-		global $AZMAILER;
 		$this->items = $this->get('Items');
 		//$this->pagination = $this->get('Pagination');//--NO PAGINATION SINCE CATEGORIES WILL HAVE FEW ITEMS AND jQuery ORDERING
 		$this->state = $this->get('State');
 		if (count($errors = $this->get('Errors'))) {
-		    JError::raiseError(500, implode('<br />', $errors));
-		    return false;
+			throw new AZMailerException(implode('<br />', $errors));
 		}
-		parent::display($tpl);
+
 		//
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_CATEGORY"),"category");
 		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(
 		    array("core.create", "category.new", 'new', 'JTOOLBAR_NEW', false),
 		));
+	    return(parent::display($tpl));
     }
 
 }
