@@ -8,7 +8,7 @@ use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 use AZMailer\Helpers\AZMailerDateHelper;
 use AZMailer\Helpers\AZMailerQueuemanagerHelper;
 
-/** @var $params \JRegistry AZMailer Settings params */
+/** @var \JRegistry|\Joomla\Registry\Registry - AZMailer Settings params */
 //$params = $this->state->get('params');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));

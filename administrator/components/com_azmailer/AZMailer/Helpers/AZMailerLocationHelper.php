@@ -57,6 +57,7 @@ class AZMailerLocationHelper {
 				$data["id"] = null;
 				$data["country_name"] = ucfirst(strtolower($name));
 				$data["country_sigla"] = strtoupper(substr($name, 0, 2));
+				/** @var \JTable $table */
 				$table = \JTable::getInstance('azmailer_country', 'Table');
 				if ($table->bind($data)) {
 					if ($table->check()) {
@@ -126,6 +127,7 @@ class AZMailerLocationHelper {
 				$data["country_id"] = $country_id;
 				$data["region_name"] = ucfirst(strtolower($name));
 				$data["region_sigla"] = "";
+				/** @var \JTable $table */
 				$table = \JTable::getInstance('azmailer_region', 'Table');
 				if ($table->bind($data)) {
 					if ($table->check()) {
@@ -195,6 +197,7 @@ class AZMailerLocationHelper {
 				$data["region_id"] = $region_id;
 				$data["province_name"] = ucfirst(strtolower($name));
 				$data["province_sigla"] = "";
+				/** @var \JTable $table */
 				$table = \JTable::getInstance('azmailer_province', 'Table');
 				if ($table->bind($data)) {
 					if ($table->check()) {

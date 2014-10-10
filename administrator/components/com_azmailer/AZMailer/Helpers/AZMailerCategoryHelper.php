@@ -164,6 +164,7 @@ class AZMailerCategoryHelper {
 							$data["item_order"] = ++$order;
 							$data["is_default"] = 0;
 							$data["name"] = ucfirst($catName);
+							/** @var \JTable $table */
 							$table = \JTable::getInstance('azmailer_category_item', 'Table');
 							if ($table->bind($data)) {
 								if ($table->check()) {

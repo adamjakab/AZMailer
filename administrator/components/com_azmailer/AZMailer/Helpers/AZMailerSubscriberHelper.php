@@ -125,8 +125,13 @@ class AZMailerSubscriberHelper {
 	}
 
 
-	//phpExcel import helper
-
+	/**
+	 * @param \PHPExcel_Worksheet $objWorksheet
+	 * @param array $importColumns
+	 * @param integer $rowIndex
+	 * @param string $columnName
+	 * @return bool|mixed|string
+	 */
 	public static function getImportCellValue($objWorksheet, $importColumns, $rowIndex, $columnName) {
 		$answer = false;
 		$cellIndex = self::getImportColumnIndexByName($importColumns, $columnName);

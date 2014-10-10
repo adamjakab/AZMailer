@@ -148,8 +148,10 @@ class AZMailerModelSubscriber extends AZMailerModel {
 						//ok - file is in tmp folder so we can now initiate phpExcel
 						set_include_path(JPATH_COMPONENT_ADMINISTRATOR . DS . "vendors" . DS . "phpExcel");
 						include 'PHPExcel/IOFactory.php';
+						/** @var PHPExcel_Reader_Abstract $objReader */
 						$objReader = PHPExcel_IOFactory::createReaderForFile($tmpfilepath);
 						$objReader->setReadDataOnly(true);
+						/** @var PHPExcel $objPHPExcel */
 						$objPHPExcel = $objReader->load($tmpfilepath);
 
 						//get Sheet #1

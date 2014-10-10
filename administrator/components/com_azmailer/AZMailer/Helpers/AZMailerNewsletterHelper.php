@@ -168,7 +168,7 @@ class AZMailerNewsletterHelper {
 	 * $NL_CATSEL -> FORMAT: {selectionBehaviour:"PLUSOR", cat1:[],cat2:[],cat3:[],cat4:[],cat5:[], country:0, region:0, province:0}
 	 *
 	 * @param $NL_CATSEL -
-	 * @return stdClass
+	 * @return \stdClass
 	 */
 	public static function getNLSubscribersForCategorySelections($NL_CATSEL) {
 		//WHERE - GENERAL CONDITIONS

@@ -62,7 +62,7 @@ class PHPExcel_Worksheet implements PHPExcel_IComparable
     /**
      * Cacheable collection of cells
      *
-     * @var PHPExcel_CachedObjectStorage_xxx
+     * @var PHPExcel_CachedObjectStorage
      */
     private $_cellCollection = null;
 

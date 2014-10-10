@@ -10,7 +10,7 @@ global $AZMAILER;
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
 
-/** @var \JRegistry AZMailer Settings params */
+/** @var \JRegistry|\Joomla\Registry\Registry - AZMailer Settings params */
 $params = $this->state->get('params');
 
 $SHOW_WHAT = $this->state->get('filter.location_type');

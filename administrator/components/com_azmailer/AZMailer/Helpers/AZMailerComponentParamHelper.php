@@ -494,6 +494,7 @@ class AZMailerComponentParamHelper {
 	public static function setParamValue($name, $value) {
 		$answer = false;
 		if (self::keyExists($name)) {
+			/** @var \JRegistry|\Joomla\Registry\Registry $params */
 			$params = \JComponentHelper::getParams('com_azmailer');
 			$params->set($name, $value);
 			//save params to db

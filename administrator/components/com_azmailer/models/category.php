@@ -177,7 +177,7 @@ class AZMailerModelCategory extends AZMailerModel {
 		$this->setState('filter.category_id', $category_id);
 
 		// Load the parameters.
-		/** @var \JRegistry AZMailer Settings params */
+		/** @var \JRegistry|\Joomla\Registry\Registry - AZMailer Settings params */
 		$params = JComponentHelper::getParams('com_azmailer');
 		$this->setState('params', $params);
 

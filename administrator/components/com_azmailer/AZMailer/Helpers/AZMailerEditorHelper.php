@@ -32,7 +32,7 @@ class AZMailerEditorHelper {
 
 	/**
 	 * returns url|link to editor
-	 * @global type   $AZMAILER
+	 * @global \AZMailer\AZMailerCore $AZMAILER
 	 * @param object  $ELP (title, parent_type, parent_id, return_uri[base64encoded])
 	 * @param boolean $urlOnly
 	 * @return string
