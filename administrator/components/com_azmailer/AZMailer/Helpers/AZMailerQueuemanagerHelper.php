@@ -16,16 +16,6 @@ defined('_JEXEC') or die('Restricted access');
  */
 class AZMailerQueuemanagerHelper {
 
-	public static function countUnsentMails() {
-		$db = \JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('COUNT(*)');
-		$query->from('#__azmailer_mail_queue_item AS a');
-		$query->where('a.mq_state = 0');
-		$db->setQuery($query);
-		return($db->loadResult());
-	}
-
 	public static function getMQIById($id) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -33,7 +23,7 @@ class AZMailerQueuemanagerHelper {
 		$query->from('#__azmailer_mail_queue_item AS a');
 		$query->where('a.id = ' . $db->quote($id));
 		$db->setQuery($query);
-		return($db->loadObject());
+		return ($db->loadObject());
 	}
 
 	/**
@@ -41,7 +31,7 @@ class AZMailerQueuemanagerHelper {
 	 * @param bool $forceRecalculateUnsentMails
 	 * @return mixed
 	 */
-	public static function getMailQueueState($forceRecalculateUnsentMails=false) {
+	public static function getMailQueueState($forceRecalculateUnsentMails = false) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.*');
@@ -49,20 +39,30 @@ class AZMailerQueuemanagerHelper {
 		$query->where('a.id = 1');
 		$db->setQuery($query);
 		$answer = $db->loadObject();
-		if($forceRecalculateUnsentMails) {
+		if ($forceRecalculateUnsentMails) {
 			$answer->unsent_count = self::countUnsentMails();
 		}
-		return($answer);
+		return ($answer);
+	}
+
+	public static function countUnsentMails() {
+		$db = \JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('COUNT(*)');
+		$query->from('#__azmailer_mail_queue_item AS a');
+		$query->where('a.mq_state = 0');
+		$db->setQuery($query);
+		return ($db->loadResult());
 	}
 
 	public static function setMailQueue($state) {
-		$state = ($state==1?$state:0);
+		$state = ($state == 1 ? $state : 0);
 		/** @var \JTable $MQS */
 		$MQS = \JTable::getInstance('azmailer_mail_queue_state', 'Table');
 		$MQS->load(1);
 		$data["id"] = 1;
 		$data["enabled"] = $state;
-		return($MQS->save($data));
+		return ($MQS->save($data));
 	}
 
 	public static function getSelectOptions_Type($zeroOption = false) {
@@ -82,32 +82,32 @@ class AZMailerQueuemanagerHelper {
 
 	public static function getSelectOptions_Priority($zeroOption = false) {
 		$lst = array();
-		if ($zeroOption!==false) {
-			$lst[] = \JHTML::_('select.option',  '999', \JText::_($zeroOption), 'id', 'data' );
+		if ($zeroOption !== false) {
+			$lst[] = \JHTML::_('select.option', '999', \JText::_($zeroOption), 'id', 'data');
 		}
-		$lst[] = \JHTML::_('select.option',  '0', '0', 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '1', '1', 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '2', '2', 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '3', '3', 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '4', '4', 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '5', '5', 'id', 'data' );
+		$lst[] = \JHTML::_('select.option', '0', '0', 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '1', '1', 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '2', '2', 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '3', '3', 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '4', '4', 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '5', '5', 'id', 'data');
 		return ($lst);
 	}
 
 	public static function getSelectOptions_State($zeroOption = false) {
 		$lst = array();
-		if ($zeroOption!==false) {
-			$lst[] = \JHTML::_('select.option',  '999', \JText::_($zeroOption), 'id', 'data' );
+		if ($zeroOption !== false) {
+			$lst[] = \JHTML::_('select.option', '999', \JText::_($zeroOption), 'id', 'data');
 		}
-		$lst[] = \JHTML::_('select.option',  '1', \JText::_("COM_AZMAILER_MQM_TIT_MQI_STATE_SENT"), 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '0', \JText::_("COM_AZMAILER_MQM_TIT_MQI_STATE_UNSENT"), 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  '2', \JText::_("COM_AZMAILER_MQM_TIT_MQI_STATE_FAILED"), 'id', 'data' );
+		$lst[] = \JHTML::_('select.option', '1', \JText::_("COM_AZMAILER_MQM_TIT_MQI_STATE_SENT"), 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '0', \JText::_("COM_AZMAILER_MQM_TIT_MQI_STATE_UNSENT"), 'id', 'data');
+		$lst[] = \JHTML::_('select.option', '2', \JText::_("COM_AZMAILER_MQM_TIT_MQI_STATE_FAILED"), 'id', 'data');
 		return ($lst);
 	}
 
 
-
 }
+
 /*
 
     function markMailQueueItemRead($mqiid) {

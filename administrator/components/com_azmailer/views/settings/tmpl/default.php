@@ -3,19 +3,23 @@
 defined('_JEXEC') or die('Restricted Access');
 JHtml::_('behavior.tooltip');
 global $AZMAILER;
-use AZMailer\Helpers\AZMailerComponentParamHelper;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
+use AZMailer\Helpers\AZMailerComponentParamHelper;
+
 $cols = 0;
 ?>
 <?php echo AZMailerAdminInterfaceHelper::displaySubmenu(); ?>
 <form action="<?php echo JRoute::_('index.php'); ?>" method="post" name="adminForm" id="adminForm">
 	<table class="adminlist">
 		<thead>
-			<tr>
-				<th width="250"><?php echo JText::_('COM_AZMAILER_SETTING_PCODE');$cols++; ?></th>
-				<th width="250"><?php echo JText::_('COM_AZMAILER_SETTING_PNAME');$cols++; ?></th>
-				<th><?php echo JText::_('COM_AZMAILER_SETTING_PVALUE');$cols++; ?></th>
-			</tr>
+		<tr>
+			<th width="250"><?php echo JText::_('COM_AZMAILER_SETTING_PCODE');
+				$cols++; ?></th>
+			<th width="250"><?php echo JText::_('COM_AZMAILER_SETTING_PNAME');
+				$cols++; ?></th>
+			<th><?php echo JText::_('COM_AZMAILER_SETTING_PVALUE');
+				$cols++; ?></th>
+		</tr>
 		</thead>
 		<tbody>
 		<?php
@@ -30,10 +34,10 @@ $cols = 0;
 			$i = 0;
 			foreach ($groupParams as $paramKey => $groupParam):
 
-				$PKLINK = '<a href="javascript:void(0);" onclick="changeParam(\'' . $paramKey . '\')" title="'.$groupParam["description"].'">' . $groupParam["label"] . '</a>';
+				$PKLINK = '<a href="javascript:void(0);" onclick="changeParam(\'' . $paramKey . '\')" title="' . $groupParam["description"] . '">' . $groupParam["label"] . '</a>';
 
 				$paramValue = $AZMAILER->getOption($paramKey, true);
-				switch($groupParam["type"]) {
+				switch ($groupParam["type"]) {
 					case "list":
 						$paramValue = AZMailerComponentParamHelper::getParamValueNameFromList($paramKey, $paramValue);
 						break;
@@ -41,7 +45,9 @@ $cols = 0;
 				?>
 				<tr class="row<?php echo $i++ % 2; ?>">
 					<td><?php echo $paramKey; ?></td>
-					<td><?php echo $PKLINK; ?><br /><small><?php echo $groupParam["description"]; ?></small></td>
+					<td><?php echo $PKLINK; ?><br/>
+						<small><?php echo $groupParam["description"]; ?></small>
+					</td>
 					<td class="pv pv_<?php echo $paramKey; ?>"><?php echo $paramValue; ?></td>
 				</tr>
 			<?php
@@ -82,7 +88,7 @@ $cols = 0;
 		if (showErrors && answer.errors.length > 0) {
 			alert(answer.errors);
 		}
-		return(answer);
+		return (answer);
 	}
 
 	function changeParam(paramName) {
@@ -101,46 +107,46 @@ $cols = 0;
 			},
 			function (data) {
 				var answer = elaborateJsonResponse(data, true);
-				if(answer.errors.length > 0) {
+				if (answer.errors.length > 0) {
 					mDialog.dialog('close');
 					return;
 				}
 				jQuery('.content', mDialog).html(answer.result);
 				mDialog.dialog("option", "buttons", [
-					{
-						text: "<?php echo JText::_('COM_AZMAILER_SET'); ?>",
-						click: function () {
-							jQuery('.msg', mDialog).html("");
-							var newValue = jQuery("input[name=paramValue], textarea[name=paramValue], select[name=paramValue]", mDialog).val();
-							jQuery.post("index.php", {
-									option: jQuery("form#adminForm input[name=option]").val(),
-									task: "settings.submitParamEditForm",
-									format: "raw",
-									paramName: paramName,
-									paramValue: newValue
-								},
-								function (data) {
-									var answer = elaborateJsonResponse(data, false);
-									if(answer.errors.length > 0) {
-										jQuery('.msg', mDialog).html(JSON.stringify(answer.errors));
-									} else {
-										if(jQuery("input[name=paramValue], textarea[name=paramValue], select[name=paramValue]", mDialog).prop("tagName") == "SELECT") {
-											newValue = jQuery("select[name=paramValue] option[value="+newValue+"]", mDialog).html();
+						{
+							text: "<?php echo JText::_('COM_AZMAILER_SET'); ?>",
+							click: function () {
+								jQuery('.msg', mDialog).html("");
+								var newValue = jQuery("input[name=paramValue], textarea[name=paramValue], select[name=paramValue]", mDialog).val();
+								jQuery.post("index.php", {
+										option: jQuery("form#adminForm input[name=option]").val(),
+										task: "settings.submitParamEditForm",
+										format: "raw",
+										paramName: paramName,
+										paramValue: newValue
+									},
+									function (data) {
+										var answer = elaborateJsonResponse(data, false);
+										if (answer.errors.length > 0) {
+											jQuery('.msg', mDialog).html(JSON.stringify(answer.errors));
+										} else {
+											if (jQuery("input[name=paramValue], textarea[name=paramValue], select[name=paramValue]", mDialog).prop("tagName") == "SELECT") {
+												newValue = jQuery("select[name=paramValue] option[value=" + newValue + "]", mDialog).html();
+											}
+											jQuery(".adminlist td.pv_" + paramName).html(newValue).effect("highlight", {color: "#b83e0f"}, 1500);
+											mDialog.dialog('close');
 										}
-										jQuery(".adminlist td.pv_"+paramName).html(newValue).effect( "highlight" , {color:"#b83e0f"}, 1500 );
-										mDialog.dialog('close');
 									}
-								}
-							);
+								);
+							}
+						},
+						{
+							text: "<?php echo JText::_('COM_AZMAILER_CANCEL'); ?>",
+							click: function () {
+								mDialog.dialog('close');
+							}
 						}
-					},
-					{
-						text: "<?php echo JText::_('COM_AZMAILER_CANCEL'); ?>",
-						click: function () {
-							mDialog.dialog('close');
-						}
-					}
-				]
+					]
 				);
 			}
 		);
@@ -149,7 +155,7 @@ $cols = 0;
 	Joomla.submitbutton = function (pressbutton) {
 		if (pressbutton == 'settings.checkAndUpdateAZMailerTables') {
 			if (!confirm("<?php echo JText::_( 'COM_AZMAILER_SETTING_CHECKDB_CONFIRM' ); ?>")) {
-				return(false);
+				return (false);
 			}
 		}
 		submitform(pressbutton);

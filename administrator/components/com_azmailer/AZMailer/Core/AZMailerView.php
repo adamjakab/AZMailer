@@ -15,18 +15,27 @@ jimport('joomla.application.component.view');
  * @package AZMailer\Core
  */
 class AZMailerView extends \JViewLegacy {
+	/** @var mixed $item */
+	protected $item;
+
 	/** @var mixed $items */
 	protected $items;
 
 	/** @var mixed $state */
 	protected $state;
 
+	/** @var mixed $filters */
+	protected $filters;
+
+	/** @var mixed $pagination */
+	protected $pagination;
+
 	/**
 	 * @param array $config
 	 */
 	function __construct($config = array()) {
 		parent::__construct($config);
-    }
+	}
 
 	/**
 	 * Default view display method
@@ -34,6 +43,6 @@ class AZMailerView extends \JViewLegacy {
 	 * @return mixed|void
 	 */
 	function display($tpl = null) {
-		return(parent::display($tpl));
-    }
+		return (parent::display($tpl));
+	}
 }

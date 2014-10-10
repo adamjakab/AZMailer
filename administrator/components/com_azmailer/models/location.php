@@ -76,7 +76,7 @@ class AZMailerModelLocation extends AZMailerModel {
 					$data["province_name"] = $name;
 					$data["province_sigla"] = $sigla;
 				}
-				if(isset($table)) {
+				if (isset($table)) {
 					if ($table->save($data)) {
 						$answer = true;
 					} else {
@@ -137,21 +137,19 @@ class AZMailerModelLocation extends AZMailerModel {
 		if (!empty($delete_what) && in_array($delete_what, array("country", "region", "province"))) {
 			if ($id != 0) {
 				if ($delete_what == "country") {
-					$COUNT_1 = AZMailerLocationHelper::countRegionsInCountry($id);
-					$COUNT_2 = 0; //AZMailerSubscriberHelper::countNLSubscribersInCountry($id);
+					$relCount = AZMailerLocationHelper::countRegionsInCountry($id);
 				} else if ($delete_what == "region") {
-					$COUNT_1 = AZMailerLocationHelper::countProvincesInRegion($id);
-					$COUNT_2 = 0; //AZMailerSubscriberHelper::countNLSubscribersInRegion($id);
+					$relCount = AZMailerLocationHelper::countProvincesInRegion($id);
 				} else if ($delete_what == "province") {
-					$COUNT_1 = 0;
-					$COUNT_2 = 0; //AZMailerSubscriberHelper::countNLSubscribersInProvince($id);
+					$relCount = 0;
 				}
-				if (($COUNT_1 + $COUNT_2) == 0) {
+				if (isset($relCount) && ($relCount) == 0) {
 					$table = \JTable::getInstance('azmailer_' . $delete_what, 'Table');
 					if ($table->delete($id)) {
 						$answer = true;
 					} else {
 						$this->setError("Error - Delete failed: " . print_r($table->getErrors(), true));
+						$answer = false;
 					}
 				} else {
 					$answer = "Error - Impossible to delete - there are related objects!";

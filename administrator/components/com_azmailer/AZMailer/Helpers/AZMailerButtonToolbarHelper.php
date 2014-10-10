@@ -16,40 +16,36 @@ defined('_JEXEC') or die('Restricted access');
  */
 class AZMailerButtonToolbarHelper {
 	/**
-	 * Toolbar name
-	 *
-	 * @var    string
-	 */
-	protected $_name = array();
-
-	/**
-	 * Toolbar array
-	 *
-	 * @var    array
-	 */
-	protected $_bar = array();
-
-	/**
-	 * Loaded buttons
-	 *
-	 * @var    array
-	 */
-	protected $_buttons = array();
-
-	/**
-	 * Directories, where button types can be stored.
-	 *
-	 * @var    array
-	 */
-	protected $_buttonPath = array();
-
-	/**
 	 * Stores the singleton instances of various toolbar.
 	 *
 	 * @var    array
 	 * @since  2.5
 	 */
 	protected static $instances = array();
+	/**
+	 * Toolbar name
+	 *
+	 * @var    string
+	 */
+	protected $_name = array();
+	/**
+	 * Toolbar array
+	 *
+	 * @var    array
+	 */
+	protected $_bar = array();
+	/**
+	 * Loaded buttons
+	 *
+	 * @var    array
+	 */
+	protected $_buttons = array();
+	/**
+	 * Directories, where button types can be stored.
+	 *
+	 * @var    array
+	 */
+	protected $_buttonPath = array();
 
 	/**
 	 * @param string $name
@@ -62,7 +58,7 @@ class AZMailerButtonToolbarHelper {
 	 * Returns the global AZMailerButtonToolbarHelper object, only creating it if it
 	 * doesn't already exist.
 	 *
-	 * @param   string  $name  The name of the toolbar.	 *
+	 * @param   string $name The name of the toolbar.     *
 	 * @return  AZMailerButtonToolbarHelper  The AZMailerButtonToolbarHelper object.
 	 */
 	public static function getInstance($name = 'toolbar') {
@@ -88,7 +84,7 @@ class AZMailerButtonToolbarHelper {
 	 * aruments: same as appendButton
 	 * @return  string
 	 */
-	public function prependButton()	{
+	public function prependButton() {
 		$btn = func_get_args();
 		array_unshift($this->_bar, $btn);
 		return true;
@@ -128,13 +124,13 @@ class AZMailerButtonToolbarHelper {
 
 	/**
 	 * Render a button.
-	 * @param   object  &$button  array with args: text, link, active
+	 * @param   object &$button array with args: text, link, active
 	 * @return  string
 	 */
 	private function renderButton(&$button) {
 		$html = array();
 		$html[] = '<li>';
-		$html[] = '<a ' . ($button[2]?'class="active"':'') . 'href="'.$button[1].'">';
+		$html[] = '<a ' . ($button[2] ? 'class="active"' : '') . 'href="' . $button[1] . '">';
 		$html[] = $button[0];
 		$html[] = '</a>';
 		$html[] = '</i>';

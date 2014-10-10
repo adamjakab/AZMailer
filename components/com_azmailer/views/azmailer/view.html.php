@@ -16,29 +16,30 @@ use AZMailer\Helpers\AZMailerNewsletterHelper;
 
 /**
  * HTML View class for the AZMailer Component.
- *
- * @package AZMailer
+ * Class AZMailerViewAZMailer
  */
-class AZMailerViewAZMailer extends JView {
-    /**
-     * AZMailer default view display method - you should not end up here
-     */
-    public function display($tpl = null) {
-	    global $AZMAILER;
-        $this->greeting = "AZMailer";
-	    $this->message = "The task(".$AZMAILER->getOption('task').") you have requested is not registered.";
-        parent::display($tpl);
-    }
+class AZMailerViewAZMailer extends JViewLegacy {
+	/** @var bool */
+	protected $confirmed = false;
 
-	public function removeMeFromNewsletter($tpl = null) {
+	/** @var string */
+	protected $removalError;
+
+	/** @var string */
+	protected $CTRL;
+
+	/**
+	 * @throws Exception
+	 */
+	public function removeMeFromNewsletter() {
 		$JI = \JFactory::getApplication()->input;
 		$this->removalError = null;
 		$this->CTRL = $JI->getString("ctrl", "");
 		$this->confirmed = $JI->getInt("confirmed", 0);
 		if (!empty($this->CTRL)) {
-			if ($validMailToRemove = AZMailerNewsletterHelper::checkAndGetValidMailToRemoveFromNewsletter($this->CTRL)) {
+			if ( ($validMailToRemove = AZMailerNewsletterHelper::checkAndGetValidMailToRemoveFromNewsletter($this->CTRL)) ) {
 				if ($this->confirmed == 1) {
-					if (\JRequest::checkToken()) {
+					if (\JSession::checkToken()) {
 						$chkemail = $JI->getString("chkemail", "");
 						if (!empty($chkemail) && $chkemail == $validMailToRemove) {
 							if (AZMailerNewsletterHelper::blacklistNewsletterSubscriber($validMailToRemove)) {

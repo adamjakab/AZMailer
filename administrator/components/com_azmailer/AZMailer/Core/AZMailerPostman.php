@@ -1,8 +1,10 @@
 <?php
 namespace AZMailer\Core;
-use AZMailer\Helpers\AZMailerPostmanHelper;
+
 use AZMailer\Helpers\AZMailerMimeHelper;
+use AZMailer\Helpers\AZMailerPostmanHelper;
 use AZMailer\Helpers\AZMailerSubscriberHelper;
+
 /**
  * @package AZMailer
  * @author Adam Jakab
@@ -11,20 +13,17 @@ use AZMailer\Helpers\AZMailerSubscriberHelper;
 defined('_JEXEC') or die('RESTRICTED');
 
 class AZMailerPostman {
+	const CRLF = "\r\n";
+		const BLEN = 1024; //unknown error
 	static private $logs = array();
-	private $resultcode = 999; //unknown error
-	private $resultmsg = "Unknown error";
-	private $mxc = null; //this is the Mail Server Connection resource
-	private $mxhosts = array(); //mx hosts array
+	private $resultcode = 999; //this is the Mail Server Connection resource
+		private $resultmsg = "Unknown error"; //mx hosts array
+private $mxc = null;
+private $mxhosts = array();
 	private $mx_connection_timeout = 5;
 	private $ACCEPTABLEMXCODES = array("220", "250", "354");
-
 	private $php_required_functions = array("stream_socket_client", "fsockopen");
 	private $smtp_usable_methods = array();
-
-	const CRLF = "\r\n";
-	const BLEN = 1024;
-
 	private $MDATA = array(
 		"helo" => "",
 		"xmailer" => "",
@@ -46,14 +45,124 @@ class AZMailerPostman {
 		$this->setup($qs);
 	}
 
-	public function getMailData($key) {
-		if (isset($this->MDATA[$key])) {
-			return($this->MDATA[$key]);
+	public static function logThis($msg, $cleanupSpecialChars = true) {
+		if (!empty($msg)) {
+			if ($cleanupSpecialChars) {
+				$msg = htmlspecialchars($msg);
+			}
+			self::$logs[] = $msg;
 		}
-		return(false);
 	}
 
 	//------------------------------------------------------------------------------MAIN PUBLIC FUNCTIONS
+
+	private function setup($qs = null) {
+		if (!$qs) {
+			return;
+		}
+		//map quick setup date to MDATA
+		foreach ($qs as $sk => $sv) {
+			if (isset($this->MDATA[$sk])) {
+				if (method_exists($this, "set_" . $sk)) {
+					call_user_func_array(array($this, "set_" . $sk), array($sv));
+				}
+			}
+		}
+		//check for php usable methods
+		$this->smtp_usable_methods = $this->smtp_get_connection_methods();
+	}
+
+	private function smtp_get_connection_methods() {
+		$answer = array();
+		$php_disabled_functions = ini_get('disable_functions');
+		foreach ($this->php_required_functions as $phpfunc) {
+			if (!preg_match('/' . $phpfunc . '/', $php_disabled_functions)) {
+				if (function_exists($phpfunc)) {
+					array_push($answer, $phpfunc);
+				}
+			}
+		}
+		return ($answer);
+	}
+
+	//------------------------------------------------------------------------------SETTERS
+
+	public function getMailData($key) {
+		if (isset($this->MDATA[$key])) {
+			return ($this->MDATA[$key]);
+		}
+		return (false);
+	}
+
+	public function sendMail() {
+		if (!$this->check_subject()) {
+			$this->setError(911, "sendMail[%s]: Mail subject is not set!");
+			return (false);
+		}
+		if (!$this->check_text() || !$this->check_html()) {
+			$this->setError(912, "sendMail[%s]: Mail message (text/html) is not set!");
+			return (false);
+		}
+		if (!$this->controlRecipientMailAddress(true)) {
+			$this->logThis("sendMail[$this->resultcode]: Mail recipient check failed!");
+			$this->smtp_disconnect($this->mxc);
+			return (false);
+		}
+		$messageBody = AZMailerPostmanHelper::composeMessageData($this->MDATA);
+		if (!$messageBody) {
+			$this->setError(913, "sendMail[%s]: Mail compose failed!");
+			$this->smtp_disconnect($this->mxc);
+			return (false);
+		}
+
+		$this->logThis("sendMail: sending mail to recipient(" . strlen($messageBody) . " bytes)...");
+		$res = $this->smtp_send($this->mxc, $messageBody);
+		$this->smtp_disconnect($this->mxc);
+		return ($res);
+	}
+
+	private function check_subject($subject = null) {
+		if (!$subject) {
+			$subject = $this->MDATA["subject"];
+		}
+		$subject = trim($subject);
+		if (empty($subject)) {
+			$this->logThis("checkSubject: Subject must not be empty!");
+			return (false);
+		}
+		return ($subject);
+	}
+
+	private function setError($errNum, $errMsg) {
+		$this->resultcode = $errNum; //last server error code
+		$this->resultmsg = htmlspecialchars(sprintf($errMsg, $errNum));
+		$errMsg = '<font style="color:#ff0000">' . $this->resultmsg . '</font>';
+		$this->logThis($errMsg, false);
+		return ($errNum);
+	}
+
+	private function check_text($text = null) {
+		if (!$text) {
+			$text = $this->MDATA["text"];
+		}
+		if (empty($text)) {
+			$this->logThis("checkText: Text content is empty!");
+			return (false);
+		}
+		return ($text);
+	}
+
+	private function check_html($html = null) {
+		if (!$html) {
+			$html = $this->MDATA["html"];
+		}
+		if (empty($html)) {
+			$this->logThis("checkHtml: Html content is empty!");
+			return (false);
+		}
+		return ($html);
+	}
+
 	public function controlRecipientMailAddress($keepConnection = false) {
 		if (!$this->check_helo()) {
 			$this->setError(908, "Postman Check[%s]: Undefined parameter HELO - unable continue!");
@@ -100,34 +209,259 @@ class AZMailerPostman {
 		}
 	}
 
-	public function sendMail() {
-		if (!$this->check_subject()) {
-			$this->setError(911, "sendMail[%s]: Mail subject is not set!");
+	private function check_helo($helo = null) {
+		if (!$helo) {
+			$helo = $this->MDATA["helo"];
+		}
+		$helo = strtolower(trim($helo));
+		if (empty($helo)) {
+			$this->logThis("checkHelo: Helo is empty!");
 			return (false);
 		}
-		if (!$this->check_text() || !$this->check_html()) {
-			$this->setError(912, "sendMail[%s]: Mail message (text/html) is not set!");
+		if (!is_string($helo)) {
+			$this->logThis("checkHelo: Helo is not a string!");
 			return (false);
 		}
-		if (!$this->controlRecipientMailAddress(true)) {
-			$this->logThis("sendMail[$this->resultcode]: Mail recipient check failed!");
-			$this->smtp_disconnect($this->mxc);
+		if (!AZMailerPostmanHelper::is_valid_hostname($helo)) {
+			$this->logThis("checkHelo: Helo[$helo] is not a valid hostname/ipv4!");
 			return (false);
 		}
-		$messageBody = AZMailerPostmanHelper::composeMessageData($this->MDATA);
-		if (!$messageBody) {
-			$this->setError(913, "sendMail[%s]: Mail compose failed!");
-			$this->smtp_disconnect($this->mxc);
-			return (false);
-		}
-
-		$this->logThis("sendMail: sending mail to recipient(" . strlen($messageBody) . " bytes)...");
-		$res = $this->smtp_send($this->mxc, $messageBody);
-		$this->smtp_disconnect($this->mxc);
-		return ($res);
+		return ($helo);
 	}
 
-	//------------------------------------------------------------------------------SETTERS
+	private function check_from($from = null) {
+		if (!$from) {
+			$from = $this->MDATA["from"];
+		}
+		$from = strtolower(trim($from));
+		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($from)) {
+			$this->logThis("checkFrom: From[$from] is not a semantically valid e-mail address!");
+			return (false);
+		}
+		return ($from);
+	}
+
+	private function check_to($to = null) {
+		if (!$to) {
+			$to = $this->MDATA["to"];
+		}
+		$to = strtolower(trim($to));
+		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($to)) {
+			$this->logThis("checkFrom: To[$to] is not a semantically valid e-mail address!");
+			return (false);
+		}
+		return ($to);
+	}
+
+	private function getConnectionResource() {
+		if (!$this->mxc) {
+			if ($this->mxhosts = $this->getMXHosts()) {
+				$this->mxc = $this->getMXConnectionResource($this->mxhosts);
+				if (!$this->mxc) {
+					$this->logThis("getConnectionResource[$this->resultcode] - All MX hosts failed - no available connection!");
+				}
+			} else {
+				$this->setError(911, "getConnectionResource[%s] - No available MX host to use!");
+			}
+		}
+		return ($this->mxc);
+	}
+
+	private function getMXHosts() {
+		$answer = false;
+		if (!empty($this->MDATA["to"])) {
+			list($username, $domain) = explode('@', $this->MDATA["to"]);
+			$this->logThis("getMXHosts: checking on domain: $domain");
+			if (!@getmxrr($domain, $mx_records, $mx_weight)) {
+				$mxs = array();
+				$mxs[] = $domain;
+				$this->logThis("getMXHosts: no MX hosts - will use domain name: $domain");
+			} else {
+				// Put the records together in a array we can sort them by weight
+				for ($i = 0; $i < count($mx_records); $i++) {
+					$mxs[$mx_records[$i]] = $mx_weight[$i];
+				}
+				asort($mxs);
+				$mxs = array_keys($mxs);
+				//$this->logThis("getMXHosts: MX hosts found: " . implode(", ", $answer));
+			}
+			//
+			$answer = array();
+			foreach ($mxs as $mx) {
+				if (AZMailerPostmanHelper::is_valid_hostname($mx)) {
+					$this->logThis("getMXHosts: found valid MX host: $mx");
+					array_push($answer, $mx);
+				} else {
+					$this->logThis("getMXHosts: removing invalid MX host: $mx");
+				}
+			}
+			if (!count($answer)) {
+				$answer = false;
+			}
+		}
+		return ($answer);
+	}
+
+
+	//------------------------------------------------------------------------------CHECKERS (return correct data to set or FALSE if incorrect)
+
+	private function getMXConnectionResource($mxhosts) {
+		$handle = false;
+		foreach ($mxhosts as $mxhost) {
+			$handle = $this->smtp_connect($mxhost, 25);
+			if ($handle) {
+				if (!$this->smtp_command($handle, "HELO " . $this->MDATA["helo"])) {
+					$this->smtp_disconnect($handle);
+					$handle = false;
+				} else if (!in_array($this->smtp_read_from_handle($handle), $this->ACCEPTABLEMXCODES)) {
+					$this->smtp_disconnect($handle);
+					$handle = false;
+				} else {
+					break;
+				}
+			}
+		}
+		return ($handle);
+	}
+
+	private function smtp_connect($host, $port) {
+		$handle = false;
+		if (count($this->smtp_usable_methods) > 0) {
+			try {
+				foreach ($this->smtp_usable_methods as $connectionMethod) {
+					$logMsg = 'SMTP(CONN)(' . $connectionMethod . ') - connecting to MX host: ' . $host . ':' . $port . '...';
+					switch ($connectionMethod) {
+						case 'stream_socket_client':
+							$errno = 0;
+							$errstr = "";
+							$handle = @stream_socket_client('tcp://' . $host . ':' . $port, $errno, $errstr, $this->mx_connection_timeout);
+							break;
+						case 'fsockopen':
+							$errno = 0;
+							$errstr = "";
+							$handle = @fsockopen($host, $port, $errno, $errstr, $this->mx_connection_timeout);
+							break;
+						default:
+							$errno = 127;
+							$errstr = "Unknown connection method!";
+					}
+					if (!$handle) {
+						$this->setError($errno, $logMsg . "FAILED[%s] - " . $errstr);
+					} else {
+						$this->logThis($logMsg);
+						$rcode = $this->smtp_read_from_handle($handle);
+						if ($rcode == 220) {
+							break;
+						}
+					}
+				}
+			} catch (\Exception $e) {
+				$this->setError(950, "SMTP(CONN)[%s] - unexpected connection error - " . $e->getMessage());
+				return (false);
+			}
+		} else {
+			$this->setError(951, "SMTP(CONN)[%s] - Server does NOT support any of these connection methods: " . implode(", ", $this->php_required_functions));
+			return (false);
+		}
+		return $handle;
+	}
+
+	private function smtp_read_from_handle($handle = null) {
+		if ($handle && is_resource($handle)) {
+			$resp = array();
+			do {
+				if ($response = fgets($handle, self::BLEN)) {
+					$resp[] = $response;
+					preg_match("/^([0-9]{3})/", $response, $matches);
+					if ($matches[1]) {
+						$rcode = (int)$matches[1];
+					} else {
+						$rcode = $this->setError(996, "SMTP(R)[%s] - cannot determin exit code from: " . $response);
+					}
+				} else {
+					$rcode = $this->setError(997, "SMTP(R)[%s] - cannot read from resource!");
+					break;
+				}
+			} while ($response[3] == '-');
+			if (!in_array($rcode, $this->ACCEPTABLEMXCODES) && !in_array($rcode, array("996", "997"))) {
+				$this->setError($rcode, "SMTP(R)[%s] - " . implode(" : ", $resp));
+			} else {
+				$this->logThis("SMTP(R)[$rcode] - " . implode(" : ", $resp));
+				$this->resultcode = $rcode; //last server error code
+			}
+		} else {
+			$rcode = $this->setError(990, "SMTP(R)[%s] - no connection resource handle!");
+		}
+		return ($rcode);
+	}
+
+	private function smtp_command($handle, $command, $traceCommand = true) {
+		$answer = false;
+		if ($handle) {
+			if (!fwrite($handle, $command . self::CRLF)) {
+				$this->setError(998, "SMTP(W)[%s]>" . $command . " - cannot write to resource!");
+			} else {
+				if ($traceCommand) {
+					$this->logThis("SMTP(W)> " . $command);
+				}
+				$answer = true;
+			}
+		} else {
+			$this->setError(990, "SMTP(W)[%s] - no connection resource handle!");
+		}
+		return ($answer);
+	}
+
+	private function smtp_disconnect($handle) {
+		if ($handle) {
+			if (!fwrite($handle, 'QUIT' . self::CRLF)) {
+				$this->logThis("smtp_disconnect - Unable to QUIT to resource!");
+			}
+			fclose($handle);
+			$this->mxc = null;
+			$this->logThis("Disconnected.");
+		}
+	}
+
+	private function smtp_send($handle = null, $mess = null) {
+		$answer = false;
+		if ($this->smtp_command($handle, "DATA")) {
+			if ($this->smtp_read_from_handle($handle) == 354) {
+				$continue = true;
+				$lines = explode(self::CRLF, $mess);
+				$lineCount = count($lines);
+				foreach ($lines as $line) {
+					if ($line != '' && $line[0] == '.') {
+						$line = '.' . $line;
+					}
+					if (!$this->smtp_command($handle, $line, false)) {
+						$continue = false;
+						$this->logThis("smtp_send[$this->resultcode] - cannot write line to resource!");
+						break;
+					}
+				}
+				if ($continue) {
+					$this->logThis("smtp_send - piped $lineCount lines - ok");
+					if (!$this->smtp_command($handle, self::CRLF . '.')) {
+						$this->logThis("smtp_send[$this->resultcode] - cannot close DATA connection!");
+					} else if (!in_array($this->smtp_read_from_handle($handle), $this->ACCEPTABLEMXCODES)) {
+						$this->logThis("smtp_send[$this->resultcode] - cannot close DATA connection!");
+					} else {
+						$this->logThis("smtp_send - DONE!");
+						$answer = true;
+					}
+				}
+
+
+			} else {
+				$this->logThis("smtp_send[$this->resultcode] - DATA command failed!");
+			}
+		} else {
+			$this->logThis("smtp_send[$this->resultcode] - DATA command failed!");
+		}
+		return ($answer);
+	}
+
 	public function set_helo($helo = null) {
 		$helo = $this->check_helo($helo);
 		if ($helo) {
@@ -150,6 +484,22 @@ class AZMailerPostman {
 		}
 	}
 
+	private function check_xmailer($xmailer = null) {
+		if (!$xmailer) {
+			$xmailer = $this->MDATA["xmailer"];
+		}
+		$xmailer = trim($xmailer);
+		if (empty($xmailer)) {
+			$this->logThis("check_xmailer: XMailer is empty!");
+			return (false);
+		}
+		if (!is_string($xmailer)) {
+			$this->logThis("check_xmailer: XMailer is not a string!");
+			return (false);
+		}
+		return ($xmailer);
+	}
+
 	public function set_messageid($messageid = null) {
 		$messageid = $this->check_messageid($messageid);
 		if ($messageid) {
@@ -159,6 +509,26 @@ class AZMailerPostman {
 		} else {
 			return (false);
 		}
+	}
+
+	private function check_messageid($messageid = null) {
+		if (!$messageid) {
+			$messageid = $this->MDATA["messageid"];
+		}
+		$messageid = strtolower(trim($messageid));
+		if (empty($messageid)) {
+			$this->logThis("check_messageid: MessageID is empty!");
+			return (false);
+		}
+		if (!is_string($messageid)) {
+			$this->logThis("check_messageid: MessageID is not a string!");
+			return (false);
+		}
+		if ($messageid[0] != '@') {
+			$this->logThis("check_messageid: MessageID must start with the at('@') character!");
+			return (false);
+		}
+		return ($messageid);
 	}
 
 	public function set_from($from = null) {
@@ -172,6 +542,9 @@ class AZMailerPostman {
 		}
 	}
 
+
+	//------------------------------------------------------------------------------OTHER PUBLIC FUNCTIONS
+
 	public function set_fromname($fromname = null) {
 		$fromname = $this->check_fromname($fromname);
 		if ($fromname) {
@@ -181,6 +554,22 @@ class AZMailerPostman {
 		} else {
 			return (false);
 		}
+	}
+
+	private function check_fromname($fromname = null) {
+		if (!$fromname) {
+			$fromname = $this->MDATA["fromname"];
+		}
+		$fromname = AZMailerPostmanHelper::str_clear(trim($fromname));
+		if (empty($fromname)) {
+			$this->logThis("check_fromname: FromName is empty!");
+			return (false);
+		}
+		if (!is_string($fromname)) {
+			$this->logThis("check_fromname: FromName is not a string!");
+			return (false);
+		}
+		return ($fromname);
 	}
 
 	public function set_to($to = null) {
@@ -203,6 +592,21 @@ class AZMailerPostman {
 		} else {
 			return (false);
 		}
+	}
+
+
+	//------------------------------------------------------------------------------private utils
+
+	private function check_returnpath($returnpath = null) {
+		if (!$returnpath) {
+			$returnpath = $this->MDATA["returnpath"];
+		}
+		$returnpath = strtolower(trim($returnpath));
+		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($returnpath)) {
+			$this->logThis("checkReturnpath: Returnpath[$returnpath] is not a semantically valid e-mail address!");
+			return (false);
+		}
+		return ($returnpath);
 	}
 
 	public function set_subject($subject = null) {
@@ -249,197 +653,6 @@ class AZMailerPostman {
 		} else {
 			return (false);
 		}
-	}
-
-	public function add_attachment($file = null, $fileName = null, $disposition = null, $uid = null) {
-		if (!file_exists($file)) {
-			$this->logThis("add_attachment: File does not exist! - $file");
-			return (false);
-		}
-		if (!$FC = file_get_contents($file)) {
-			$this->logThis("add_attachment: Error getting file contents! - $file");
-			return (false);
-		}
-		if (!$MT = AZMailerPostmanHelper::mime_type($file)) {
-			$this->logThis("add_attachment: Error getting file mime-type! - $file");
-			return (false);
-		}
-		if (empty($fileName)) {
-			$FI = pathinfo($file);
-			$fileName = $FI["basename"];
-		}
-		$fileName = trim(AZMailerPostmanHelper::str_clear($fileName));
-		if (!$fileName) {
-			$this->logThis("add_attachment: Invalid or missing attachment fileName");
-			return (false);
-		}
-		if ($disposition == null) {
-			$disposition = 'attachment';
-		}
-		if (!in_array($disposition, array('attachment', 'inline'))) {
-			$this->logThis("add_attachment: Invalid disposition value! - $disposition");
-			return (false);
-		}
-		if (empty($uid)) {
-			$uid = AZMailerMimeHelper::unique();
-		}
-		$uid = AZMailerPostmanHelper::str_clear($uid, array(" "));
-		if (!$uid) {
-			$this->logThis("add_attachment: Invalid or missing attachment unique identifier");
-			return (false);
-		}
-		//
-		$charset = null;
-		$encoding = "base64";
-		//
-		$att = array('content' => $FC, 'type' => $MT, 'name' => $fileName, 'charset' => $charset, 'encoding' => $encoding, 'disposition' => $disposition, 'id' => $uid);
-		array_push($this->MDATA["attachments"], $att);
-		$this->logThis('ADD: "ATTACHMENT(' . $disposition . ')" => OK: ' . "Type($MT), Name($fileName), Uid($uid)");
-		return (true);
-	}
-
-
-	//------------------------------------------------------------------------------CHECKERS (return correct data to set or FALSE if incorrect)
-	private function check_helo($helo = null) {
-		if (!$helo) {
-			$helo = $this->MDATA["helo"];
-		}
-		$helo = strtolower(trim($helo));
-		if (empty($helo)) {
-			$this->logThis("checkHelo: Helo is empty!");
-			return (false);
-		}
-		if (!is_string($helo)) {
-			$this->logThis("checkHelo: Helo is not a string!");
-			return (false);
-		}
-		if (!AZMailerPostmanHelper::is_valid_hostname($helo)) {
-			$this->logThis("checkHelo: Helo[$helo] is not a valid hostname/ipv4!");
-			return (false);
-		}
-		return ($helo);
-	}
-
-	private function check_xmailer($xmailer = null) {
-		if (!$xmailer) {
-			$xmailer = $this->MDATA["xmailer"];
-		}
-		$xmailer = trim($xmailer);
-		if (empty($xmailer)) {
-			$this->logThis("check_xmailer: XMailer is empty!");
-			return (false);
-		}
-		if (!is_string($xmailer)) {
-			$this->logThis("check_xmailer: XMailer is not a string!");
-			return (false);
-		}
-		return ($xmailer);
-	}
-
-	private function check_messageid($messageid = null) {
-		if (!$messageid) {
-			$messageid = $this->MDATA["messageid"];
-		}
-		$messageid = strtolower(trim($messageid));
-		if (empty($messageid)) {
-			$this->logThis("check_messageid: MessageID is empty!");
-			return (false);
-		}
-		if (!is_string($messageid)) {
-			$this->logThis("check_messageid: MessageID is not a string!");
-			return (false);
-		}
-		if ($messageid[0] != '@') {
-			$this->logThis("check_messageid: MessageID must start with the at('@') character!");
-			return (false);
-		}
-		return ($messageid);
-	}
-
-	private function check_from($from = null) {
-		if (!$from) {
-			$from = $this->MDATA["from"];
-		}
-		$from = strtolower(trim($from));
-		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($from)) {
-			$this->logThis("checkFrom: From[$from] is not a semantically valid e-mail address!");
-			return (false);
-		}
-		return ($from);
-	}
-
-	private function check_fromname($fromname = null) {
-		if (!$fromname) {
-			$fromname = $this->MDATA["fromname"];
-		}
-		$fromname = AZMailerPostmanHelper::str_clear(trim($fromname));
-		if (empty($fromname)) {
-			$this->logThis("check_fromname: FromName is empty!");
-			return (false);
-		}
-		if (!is_string($fromname)) {
-			$this->logThis("check_fromname: FromName is not a string!");
-			return (false);
-		}
-		return ($fromname);
-	}
-
-	private function check_to($to = null) {
-		if (!$to) {
-			$to = $this->MDATA["to"];
-		}
-		$to = strtolower(trim($to));
-		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($to)) {
-			$this->logThis("checkFrom: To[$to] is not a semantically valid e-mail address!");
-			return (false);
-		}
-		return ($to);
-	}
-
-	private function check_returnpath($returnpath = null) {
-		if (!$returnpath) {
-			$returnpath = $this->MDATA["returnpath"];
-		}
-		$returnpath = strtolower(trim($returnpath));
-		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($returnpath)) {
-			$this->logThis("checkReturnpath: Returnpath[$returnpath] is not a semantically valid e-mail address!");
-			return (false);
-		}
-		return ($returnpath);
-	}
-
-	private function check_subject($subject = null) {
-		if (!$subject) {
-			$subject = $this->MDATA["subject"];
-		}
-		$subject = trim($subject);
-		if (empty($subject)) {
-			$this->logThis("checkSubject: Subject must not be empty!");
-			return (false);
-		}
-		return ($subject);
-	}
-
-	private function check_text($text = null) {
-		if (!$text) {
-			$text = $this->MDATA["text"];
-		}
-		if (empty($text)) {
-			$this->logThis("checkText: Text content is empty!");
-			return (false);
-		}
-		return ($text);
-	}
-
-	private function check_html($html = null) {
-		if (!$html) {
-			$html = $this->MDATA["html"];
-		}
-		if (empty($html)) {
-			$this->logThis("checkHtml: Html content is empty!");
-			return (false);
-		}
-		return ($html);
 	}
 
 	private function check_headers($headers = null) {
@@ -553,15 +766,51 @@ class AZMailerPostman {
 		return ($header);
 	}
 
-
-	//------------------------------------------------------------------------------OTHER PUBLIC FUNCTIONS
-	public static function logThis($msg, $cleanupSpecialChars = true) {
-		if (!empty($msg)) {
-			if ($cleanupSpecialChars) {
-				$msg = htmlspecialchars($msg);
-			}
-			self::$logs[] = $msg;
+	public function add_attachment($file = null, $fileName = null, $disposition = null, $uid = null) {
+		if (!file_exists($file)) {
+			$this->logThis("add_attachment: File does not exist! - $file");
+			return (false);
 		}
+		if (!$FC = file_get_contents($file)) {
+			$this->logThis("add_attachment: Error getting file contents! - $file");
+			return (false);
+		}
+		if (!$MT = AZMailerPostmanHelper::mime_type($file)) {
+			$this->logThis("add_attachment: Error getting file mime-type! - $file");
+			return (false);
+		}
+		if (empty($fileName)) {
+			$FI = pathinfo($file);
+			$fileName = $FI["basename"];
+		}
+		$fileName = trim(AZMailerPostmanHelper::str_clear($fileName));
+		if (!$fileName) {
+			$this->logThis("add_attachment: Invalid or missing attachment fileName");
+			return (false);
+		}
+		if ($disposition == null) {
+			$disposition = 'attachment';
+		}
+		if (!in_array($disposition, array('attachment', 'inline'))) {
+			$this->logThis("add_attachment: Invalid disposition value! - $disposition");
+			return (false);
+		}
+		if (empty($uid)) {
+			$uid = AZMailerMimeHelper::unique();
+		}
+		$uid = AZMailerPostmanHelper::str_clear($uid, array(" "));
+		if (!$uid) {
+			$this->logThis("add_attachment: Invalid or missing attachment unique identifier");
+			return (false);
+		}
+		//
+		$charset = null;
+		$encoding = "base64";
+		//
+		$att = array('content' => $FC, 'type' => $MT, 'name' => $fileName, 'charset' => $charset, 'encoding' => $encoding, 'disposition' => $disposition, 'id' => $uid);
+		array_push($this->MDATA["attachments"], $att);
+		$this->logThis('ADD: "ATTACHMENT(' . $disposition . ')" => OK: ' . "Type($MT), Name($fileName), Uid($uid)");
+		return (true);
 	}
 
 	public function getLogs() {
@@ -574,252 +823,5 @@ class AZMailerPostman {
 
 	public function getResultMessage() {
 		return ($this->resultmsg);
-	}
-
-
-	//------------------------------------------------------------------------------private utils
-	private function setup($qs = null) {
-		if (!$qs) {
-			return;
-		}
-		//map quick setup date to MDATA
-		foreach ($qs as $sk => $sv) {
-			if (isset($this->MDATA[$sk])) {
-				if (method_exists($this, "set_" . $sk)) {
-					call_user_func_array(array($this, "set_" . $sk), array($sv));
-				}
-			}
-		}
-		//check for php usable methods
-		$this->smtp_usable_methods = $this->smtp_get_connection_methods();
-	}
-
-	private function getConnectionResource() {
-		if (!$this->mxc) {
-			if ($this->mxhosts = $this->getMXHosts()) {
-				$this->mxc = $this->getMXConnectionResource($this->mxhosts);
-				if (!$this->mxc) {
-					$this->logThis("getConnectionResource[$this->resultcode] - All MX hosts failed - no available connection!");
-				}
-			} else {
-				$this->setError(911, "getConnectionResource[%s] - No available MX host to use!");
-			}
-		}
-		return ($this->mxc);
-	}
-
-	private function getMXConnectionResource($mxhosts) {
-		$handle = false;
-		foreach ($mxhosts as $mxhost) {
-			$handle = $this->smtp_connect($mxhost, 25);
-			if ($handle) {
-				if (!$this->smtp_command($handle, "HELO " . $this->MDATA["helo"])) {
-					$this->smtp_disconnect($handle);
-					$handle = false;
-				} else if (!in_array($this->smtp_read_from_handle($handle), $this->ACCEPTABLEMXCODES)) {
-					$this->smtp_disconnect($handle);
-					$handle = false;
-				} else {
-					break;
-				}
-			}
-		}
-		return ($handle);
-	}
-
-
-	private function smtp_send($handle = null, $mess = null) {
-		$answer = false;
-		if ($this->smtp_command($handle, "DATA")) {
-			if ($this->smtp_read_from_handle($handle) == 354) {
-				$continue = true;
-				$lines = explode(self::CRLF, $mess);
-				$lineCount = count($lines);
-				foreach ($lines as $line) {
-					if ($line != '' && $line[0] == '.') {
-						$line = '.' . $line;
-					}
-					if (!$this->smtp_command($handle, $line, false)) {
-						$continue = false;
-						$this->logThis("smtp_send[$this->resultcode] - cannot write line to resource!");
-						break;
-					}
-				}
-				if ($continue) {
-					$this->logThis("smtp_send - piped $lineCount lines - ok");
-					if (!$this->smtp_command($handle, self::CRLF . '.')) {
-						$this->logThis("smtp_send[$this->resultcode] - cannot close DATA connection!");
-					} else if (!in_array($this->smtp_read_from_handle($handle), $this->ACCEPTABLEMXCODES)) {
-						$this->logThis("smtp_send[$this->resultcode] - cannot close DATA connection!");
-					} else {
-						$this->logThis("smtp_send - DONE!");
-						$answer = true;
-					}
-				}
-
-
-			} else {
-				$this->logThis("smtp_send[$this->resultcode] - DATA command failed!");
-			}
-		} else {
-			$this->logThis("smtp_send[$this->resultcode] - DATA command failed!");
-		}
-		return ($answer);
-	}
-
-
-	private function smtp_command($handle, $command, $traceCommand = true) {
-		$answer = false;
-		if ($handle) {
-			if (!fwrite($handle, $command . self::CRLF)) {
-				$this->setError(998, "SMTP(W)[%s]>" . $command . " - cannot write to resource!");
-			} else {
-				if ($traceCommand) {
-					$this->logThis("SMTP(W)> " . $command);
-				}
-				$answer = true;
-			}
-		} else {
-			$this->setError(990, "SMTP(W)[%s] - no connection resource handle!");
-		}
-		return ($answer);
-	}
-
-	private function smtp_read_from_handle($handle = null) {
-		if ($handle && is_resource($handle)) {
-			$resp = array();
-			do {
-				if ($response = fgets($handle, self::BLEN)) {
-					$resp[] = $response;
-					preg_match("/^([0-9]{3})/", $response, $matches);
-					if ($matches[1]) {
-						$rcode = (int)$matches[1];
-					} else {
-						$rcode = $this->setError(996, "SMTP(R)[%s] - cannot determin exit code from: " . $response);
-					}
-				} else {
-					$rcode = $this->setError(997, "SMTP(R)[%s] - cannot read from resource!");
-					break;
-				}
-			} while ($response[3] == '-');
-			if (!in_array($rcode, $this->ACCEPTABLEMXCODES) && !in_array($rcode, array("996", "997"))) {
-				$this->setError($rcode, "SMTP(R)[%s] - " . implode(" : ", $resp));
-			} else {
-				$this->logThis("SMTP(R)[$rcode] - " . implode(" : ", $resp));
-				$this->resultcode = $rcode; //last server error code
-			}
-		} else {
-			$rcode = $this->setError(990, "SMTP(R)[%s] - no connection resource handle!");
-		}
-		return ($rcode);
-	}
-
-	private function smtp_connect($host, $port) {
-		$handle = false;
-		if (count($this->smtp_usable_methods) > 0) {
-			try {
-				foreach ($this->smtp_usable_methods as $connectionMethod) {
-					$logMsg = 'SMTP(CONN)(' . $connectionMethod . ') - connecting to MX host: ' . $host . ':' . $port . '...';
-					switch ($connectionMethod) {
-						case 'stream_socket_client':
-							$errno = 0;
-							$errstr = "";
-							$handle = @stream_socket_client('tcp://' . $host . ':' . $port, $errno, $errstr, $this->mx_connection_timeout);
-							break;
-						case 'fsockopen':
-							$errno = 0;
-							$errstr = "";
-							$handle = @fsockopen($host, $port, $errno, $errstr, $this->mx_connection_timeout);
-							break;
-						default:
-							$errno = 127;
-							$errstr = "Unknown connection method!";
-					}
-					if (!$handle) {
-						$rcode = $this->setError($errno, $logMsg . "FAILED[%s] - " . $errstr);
-					} else {
-						$this->logThis($logMsg);
-						$rcode = $this->smtp_read_from_handle($handle);
-						if ($rcode == 220) {
-							break;
-						}
-					}
-				}
-			} catch (\Exception $e) {
-				$this->setError(950, "SMTP(CONN)[%s] - unexpected connection error - " . $e->getMessage());
-				return (false);
-			}
-		} else {
-			$this->setError(951, "SMTP(CONN)[%s] - Server does NOT support any of these connection methods: " . implode(", ", $this->php_required_functions));
-			return (false);
-		}
-		return $handle;
-	}
-
-	private function smtp_disconnect($handle) {
-		if ($handle) {
-			if (!fwrite($handle, 'QUIT' . self::CRLF)) {
-				$this->logThis("smtp_disconnect - Unable to QUIT to resource!");
-			}
-			fclose($handle);
-			$this->mxc = null;
-			$this->logThis("Disconnected.");
-		}
-	}
-
-	private function getMXHosts() {
-		$answer = false;
-		if (!empty($this->MDATA["to"])) {
-			list($username, $domain) = explode('@', $this->MDATA["to"]);
-			$this->logThis("getMXHosts: checking on domain: $domain");
-			if (!@getmxrr($domain, $mx_records, $mx_weight)) {
-				$mxs = array();
-				$mxs[] = $domain;
-				$this->logThis("getMXHosts: no MX hosts - will use domain name: $domain");
-			} else {
-				// Put the records together in a array we can sort them by weight
-				for ($i = 0; $i < count($mx_records); $i++) {
-					$mxs[$mx_records[$i]] = $mx_weight[$i];
-				}
-				asort($mxs);
-				$mxs = array_keys($mxs);
-				//$this->logThis("getMXHosts: MX hosts found: " . implode(", ", $answer));
-			}
-			//
-			$answer = array();
-			foreach ($mxs as $mx) {
-				if (AZMailerPostmanHelper::is_valid_hostname($mx)) {
-					$this->logThis("getMXHosts: found valid MX host: $mx");
-					array_push($answer, $mx);
-				} else {
-					$this->logThis("getMXHosts: removing invalid MX host: $mx");
-				}
-			}
-			if (!count($answer)) {
-				$answer = false;
-			}
-		}
-		return ($answer);
-	}
-
-	private function smtp_get_connection_methods() {
-		$answer = array();
-		$php_disabled_functions = ini_get('disable_functions');
-		foreach ($this->php_required_functions as $phpfunc) {
-			if (!preg_match('/' . $phpfunc . '/', $php_disabled_functions)) {
-				if (function_exists($phpfunc)) {
-					array_push($answer, $phpfunc);
-				}
-			}
-		}
-		return ($answer);
-	}
-
-	private function setError($errNum, $errMsg) {
-		$this->resultcode = $errNum; //last server error code
-		$this->resultmsg = htmlspecialchars(sprintf($errMsg, $errNum));
-		$errMsg = '<font style="color:#ff0000">' . $this->resultmsg . '</font>';
-		$this->logThis($errMsg, false);
-		return ($errNum);
 	}
 }

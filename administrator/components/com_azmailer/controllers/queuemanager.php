@@ -19,6 +19,6 @@ class AZMailerControllerQueuemanager extends AZMailerController {
 	 */
 	function __construct($config = array()) {
 		parent::__construct($config);
-    }
+	}
 
 }

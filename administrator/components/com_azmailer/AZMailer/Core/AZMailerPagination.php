@@ -11,7 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.html.pagination');
 
 
-class AZMailerPagination extends \JPagination{
+class AZMailerPagination extends \JPagination {
 
 
 	/**
@@ -28,8 +28,7 @@ class AZMailerPagination extends \JPagination{
 		$limits = array();
 
 		// Make the option list.
-		for ($i = 10; $i <= 30; $i += 10)
-		{
+		for ($i = 10; $i <= 30; $i += 10) {
 			$limits[] = \JHtml::_('select.option', "$i");
 		}
 		$limits[] = \JHtml::_('select.option', '50');
@@ -38,12 +37,11 @@ class AZMailerPagination extends \JPagination{
 		//$limits[] = \JHtml::_('select.option', '0', "ALL RECORDS");
 
 		//J25 has _viewall and J3 has viewall
-		$viewAll = (isset($this->_viewall)?$this->_viewall:$this->viewall);
+		$viewAll = (isset($this->_viewall) ? $this->_viewall : $this->viewall);
 		$selected = $viewAll ? 0 : $this->limit;
 
 		// Build the select list.
-		if ($app->isAdmin())
-		{
+		if ($app->isAdmin()) {
 			$html = \JHtml::_(
 				'select.genericlist',
 				$limits,
@@ -53,9 +51,7 @@ class AZMailerPagination extends \JPagination{
 				'text',
 				$selected
 			);
-		}
-		else
-		{
+		} else {
 			$html = \JHtml::_(
 				'select.genericlist',
 				$limits,

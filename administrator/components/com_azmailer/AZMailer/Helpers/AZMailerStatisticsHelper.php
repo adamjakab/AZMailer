@@ -8,7 +8,6 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use AZMailer\Helpers\AZMailerDateHelper;
 use AZMailer\Entities\AZMailerQueueItem;
 
 /**
@@ -31,13 +30,13 @@ class AZMailerStatisticsHelper {
 	 * @param AZMailerQueueItem $MQI
 	 */
 	public static function registerNewsletterStatistics($MQI) {
-		if($MQI->get("mq_type") == "newsletter") {
+		if ($MQI->get("mq_type") == "newsletter") {
 			$db = \JFactory::getDbo();
 			$sql = 'SELECT COUNT(*) FROM #__azmailer_newsletter_stat AS res'
-				.' WHERE res.stat_nl_id = '.$MQI->get("mq_typeid")
-				.' AND res.stat_nls_mail = ' . $db->quote($MQI->get("mq_to"));
+				. ' WHERE res.stat_nl_id = ' . $MQI->get("mq_typeid")
+				. ' AND res.stat_nls_mail = ' . $db->quote($MQI->get("mq_to"));
 			$db->setQuery($sql);
-			$registerStatistics = ($db->loadResult()==0);
+			$registerStatistics = ($db->loadResult() == 0);
 		} else {
 			//for any other type we don't care
 			$registerStatistics = true;
@@ -51,8 +50,8 @@ class AZMailerStatisticsHelper {
 			$data["stat_date"] = AZMailerDateHelper::now();
 			$data["stat_nls_mail"] = $MQI->get("mq_to");
 			$data["stat_client"] = $_SERVER['HTTP_USER_AGENT'];
-			$table  = \JTable::getInstance('azmailer_newsletter_stat', 'Table');
-			if ($table->bind( $data )) {
+			$table = \JTable::getInstance('azmailer_newsletter_stat', 'Table');
+			if ($table->bind($data)) {
 				if ($table->check()) {
 					if ($table->store()) {
 						//OK

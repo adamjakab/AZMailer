@@ -7,10 +7,10 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerController;
-use AZMailer\Helpers\AZMailerNewsletterHelper;
-use AZMailer\Helpers\AZMailerLocationHelper;
-use AZMailer\Helpers\AZMailerTemplateHelper;
 use AZMailer\Entities\AZMailerNewsletter;
+use AZMailer\Helpers\AZMailerLocationHelper;
+use AZMailer\Helpers\AZMailerNewsletterHelper;
+use AZMailer\Helpers\AZMailerTemplateHelper;
 
 /**
  * Controller for Newsletter - RAW REQUESTS

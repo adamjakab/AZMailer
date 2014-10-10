@@ -6,12 +6,12 @@
  */
 defined('_JEXEC') or die('Restricted access');
 //
-require JPATH_COMPONENT_ADMINISTRATOR.'/includes/defines.php';
+require JPATH_COMPONENT_ADMINISTRATOR . '/includes/defines.php';
 try {
-    require JPATH_COMPONENT_ADMINISTRATOR.'/includes/loader.php';
-} catch(Exception $e) {
-    JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-    return;
+	require JPATH_COMPONENT_ADMINISTRATOR . '/includes/loader.php';
+} catch (Exception $e) {
+	JFactory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+	return;
 }
 //
 $AZMC = new \AZMailer\AZMailerCore();

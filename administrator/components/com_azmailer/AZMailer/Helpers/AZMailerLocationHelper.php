@@ -36,10 +36,10 @@ class AZMailerLocationHelper {
 	/**
 	 * For Xls Importer
 	 * @param string $name
-	 * @param bool $registerIfNew
+	 * @param bool   $registerIfNew
 	 * @return bool|int
 	 */
-	public static function getCountryIdByName($name, $registerIfNew=false) {
+	public static function getCountryIdByName($name, $registerIfNew = false) {
 		$answer = false;
 		if (!empty($name)) {
 			$db = \JFactory::getDbo();
@@ -49,14 +49,16 @@ class AZMailerLocationHelper {
 			$query->where('LOWER(a.country_name) = ' . $db->quote(strtolower($name)));
 			$db->setQuery($query);
 			$answer = $db->loadResult();
-			if(!$answer||empty($answer)) {$answer = false;}
+			if (!$answer || empty($answer)) {
+				$answer = false;
+			}
 			if (!$answer && $registerIfNew) {
 				$data = array();
 				$data["id"] = null;
 				$data["country_name"] = ucfirst(strtolower($name));
 				$data["country_sigla"] = strtoupper(substr($name, 0, 2));
-				$table  = \JTable::getInstance('azmailer_country', 'Table');
-				if ($table->bind( $data )) {
+				$table = \JTable::getInstance('azmailer_country', 'Table');
+				if ($table->bind($data)) {
 					if ($table->check()) {
 						if ($table->store()) {
 							$db = $table->getDBO();
@@ -66,12 +68,12 @@ class AZMailerLocationHelper {
 				}
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
 
 
 	//-----------------------------------------------------------------------REGIONS
-	public static function getSelectOptions_Regions($zeroOption=false, $country_id=0) {
+	public static function getSelectOptions_Regions($zeroOption = false, $country_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.id, a.region_name AS data');
@@ -87,7 +89,7 @@ class AZMailerLocationHelper {
 		return ($lst);
 	}
 
-	public static function countRegionsInCountry($country_id=0) {
+	public static function countRegionsInCountry($country_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*)');
@@ -100,11 +102,11 @@ class AZMailerLocationHelper {
 	/**
 	 * For Xls Importer
 	 * @param string $name
-	 * @param int $country_id
-	 * @param bool $registerIfNew
+	 * @param int    $country_id
+	 * @param bool   $registerIfNew
 	 * @return bool|int
 	 */
-	public static function getRegionIdByName($name, $country_id, $registerIfNew=false) {
+	public static function getRegionIdByName($name, $country_id, $registerIfNew = false) {
 		$answer = false;
 		if (!empty($name)) {
 			$db = \JFactory::getDbo();
@@ -115,15 +117,17 @@ class AZMailerLocationHelper {
 			$query->where('LOWER(a.region_name) = ' . $db->quote(strtolower($name)));
 			$db->setQuery($query);
 			$answer = $db->loadResult();
-			if(!$answer||empty($answer)) {$answer = false;}
+			if (!$answer || empty($answer)) {
+				$answer = false;
+			}
 			if (!$answer && $registerIfNew) {
 				$data = array();
 				$data["id"] = null;
 				$data["country_id"] = $country_id;
 				$data["region_name"] = ucfirst(strtolower($name));
 				$data["region_sigla"] = "";
-				$table  = \JTable::getInstance('azmailer_region', 'Table');
-				if ($table->bind( $data )) {
+				$table = \JTable::getInstance('azmailer_region', 'Table');
+				if ($table->bind($data)) {
 					if ($table->check()) {
 						if ($table->store()) {
 							$db = $table->getDBO();
@@ -133,12 +137,12 @@ class AZMailerLocationHelper {
 				}
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
 
 
 	//-------------------------------------------------------------------PROVINCES
-	public static function getSelectOptions_Provinces($zeroOption=false, $region_id=0) {
+	public static function getSelectOptions_Provinces($zeroOption = false, $region_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.id, a.province_name AS data');
@@ -154,7 +158,7 @@ class AZMailerLocationHelper {
 		return ($lst);
 	}
 
-	public static function countProvincesInRegion($region_id=0) {
+	public static function countProvincesInRegion($region_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('COUNT(*)');
@@ -167,11 +171,11 @@ class AZMailerLocationHelper {
 	/**
 	 * For Xls Importer
 	 * @param string $name
-	 * @param int $region_id
-	 * @param bool $registerIfNew
+	 * @param int    $region_id
+	 * @param bool   $registerIfNew
 	 * @return bool|int
 	 */
-	public static function getProvinceIdByName($name, $region_id, $registerIfNew=false) {
+	public static function getProvinceIdByName($name, $region_id, $registerIfNew = false) {
 		$answer = false;
 		if (!empty($name)) {
 			$db = \JFactory::getDbo();
@@ -182,15 +186,17 @@ class AZMailerLocationHelper {
 			$query->where('LOWER(a.province_name) = ' . $db->quote(strtolower($name)));
 			$db->setQuery($query);
 			$answer = $db->loadResult();
-			if(!$answer||empty($answer)) {$answer = false;}
+			if (!$answer || empty($answer)) {
+				$answer = false;
+			}
 			if (!$answer && $registerIfNew) {
 				$data = array();
 				$data["id"] = null;
 				$data["region_id"] = $region_id;
 				$data["province_name"] = ucfirst(strtolower($name));
 				$data["province_sigla"] = "";
-				$table  = \JTable::getInstance('azmailer_province', 'Table');
-				if ($table->bind( $data )) {
+				$table = \JTable::getInstance('azmailer_province', 'Table');
+				if ($table->bind($data)) {
 					if ($table->check()) {
 						if ($table->store()) {
 							$db = $table->getDBO();
@@ -200,46 +206,45 @@ class AZMailerLocationHelper {
 				}
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
 
 
-
 	//---------------------------------------------------------------------------------------------ALL
-	public static function getCountryRegionProvince($cid=0, $rid=0, $pid=0) {
+	public static function getCountryRegionProvince($cid = 0, $rid = 0, $pid = 0) {
 		$answer = array();
-		if($cid) {
+		if ($cid) {
 			$db = \JFactory::getDbo();
 			$query = $db->getQuery(true);
 			$query->select('a.*');
 			$query->from('#__azmailer_country AS a');
 			$query->where('a.id = ' . $cid);
-			if($rid) {
+			if ($rid) {
 				$query->select('b.*');
 				$query->join('INNER', '#__azmailer_region AS b ON b.country_id = a.id');
 				$query->where('b.id = ' . $rid);
 			}
-			if($pid) {
+			if ($pid) {
 				$query->select('c.*');
 				$query->join('INNER', '#__azmailer_province AS c ON c.region_id = b.id');
 				$query->where('c.id = ' . $pid);
 			}
 			$db->setQuery($query);
 			$res = $db->loadObject();
-			if($res) {
+			if ($res) {
 				if ($cid && isset($res->country_name)) {
 					$answer['country'] = new \stdClass();
 					$answer['country']->id = $cid;
 					$answer['country']->country_name = $res->country_name;
 					$answer['country']->country_sigla = $res->country_sigla;
 				}
-				if($rid && isset($res->region_name)) {
+				if ($rid && isset($res->region_name)) {
 					$answer['region'] = new \stdClass();
 					$answer['region']->id = $rid;
 					$answer['region']->region_name = $res->region_name;
 					$answer['region']->region_sigla = $res->region_sigla;
 				}
-				if($pid && isset($res->province_name)) {
+				if ($pid && isset($res->province_name)) {
 					$answer['province'] = new \stdClass();
 					$answer['province']->id = $pid;
 					$answer['province']->province_name = $res->province_name;
@@ -247,7 +252,7 @@ class AZMailerLocationHelper {
 				}
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
 
 }

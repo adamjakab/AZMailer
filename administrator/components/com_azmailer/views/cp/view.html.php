@@ -8,8 +8,6 @@
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerView;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
-use \JError;
-use \JText;
 
 /**
  * ControlPanel View
@@ -20,7 +18,7 @@ class AZMailerViewCp extends AZMailerView {
 	 */
 	function __construct($config = array()) {
 		parent::__construct($config);
-    }
+	}
 
 	/**
 	 * @param null $tpl
@@ -29,14 +27,14 @@ class AZMailerViewCp extends AZMailerView {
 	function display($tpl = null) {
 		// Check for model errors
 		if (count($errors = $this->get('Errors'))) {
-		    JError::raiseError(500, implode('<br />', $errors));
-		    return false;
+			JError::raiseError(500, implode('<br />', $errors));
+			return false;
 		}
 
 		$this->cpbuttons = $this->get('CpButtons');
 		$this->cpinfo = $this->get('CpInfo');
-		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_CP"),"azmailer");
-		return(parent::display($tpl));
-    }
+		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_CP"), "azmailer");
+		return (parent::display($tpl));
+	}
 
 }

@@ -14,9 +14,9 @@ define('_JEXEC', 1);
  * in this manner: php azmailer.php --someOption --anotherOption --JPATH_BASE="/path/to/joomla/root"
  * This is absolutely NOT necessary for normal installations!
  */
-if(count($argv)) {//;) it must be otherwise you wouldn't be here
-	foreach($argv as $arg) {
-		if(substr($arg, 0, strlen("--JPATH_BASE=")) == "--JPATH_BASE=") {
+if (count($argv)) {//;) it must be otherwise you wouldn't be here
+	foreach ($argv as $arg) {
+		if (substr($arg, 0, strlen("--JPATH_BASE=")) == "--JPATH_BASE=") {
 			define('JPATH_BASE', substr($arg, strlen("--JPATH_BASE=")));
 		}
 	}
@@ -24,13 +24,13 @@ if(count($argv)) {//;) it must be otherwise you wouldn't be here
 
 // Define the path for the Joomla Platform
 defined('JPATH_BASE') || define('JPATH_BASE', realpath(__DIR__ . '/../../../../..'));
-define('JPATH_COMPONENT_SITE', JPATH_BASE.'/components/com_azmailer');
-define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_BASE.'/administrator/components/com_azmailer');
+define('JPATH_COMPONENT_SITE', JPATH_BASE . '/components/com_azmailer');
+define('JPATH_COMPONENT_ADMINISTRATOR', JPATH_BASE . '/administrator/components/com_azmailer');
 define('JPATH_CLIBASE', realpath(__DIR__ . '/..'));
 
 
 //check if JPAH_BASE is correct by checking for J! configuration file in site root
-if(!file_exists(JPATH_BASE."/configuration.php")) {
+if (!file_exists(JPATH_BASE . "/configuration.php")) {
 	echo("Cannot find Joomla root directory! JPATH_BASE is wrong!\n");
 	echo("Please use the '--JPATH_BASE=joomla/root/directory' argument to adjust.\n");
 	die();
@@ -48,11 +48,11 @@ $jVersion = new \JVersion();
 
 
 //Load JApp classes for J!3
-if(IS_J3) {
+if (IS_J3) {
 	JLoader::import('joomla.input.input');//(JInput)
 	JLoader::import('joomla.table.table');//(JTable)
 	JLoader::import('cms.installer.installer');//(JInstaller)
-	if(version_compare( $jVersion->RELEASE, '3.1.6', '<=')) {
+	if (version_compare($jVersion->RELEASE, '3.1.6', '<=')) {
 		JLoader::import('legacy.component.helper');//(JComponentHelper)
 	} else {
 		JLoader::import('cms.component.helper');//(JComponentHelper)
@@ -73,20 +73,20 @@ require_once JPATH_COMPONENT_ADMINISTRATOR . '/includes/loader.php';
 $AZMC = new \AZMailer\AZMailerCore();
 
 // Setup the specific autoloader for CLI
-spl_autoload_register(function($class){
-    if (preg_match('#^AZMailer\\\Cli\\\#', $class)) {
+spl_autoload_register(function ($class) {
+	if (preg_match('#^AZMailer\\\Cli\\\#', $class)) {
 		$classpath = str_replace('AZMailer\\Cli\\', '', $class);
-		$classpath = str_replace('\\', '/', $classpath).'.php';
-		$realpath = realpath(JPATH_CLIBASE.DS.'code'.DS.$classpath);
-		if($realpath) {
-		    //echo "\nAutoloading Class($class): $classpath - $realpath";
-		    require_once($realpath);
+		$classpath = str_replace('\\', '/', $classpath) . '.php';
+		$realpath = realpath(JPATH_CLIBASE . DS . 'code' . DS . $classpath);
+		if ($realpath) {
+			//echo "\nAutoloading Class($class): $classpath - $realpath";
+			require_once($realpath);
 		} else {
-		    echo "\nAutoloading Class Not Found($class): $classpath !";
+			echo "\nAutoloading Class Not Found($class): $classpath !";
 		}
-    } else {
+	} else {
 		//echo "\nNOT AZMailer CLI Class($class)!";
-    }
+	}
 
 }, true, true);
 

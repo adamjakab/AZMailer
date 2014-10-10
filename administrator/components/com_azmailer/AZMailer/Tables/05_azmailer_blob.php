@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted access');
  * @license GNU/GPL
  **/
 require_once 'AZMailerTableInfo.php';
+
 class tbl_azmailer_blob extends AZMailerTableInfo {
 	public function __construct() {
 		$this->name = 'azmailer_blob';
@@ -27,7 +28,7 @@ class tbl_azmailer_blob extends AZMailerTableInfo {
 	}
 
 	private function getData() {
-		$tplContent = file_get_contents(__DIR__.DS.'deftpl.html');
+		$tplContent = file_get_contents(__DIR__ . DS . 'deftpl.html');
 		$answer = array(array(1, 'template', $tplContent));
 		return ($answer);
 	}

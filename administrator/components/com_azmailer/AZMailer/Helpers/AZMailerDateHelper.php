@@ -8,47 +8,46 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use \JText;
 
 /**
  * AZMailer Helper Class
  *
  * @author jackisback
  */
-
 class AZMailerDateHelper {
-	public static function now() {
-		return(date("U"));
-	}
-
-	public static function convertToHumanReadableFormat($ts,$format='d/m/Y') {//if you want time use: 'd/m/Y G:i'
-		return (date($format,$ts));
+	public static function convertToHumanReadableFormat($ts, $format = 'd/m/Y') {//if you want time use: 'd/m/Y G:i'
+		return (date($format, $ts));
 	}
 
 	public static function convertFromHumanReadableFormat($date) {
 		//Convert Datetime from gg/mm/aaaa hh:mm:ss to timestamp
 		//MUST DO SOME DATE CHECKING HERE - IF INVALID LET'S USE NOW()
-		$array = explode(" ",$date);
-		$array[0]=explode("/",$array[0]);
-		if(isset($array[1])) {
-			$array[1]=explode(":",$array[1]);
+		$array = explode(" ", $date);
+		$array[0] = explode("/", $array[0]);
+		if (isset($array[1])) {
+			$array[1] = explode(":", $array[1]);
 		} else {
-			$array[1]=array(0,0,0);
+			$array[1] = array(0, 0, 0);
 		}
-		for($i=0; $i<3; $i++) {if(!isset($array[1][$i])) $array[1][$i]=0;}
+		for ($i = 0; $i < 3; $i++) {
+			if (!isset($array[1][$i])) $array[1][$i] = 0;
+		}
 		$answer = mktime($array[1][0], $array[1][1], $array[1][2], $array[0][1], $array[0][0], $array[0][2]);
 		return ($answer);
 	}
 
-	public static function getSecondsSince($ts=0, $is_abs=true) {//is_abs=true will give difference always positive
+	public static function getSecondsSince($ts = 0, $is_abs = true) {//is_abs=true will give difference always positive
 		$diff = $ts - self::now();
-		$diff = ($is_abs?abs($diff):$diff);
-		return($diff);
+		$diff = ($is_abs ? abs($diff) : $diff);
+		return ($diff);
+	}
+
+	public static function now() {
+		return (date("U"));
 	}
 
 
 }
-
 
 
 /*

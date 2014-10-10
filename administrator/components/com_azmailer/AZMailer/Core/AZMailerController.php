@@ -9,7 +9,7 @@ namespace AZMailer\Core;
  */
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
-use \JRequest as JRequest;
+use JRequest as JRequest;
 
 
 class AZMailerController extends \JControllerLegacy {
@@ -23,8 +23,8 @@ class AZMailerController extends \JControllerLegacy {
 	/**
 	 * The default display function that suits basic tasks
 	 * @global \AZMailer\AZMailerCore $AZMAILER
-	 * @param bool $cachable
-	 * @param bool $urlparams
+	 * @param bool                    $cachable
+	 * @param bool                    $urlparams
 	 * @return \JController|void
 	 */
 	public function display($cachable = false, $urlparams = false) {

@@ -9,7 +9,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 /**
- * AZMailer Controller
+ * AZMailer Front-end Controller
  */
 class AZMailerControllerAZMailer extends \JControllerLegacy {
 	/**
@@ -21,13 +21,15 @@ class AZMailerControllerAZMailer extends \JControllerLegacy {
 
 	/**
 	 * @param bool $cachable
+	 * @param bool $urlparams
 	 * @return JControllerLegacy|void
 	 */
-	public function display($cachable = false) {
+	public function display($cachable = false, $urlparams = false) {
 		global $AZMAILER;
 		$view = $this->getView($AZMAILER->getOption("controller"), 'html', '');
 		$tmpl = JRequest::getVar('tmpl', 'default');
-		if (($model = $this->getModel($AZMAILER->getOption("controller")))) {
+		if ( ($model = $this->getModel($AZMAILER->getOption("controller"))) ) {
+			/** @var \JModelLegacy $model */
 			$view->setModel($model, true);
 		}
 		$view->setLayout($tmpl);

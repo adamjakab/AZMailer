@@ -1,6 +1,7 @@
 <?php
 
 namespace AZMailer\Cli\Application;
+
 use AZMailer\Cli\Model\AZMailerCron;
 
 defined('_JEXEC') or die('Restricted access');
@@ -21,7 +22,7 @@ class AZMailerApplicationCli extends \JApplicationCli {
 		parent::__construct($input, $config, $dispatcher);
 		//now we have configuration read in:
 		//$this->out("Verbose:" . $this->config->get('verbose'));
-		if($this->config->get('verbose')) {
+		if ($this->config->get('verbose')) {
 			error_reporting(E_ALL);
 			ini_set('display_errors', true);
 		}
@@ -43,6 +44,18 @@ class AZMailerApplicationCli extends \JApplicationCli {
 		}
 	}
 
+	private function _help() {
+		$this->out('AZMailer CLI');
+		$this->out('Please refer to the users guide for usage.');
+		$this->out('For normal operation use: php /path/to/joomla/administrator/components/com_azmailer/cli/azmailer.php');
+	}
+
+	public function out($text = '', $nl = true) {
+		if ($this->config->get('verbose')) {
+			parent::out($text, $nl);
+		}
+	}
+
 	/**
 	 * Fetch the configuration data for the application.
 	 *
@@ -53,23 +66,11 @@ class AZMailerApplicationCli extends \JApplicationCli {
 	 */
 	protected function fetchConfigurationData() {
 		$configPath = JPATH_CLIBASE . '/config/';
-		$configFile = (file_exists($configPath . '/config.json')?$configPath . '/config.json':$configPath . '/config.dist.json');
+		$configFile = (file_exists($configPath . '/config.json') ? $configPath . '/config.json' : $configPath . '/config.dist.json');
 		if (!is_readable($configFile)) {
 			throw new \RuntimeException('Configuration file does not exist or is unreadable.');
 		}
 		$config = json_decode(file_get_contents($configFile));
 		return $config;
-	}
-
-	private function _help() {
-		$this->out('AZMailer CLI');
-		$this->out('Please refer to the users guide for usage.');
-		$this->out('For normal operation use: php /path/to/joomla/administrator/components/com_azmailer/cli/azmailer.php');
-	}
-
-	public function out($text = '', $nl = true) {
-		if($this->config->get('verbose')) {
-			parent::out($text, $nl);
-		}
 	}
 }

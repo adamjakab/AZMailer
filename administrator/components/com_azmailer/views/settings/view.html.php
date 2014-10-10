@@ -36,14 +36,13 @@ class AZMailerViewSettings extends AZMailerView {
 		if ($canDo->get('core.admin')) {
 			\JToolBarHelper::preferences('com_azmailer');
 		}
-		return(parent::display($tpl));
+		return (parent::display($tpl));
 	}
 
 	/**
 	 * @param null $tpl
 	 */
 	function checkAndUpdateAZMailerTables($tpl = null) {
-		global $AZMAILER;
 		parent::display("raw");
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_SETTINGS"), "paramconfig");
 		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(

@@ -7,9 +7,9 @@ namespace AZMailer;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
+use AZMailer\Core\AZMailerException;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 use AZMailer\Helpers\AZMailerComponentParamHelper;
-use AZMailer\Core\AZMailerException;
 
 if (!class_exists('AZMailerCore')) {
 	jimport('joomla.filesystem.file');
@@ -42,7 +42,7 @@ if (!class_exists('AZMailerCore')) {
 			$this->setOption('com_name', 'com_azmailer');
 
 			//we only need this in web environment and will throw warning when AZMailer is called by cli
-			if(php_sapi_name() != 'cli') {
+			if (php_sapi_name() != 'cli') {
 				$j_uri = \JUri::getInstance();
 
 				/**
@@ -54,7 +54,7 @@ if (!class_exists('AZMailerCore')) {
 				/**
 				 * The path to the subfolder where joomla is deployed
 				 */
-				$deployFolder = str_replace('/administrator','', $uriBase);
+				$deployFolder = str_replace('/administrator', '', $uriBase);
 				$this->setOption('j_deploy_folder', $deployFolder);
 
 				/**
@@ -102,7 +102,7 @@ if (!class_exists('AZMailerCore')) {
 				//die(\JText::_('COM_AZMAILER_AUTH_NO'));
 			}
 
-			$componentLocation = (in_array($componentLocation, array('frontend','backend')) ? $componentLocation : 'frontend');
+			$componentLocation = (in_array($componentLocation, array('frontend', 'backend')) ? $componentLocation : 'frontend');
 			$this->setOption('com_location', $componentLocation);
 
 
@@ -134,7 +134,7 @@ if (!class_exists('AZMailerCore')) {
 		 */
 		public function getInstallXmlData() {
 			$answer = array();
-			$xmlFilePath = JPATH_ROOT.DS."administrator".DS."components".DS."com_azmailer".DS."azmailer.xml";
+			$xmlFilePath = JPATH_ROOT . DS . "administrator" . DS . "components" . DS . "com_azmailer" . DS . "azmailer.xml";
 			if (($data = \JInstaller::parseXMLInstallFile($xmlFilePath))) {
 				$answer = $data;
 			}
@@ -145,20 +145,20 @@ if (!class_exists('AZMailerCore')) {
 		 * @return null|array
 		 */
 		public function getParametersSetupArray() {
-			return($this->parametersSetupArray);
+			return ($this->parametersSetupArray);
 		}
 
 		/**
 		 * Sets component local option or component parameter value(defined in $parametersSetupArray)
 		 * @param string $name
-		 * @param mixed $value
-		 * @param bool $forceComponentParameter
+		 * @param mixed  $value
+		 * @param bool   $forceComponentParameter
 		 */
-		public function setOption($name, $value, $forceComponentParameter=false) {
-			if($this->getOption($name, true)) {
+		public function setOption($name, $value, $forceComponentParameter = false) {
+			if ($this->getOption($name, true)) {
 				AZMailerComponentParamHelper::setParamValue($name, $value);
 			} else {
-				if(!$forceComponentParameter) {
+				if (!$forceComponentParameter) {
 					$this->options[$name] = $value;
 				}
 			}
@@ -166,10 +166,10 @@ if (!class_exists('AZMailerCore')) {
 
 		/** This will get local component option or component parameter value
 		 * @param string $name
-		 * @param bool $forceComponentParameter
+		 * @param bool   $forceComponentParameter
 		 * @return bool|mixed|string
 		 */
-		public function getOption($name, $forceComponentParameter=false) {
+		public function getOption($name, $forceComponentParameter = false) {
 			if (!$forceComponentParameter && array_key_exists($name, $this->options)) {
 				$answer = $this->options[$name];
 			} else {
@@ -179,7 +179,7 @@ if (!class_exists('AZMailerCore')) {
 		}
 
 		/**
-		 * @return \JController
+		 * @return \JController|\JControllerLegacy
 		 */
 		public function getController() {
 			return $this->_ctrl;

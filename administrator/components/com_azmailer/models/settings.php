@@ -20,7 +20,7 @@ class AZMailerModelSettings extends AZMailerModel {
 
 	public function getParamEditForm($paramName) {
 		$answer = '';
-		if(!empty($paramName)) {
+		if (!empty($paramName)) {
 			if (AZMailerComponentParamHelper::keyExists($paramName)) {
 				$answer = AZMailerComponentParamHelper::getParamEditForm($paramName);
 			} else {
@@ -29,15 +29,15 @@ class AZMailerModelSettings extends AZMailerModel {
 		} else {
 			$this->setError("Error - No parameter name supplied!");
 		}
-		return($answer);
+		return ($answer);
 	}
 
 	public function submitParamEditForm($paramName, $paramValue) {
 		$answer = '';
-		if(!empty($paramName)) {
+		if (!empty($paramName)) {
 			if (AZMailerComponentParamHelper::keyExists($paramName)) {
 				$answer = AZMailerComponentParamHelper::submitParamEditForm($paramName, $paramValue);
-				if($answer !== true) {
+				if ($answer !== true) {
 					$this->setError("Error - $answer");
 					$answer = '';
 				}
@@ -47,7 +47,7 @@ class AZMailerModelSettings extends AZMailerModel {
 		} else {
 			$this->setError("Error - No parameter name supplied!");
 		}
-		return($answer);
+		return ($answer);
 	}
 
 

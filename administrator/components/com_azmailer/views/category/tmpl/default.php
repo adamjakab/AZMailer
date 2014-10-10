@@ -2,8 +2,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 global $AZMAILER;
-use AZMailer\Helpers\AZMailerSubscriberHelper;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
+use AZMailer\Helpers\AZMailerSubscriberHelper;
 
 
 /** @var \Joomla\Registry\Registry $params - AZMailer Settings params */
@@ -17,7 +17,7 @@ for ($i = 1; $i <= 5; $i++) {
 	$SWName = $params->get("category_name_" . $i);
 	//
 	$SHOW_WHAT_BUTTONS .= '<li style="float:left; margin: 0 5px 0 0;">'
-		. '<button class="btn btn-info" ' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '>'.$SWName.'</button>'
+		. '<button class="btn btn-info" ' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '>' . $SWName . '</button>'
 		. '</li>';
 }
 $SHOW_WHAT_BUTTONS .= '</ul>';
@@ -107,7 +107,7 @@ $CURRENT_CATNAME = $params->get("category_name_" . $this->state->get('filter.cat
 	Joomla.submitbutton = function (pressbutton) {
 		if (pressbutton == 'category.new') {
 			addNewElement();
-			return(false);
+			return (false);
 		}
 		submitform(pressbutton);
 	};
@@ -150,30 +150,31 @@ $CURRENT_CATNAME = $params->get("category_name_" . $this->state->get('filter.cat
 		jQuery('#mDialog .text').html(formhtml);
 
 		jQuery('#mDialog').dialog("option", "buttons", [
-			{
-				text: "<?php echo JText::_('COM_AZMAILER_ADD'); ?>",
-				click: function () {
-					var name = jQuery("#mDialog .text input[name=cat_name]").val();
-					jQuery.post("index.php", {
-							option: jQuery("form#adminForm input[name=option]").val(),
-							task: "category.addNew",
-							format: "raw",
-							cat_index: jQuery("form#adminForm input#filter_category_id").val(),
-							name: name
-						},
-						function (data) {
-							elaborateJsonResponse(data, true, "category.display");
-						}
-					);
+				{
+					text: "<?php echo JText::_('COM_AZMAILER_ADD'); ?>",
+					click: function () {
+						var name = jQuery("#mDialog .text input[name=cat_name]").val();
+						jQuery.post("index.php", {
+								option: jQuery("form#adminForm input[name=option]").val(),
+								task: "category.addNew",
+								format: "raw",
+								cat_index: jQuery("form#adminForm input#filter_category_id").val(),
+								name: name
+							},
+							function (data) {
+								elaborateJsonResponse(data, true, "category.display");
+							}
+						);
 
-				}},
-			{
-				text: "<?php echo JText::_('COM_AZMAILER_CANCEL'); ?>",
-				click: function () {
-					jQuery(this).dialog("close");
+					}
+				},
+				{
+					text: "<?php echo JText::_('COM_AZMAILER_CANCEL'); ?>",
+					click: function () {
+						jQuery(this).dialog("close");
+					}
 				}
-			}
-		]
+			]
 		);
 		jQuery('#mDialog').dialog('open');
 	}
@@ -185,31 +186,32 @@ $CURRENT_CATNAME = $params->get("category_name_" . $this->state->get('filter.cat
 		formhtml += '<input name="cat_name" size="70" maxlength="32" value="' + jQuery.base64Decode(name) + '" /><br /><br />';
 		jQuery('#mDialog .text').html(formhtml);
 		jQuery('#mDialog').dialog("option", "buttons", [
-			{
-				text: "<?php echo JText::_('COM_AZMAILER_MODIFY'); ?>",
-				click: function () {
-					var name = jQuery("#mDialog .text input[name=cat_name]").val();
-					jQuery.post("index.php", {
-							option: jQuery("form#adminForm input[name=option]").val(),
-							task: "category.changeName",
-							format: "raw",
-							cat_index: jQuery("form#adminForm input#filter_category_id").val(),
-							name: name,
-							id: objID
-						},
-						function (data) {
-							elaborateJsonResponse(data, true, "category.display");
-						}
-					);
+				{
+					text: "<?php echo JText::_('COM_AZMAILER_MODIFY'); ?>",
+					click: function () {
+						var name = jQuery("#mDialog .text input[name=cat_name]").val();
+						jQuery.post("index.php", {
+								option: jQuery("form#adminForm input[name=option]").val(),
+								task: "category.changeName",
+								format: "raw",
+								cat_index: jQuery("form#adminForm input#filter_category_id").val(),
+								name: name,
+								id: objID
+							},
+							function (data) {
+								elaborateJsonResponse(data, true, "category.display");
+							}
+						);
 
-				}},
-			{
-				text: "<?php echo JText::_('COM_AZMAILER_CANCEL'); ?>",
-				click: function () {
-					jQuery(this).dialog("close");
+					}
+				},
+				{
+					text: "<?php echo JText::_('COM_AZMAILER_CANCEL'); ?>",
+					click: function () {
+						jQuery(this).dialog("close");
+					}
 				}
-			}
-		]
+			]
 		);
 		jQuery('#mDialog').dialog('open');
 	}

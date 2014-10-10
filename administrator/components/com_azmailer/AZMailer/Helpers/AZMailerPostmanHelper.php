@@ -1,6 +1,8 @@
 <?php
 namespace AZMailer\Helpers;
+
 use AZMailer\Core\AZMailerPostman;
+
 /**
  * @package    AZMailer
  * @subpackage Helpers
@@ -24,7 +26,7 @@ class AZMailerPostmanHelper {
 				$answer = true;
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
 
 	static public function is_ipv4($str = null) {
@@ -44,7 +46,7 @@ class AZMailerPostmanHelper {
 		if (!empty($MDATA["fromname"])) {
 			$fromName = AZMailerMimeHelper::encode_header($MDATA["fromname"]);
 			if ($fromName == $MDATA["fromname"]) {
-				$fromName = '"'.str_replace('"', '\\"', $MDATA["fromname"]).'"';
+				$fromName = '"' . str_replace('"', '\\"', $MDATA["fromname"]) . '"';
 			}
 			$HSTR .= $fromName . ' <' . $MDATA["from"] . '>';
 		} else {
@@ -74,7 +76,7 @@ class AZMailerPostmanHelper {
 
 		//MESSAGE-ID
 		if (!empty($MDATA["messageid"])) {
-			$HSTR = 'Message-ID: <'.AZMailerMimeHelper::unique($MDATA["messageid"]).AZMailerMimeHelper::encode_header($MDATA["messageid"]).'>';
+			$HSTR = 'Message-ID: <' . AZMailerMimeHelper::unique($MDATA["messageid"]) . AZMailerMimeHelper::encode_header($MDATA["messageid"]) . '>';
 			array_push($msgData->headers, $HSTR);
 		}
 
@@ -131,23 +133,28 @@ class AZMailerPostmanHelper {
 					break;
 				}
 			}
-			if($err) {AZMailerPostman::logThis("AZMailerPostmanHelper::message: unable to set message attachment!");return (false);}
-			if (count($attArr)) {$msgData->attachments = &$attArr;}
+			if ($err) {
+				AZMailerPostman::logThis("AZMailerPostmanHelper::message: unable to set message attachment!");
+				return (false);
+			}
+			if (count($attArr)) {
+				$msgData->attachments = &$attArr;
+			}
 		}
 
 		//GET COMPOSED MESSAGE
 		$msgData->message = AZMailerMimeHelper::compose($msgData->text, $msgData->html, $msgData->attachments);
 
 		//ASSEMBLE MESSAGE FULL CONTENT
-		$msgData->content = 	implode(AZMailerMimeHelper::LE, $msgData->headers)
-			.AZMailerMimeHelper::LE
-			.$msgData->message['header']
-			.AZMailerMimeHelper::LE
-			.AZMailerMimeHelper::LE
-			.$msgData->message['content'];
+		$msgData->content = implode(AZMailerMimeHelper::LE, $msgData->headers)
+			. AZMailerMimeHelper::LE
+			. $msgData->message['header']
+			. AZMailerMimeHelper::LE
+			. AZMailerMimeHelper::LE
+			. $msgData->message['content'];
 
 		//RETURN MAIL CONTENT
-		return($msgData->content);
+		return ($msgData->content);
 	}
 
 
@@ -173,36 +180,6 @@ class AZMailerPostmanHelper {
 	 *                                                                                         *
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
-	static public function str_clear($str = null, $addrep = null) {
-		$rep = array("\r", "\n", "\t");
-		if (!is_string($str)) {
-			AZMailerPostman::logThis("AZMailerPostmanHelper::str_clear: invalid argument type");
-			return (false);
-		}
-		if ($addrep == null) {$addrep = array();}
-		if (is_array($addrep)) {
-			if (count($addrep) > 0) {
-				$err = false;
-				foreach ($addrep as $strrep) {
-					if (is_string($strrep) && $strrep != '') {
-						$rep[] = $strrep;
-					} else {
-						$err = true;
-						break;
-					}
-				}
-				if ($err) {
-					AZMailerPostman::logThis("AZMailerPostmanHelper::str_clear: nvalid array value");
-					return (false);
-				}
-			}
-		} else {
-			AZMailerPostman::logThis("AZMailerPostmanHelper::str_clear: invalid array type");
-			return (false);
-		}
-		return ( $str == '') ? '' : str_replace($rep, '', $str);
-	}
-
 	static public function is_alpha($str = null, $num = true, $add = '') {
 		if (!is_string($str)) {
 			AZMailerPostman::logThis("AZMailerPostmanHelper::is_alpha: invalid argument type");
@@ -217,7 +194,7 @@ class AZMailerPostmanHelper {
 			return (false);
 		}
 		if ($str != '') {
-			$lst = 'abcdefghijklmnoqprstuvwxyzABCDEFGHIJKLMNOQPRSTUVWXYZ'.$add;
+			$lst = 'abcdefghijklmnoqprstuvwxyzABCDEFGHIJKLMNOQPRSTUVWXYZ' . $add;
 			if ($num) $lst .= '1234567890';
 			$len1 = strlen($str);
 			$len2 = strlen($lst);
@@ -254,62 +231,94 @@ class AZMailerPostmanHelper {
 		}
 		$ret = 'application/octet-stream';
 		$arr = array(
-			'z'    => 'application/x-compress',
-			'xls'  => 'application/x-excel',
+			'z' => 'application/x-compress',
+			'xls' => 'application/x-excel',
 			'gtar' => 'application/x-gtar',
-			'gz'   => 'application/x-gzip',
-			'cgi'  => 'application/x-httpd-cgi',
-			'php'  => 'application/x-httpd-php',
-			'js'   => 'application/x-javascript',
-			'swf'  => 'application/x-shockwave-flash',
-			'tar'  => 'application/x-tar',
-			'tgz'  => 'application/x-tar',
-			'tcl'  => 'application/x-tcl',
-			'src'  => 'application/x-wais-source',
-			'zip'  => 'application/zip',
-			'kar'  => 'audio/midi',
-			'mid'  => 'audio/midi',
+			'gz' => 'application/x-gzip',
+			'cgi' => 'application/x-httpd-cgi',
+			'php' => 'application/x-httpd-php',
+			'js' => 'application/x-javascript',
+			'swf' => 'application/x-shockwave-flash',
+			'tar' => 'application/x-tar',
+			'tgz' => 'application/x-tar',
+			'tcl' => 'application/x-tcl',
+			'src' => 'application/x-wais-source',
+			'zip' => 'application/zip',
+			'kar' => 'audio/midi',
+			'mid' => 'audio/midi',
 			'midi' => 'audio/midi',
-			'mp2'  => 'audio/mpeg',
-			'mp3'  => 'audio/mpeg',
+			'mp2' => 'audio/mpeg',
+			'mp3' => 'audio/mpeg',
 			'mpga' => 'audio/mpeg',
-			'ram'  => 'audio/x-pn-realaudio',
-			'rm'   => 'audio/x-pn-realaudio',
-			'rpm'  => 'audio/x-pn-realaudio-plugin',
-			'wav'  => 'audio/x-wav',
-			'bmp'  => 'image/bmp',
-			'fif'  => 'image/fif',
-			'gif'  => 'image/gif',
-			'ief'  => 'image/ief',
-			'jpe'  => 'image/jpeg',
+			'ram' => 'audio/x-pn-realaudio',
+			'rm' => 'audio/x-pn-realaudio',
+			'rpm' => 'audio/x-pn-realaudio-plugin',
+			'wav' => 'audio/x-wav',
+			'bmp' => 'image/bmp',
+			'fif' => 'image/fif',
+			'gif' => 'image/gif',
+			'ief' => 'image/ief',
+			'jpe' => 'image/jpeg',
 			'jpeg' => 'image/jpeg',
-			'jpg'  => 'image/jpeg',
-			'png'  => 'image/png',
-			'tif'  => 'image/tiff',
+			'jpg' => 'image/jpeg',
+			'png' => 'image/png',
+			'tif' => 'image/tiff',
 			'tiff' => 'image/tiff',
-			'css'  => 'text/css',
-			'htm'  => 'text/html',
+			'css' => 'text/css',
+			'htm' => 'text/html',
 			'html' => 'text/html',
-			'txt'  => 'text/plain',
-			'rtx'  => 'text/richtext',
-			'vcf'  => 'text/x-vcard',
-			'xml'  => 'text/xml',
-			'xsl'  => 'text/xsl',
-			'mpe'  => 'video/mpeg',
+			'txt' => 'text/plain',
+			'rtx' => 'text/richtext',
+			'vcf' => 'text/x-vcard',
+			'xml' => 'text/xml',
+			'xsl' => 'text/xsl',
+			'mpe' => 'video/mpeg',
 			'mpeg' => 'video/mpeg',
-			'mpg'  => 'video/mpeg',
-			'mov'  => 'video/quicktime',
-			'qt'   => 'video/quicktime',
-			'asf'  => 'video/x-ms-asf',
-			'asx'  => 'video/x-ms-asf',
-			'avi'  => 'video/x-msvideo',
+			'mpg' => 'video/mpeg',
+			'mov' => 'video/quicktime',
+			'qt' => 'video/quicktime',
+			'asf' => 'video/x-ms-asf',
+			'asx' => 'video/x-ms-asf',
+			'avi' => 'video/x-msvideo',
 			'vrml' => 'x-world/x-vrml',
-			'wrl'  => 'x-world/x-vrml');
+			'wrl' => 'x-world/x-vrml');
 		if (count($exp = explode('.', $name)) >= 2) {
-			$ext = strtolower($exp[count($exp)-1]);
-			if (trim($exp[count($exp)-2]) != '' && isset($arr[$ext])) $ret = $arr[$ext];
+			$ext = strtolower($exp[count($exp) - 1]);
+			if (trim($exp[count($exp) - 2]) != '' && isset($arr[$ext])) $ret = $arr[$ext];
 		}
 		return $ret;
+	}
+
+	static public function str_clear($str = null, $addrep = null) {
+		$rep = array("\r", "\n", "\t");
+		if (!is_string($str)) {
+			AZMailerPostman::logThis("AZMailerPostmanHelper::str_clear: invalid argument type");
+			return (false);
+		}
+		if ($addrep == null) {
+			$addrep = array();
+		}
+		if (is_array($addrep)) {
+			if (count($addrep) > 0) {
+				$err = false;
+				foreach ($addrep as $strrep) {
+					if (is_string($strrep) && $strrep != '') {
+						$rep[] = $strrep;
+					} else {
+						$err = true;
+						break;
+					}
+				}
+				if ($err) {
+					AZMailerPostman::logThis("AZMailerPostmanHelper::str_clear: nvalid array value");
+					return (false);
+				}
+			}
+		} else {
+			AZMailerPostman::logThis("AZMailerPostmanHelper::str_clear: invalid array type");
+			return (false);
+		}
+		return ($str == '') ? '' : str_replace($rep, '', $str);
 	}
 
 

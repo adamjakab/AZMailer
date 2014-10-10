@@ -6,29 +6,34 @@
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
+use AZMailer\Core\AZMailerException;
 use AZMailer\Core\AZMailerView;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
-use \JError;
-use \JText;
 
+/**
+ * Class AZMailerViewLocation
+ */
 class AZMailerViewLocation extends AZMailerView {
 
-    function display($tpl = null) {
-	global $AZMAILER;
-	$this->items = $this->get('Items');
-	$this->filters = $this->get('Filters');
-	$this->pagination = $this->get('Pagination');
-	$this->state = $this->get('State');
-	if (count($errors = $this->get('Errors'))) {
-	    JError::raiseError(500, implode('<br />', $errors));
-	    return false;
+	/**
+	 * @param null $tpl
+	 * @return bool|mixed|void
+	 * @throws AZMailerException
+	 */
+	function display($tpl = null) {
+		$this->items = $this->get('Items');
+		$this->filters = $this->get('Filters');
+		$this->pagination = $this->get('Pagination');
+		$this->state = $this->get('State');
+		if (count($errors = $this->get('Errors'))) {
+			throw new AZMailerException(implode('<br />', $errors));
+		}
+		//
+		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_LOCATION"), "location");
+		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(
+			array("core.create", "location.new", 'new', 'JTOOLBAR_NEW', false),
+		));
+		return (parent::display($tpl));
 	}
-	parent::display($tpl);
-	//
-	AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_LOCATION"),"location");
-	AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(
-	    array("core.create", "location.new", 'new', 'JTOOLBAR_NEW', false),
-	));
-    }
 
 }

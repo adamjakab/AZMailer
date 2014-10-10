@@ -8,7 +8,7 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use \JFactory;
+use JFactory;
 
 /**
  * Blob Helper Class
@@ -17,7 +17,7 @@ use \JFactory;
  */
 class AZMailerBlobHelper {
 
-	public static function getBlob($type=null, $parentid=0) {
+	public static function getBlob($type = null, $parentid = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.*');
@@ -26,7 +26,7 @@ class AZMailerBlobHelper {
 		$query->where('a.parent_id = ' . $db->quote($parentid, true));
 		$db->setQuery($query);
 		$tpl = $db->loadObject();
-		return($tpl);
+		return ($tpl);
 	}
 
 

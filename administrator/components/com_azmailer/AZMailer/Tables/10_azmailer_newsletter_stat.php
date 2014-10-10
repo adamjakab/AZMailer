@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted access');
  * @license GNU/GPL
  **/
 require_once 'AZMailerTableInfo.php';
+
 class tbl_azmailer_newsletter_stat extends AZMailerTableInfo {
 	public function __construct() {
 		$this->name = 'azmailer_newsletter_stat';

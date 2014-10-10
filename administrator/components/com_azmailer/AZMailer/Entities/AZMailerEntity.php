@@ -21,31 +21,53 @@ class AZMailerEntity {
 	 * @param \stdClass $entityData
 	 * @param \stdClass $entityOptions
 	 */
-	function __construct($entityData=null, $entityOptions=null) {
+	function __construct($entityData = null, $entityOptions = null) {
 		$this->setupEntityData($entityData);
 		$this->setupEntityOptions($entityOptions);
 	}
 
+	/**
+	 * @param \stdClass $entityData
+	 */
+	private function setupEntityData($entityData = null) {
+		$this->data = new \stdClass();
+		if ($entityData) {
+			foreach ($entityData as $k => $v) {
+				$this->data->$k = $v;
+			}
+		}
+	}
 
+	/**
+	 * @param \stdClass $entityOptions
+	 */
+	private function setupEntityOptions($entityOptions = null) {
+		$this->options = new \stdClass();
+		if ($entityOptions) {
+			foreach ($entityOptions as $k => $v) {
+				$this->options->$k = $v;
+			}
+		}
+	}
 
 	/**
 	 * Low level getter function
 	 * @param string $key
 	 * @return mixed (requested data or false if no key is set)
 	 */
-	public function get($key=null) {
+	public function get($key = null) {
 		if (isset($this->data->$key)) {
-			return($this->data->$key);
+			return ($this->data->$key);
 		}
-		return(false);
+		return (false);
 	}
 
 	/**
 	 * @param string $key
 	 * @param mixed  $val
 	 */
-	public function set($key=null, $val=null) {
-		if($key) {
+	public function set($key = null, $val = null) {
+		if ($key) {
 			$this->data->$key = $val;
 		}
 	}
@@ -55,33 +77,9 @@ class AZMailerEntity {
 	 */
 	protected function getDataArray() {
 		$answer = array();
-		foreach($this->data as $k => $v) {
+		foreach ($this->data as $k => $v) {
 			$answer[$k] = $v;
 		}
-		return($answer);
-	}
-
-	/**
-	 * @param \stdClass $entityData
-	 */
-	private function setupEntityData($entityData=null) {
-		$this->data = new \stdClass();
-		if($entityData) {
-			foreach($entityData as $k => $v) {
-				$this->data->$k = $v;
-			}
-		}
-	}
-
-	/**
-	 * @param \stdClass $entityOptions
-	 */
-	private function setupEntityOptions($entityOptions=null) {
-		$this->options = new \stdClass();
-		if($entityOptions) {
-			foreach($entityOptions as $k => $v) {
-				$this->options->$k = $v;
-			}
-		}
+		return ($answer);
 	}
 }

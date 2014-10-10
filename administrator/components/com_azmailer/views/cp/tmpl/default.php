@@ -4,20 +4,21 @@ defined('_JEXEC') or die('Restricted Access');
 jimport('joomla.html.pane');
 JHtml::_('behavior.tooltip');
 global $AZMAILER;
-use AZMailer\Helpers\AZMailerQueuemanagerHelper;
-use AZMailer\Helpers\AZMailerDateHelper;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
+use AZMailer\Helpers\AZMailerDateHelper;
+use AZMailer\Helpers\AZMailerQueuemanagerHelper;
+
 ?>
 <?php echo AZMailerAdminInterfaceHelper::displaySubmenu(); ?>
 <div style="width:100%;">
 	<div id="cpanel" style="float:left; width:44%;">
 		<?php foreach ($this->cpbuttons as &$cpbutton): ?>
-				<div class="icon">
-					<a href="<?php echo $cpbutton["link"]; ?>" title="<?php echo $cpbutton["title"]; ?>">
-						<img src="<?php echo $cpbutton["icon"]; ?>">
-						<span><?php echo $cpbutton["title"]; ?></span>
-					</a>
-				</div>
+			<div class="icon">
+				<a href="<?php echo $cpbutton["link"]; ?>" title="<?php echo $cpbutton["title"]; ?>">
+					<img src="<?php echo $cpbutton["icon"]; ?>">
+					<span><?php echo $cpbutton["title"]; ?></span>
+				</a>
+			</div>
 		<?php endforeach; ?>
 	</div>
 	<div style="float:right; width:55%;">
@@ -40,14 +41,14 @@ use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 		$secondsPassedSinceLastExecutionTime = AZMailerDateHelper::getSecondsSince($MQS->last_updated_date);
 		$formattedSPSLET = 'More than a day! Cron Execution not working!';
 		$isWorking = false;
-		if ($secondsPassedSinceLastExecutionTime<(60*60*24)) {
+		if ($secondsPassedSinceLastExecutionTime < (60 * 60 * 24)) {
 			$formattedSPSLET = gmdate("H:i:s", AZMailerDateHelper::getSecondsSince($MQS->last_updated_date));
 			$isWorking = true;
 		}
-		$mqState = '<div class="queueState '.($isWorking==1?"enabled":"disabled").'" style="line-height:28px;padding-left:4px;cursor:auto;">';
-		$mqState .= ($MQS->enabled==1?\JText::_("COM_AZMAILER_YES"):\JText::_("COM_AZMAILER_NO"));
-		$mqState .= ' - ' . JText::_("COM_AZMAILER_MQM_MQSTATE_LAST_UPDATE").": ".AZMailerDateHelper::convertToHumanReadableFormat($MQS->last_updated_date, "d/m/Y G:i.s");
-		$mqState .= '('.$formattedSPSLET.')';
+		$mqState = '<div class="queueState ' . ($isWorking == 1 ? "enabled" : "disabled") . '" style="line-height:28px;padding-left:4px;cursor:auto;">';
+		$mqState .= ($MQS->enabled == 1 ? \JText::_("COM_AZMAILER_YES") : \JText::_("COM_AZMAILER_NO"));
+		$mqState .= ' - ' . JText::_("COM_AZMAILER_MQM_MQSTATE_LAST_UPDATE") . ": " . AZMailerDateHelper::convertToHumanReadableFormat($MQS->last_updated_date, "d/m/Y G:i.s");
+		$mqState .= '(' . $formattedSPSLET . ')';
 		$mqState .= '</div>';
 		$output .= '<tr class="row' . $k = 1 - $k . '">';
 		$output .= '<td>' . \JText::_("COM_AZMAILER_MQM_MQSTATE") . " " . \JText::_("COM_AZMAILER_MQM_MQSTATE_ENABLED") . '</td>';

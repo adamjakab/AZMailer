@@ -16,25 +16,49 @@ defined('_JEXEC') or die('Restricted access');
  */
 class AZMailerAdminInterfaceHelper {
 	/**
-	* Adds buttons to toolbar
-	*
-	* @param	array	array of arrays with the following values in this order:
-	* @string	$acl		The Acl action to control
-	* string	$task		The task to perform in the form of controllerName.controllerMethod
-	* string	$icon		The image to display.
-	* string	$title		The title of the button
-	* bool	$listSelect	True if required to check that a standard list item is checked.
-	*/
-	public static function addButtonsToToolBar($buttons=array()) {
-	   //global $AZMAILER;
-	   if ($buttons && is_array($buttons) && count($buttons)) {
-	       $canDo = self::getActions();
-	       foreach($buttons as &$button) {
-		   if ($canDo->get($button[0])) {
-		       \JToolBarHelper::custom($button[1], $button[2], $button[2], $button[3], (isset($button[4])&&$button[4]===true));
-		   }
-	       }
-	   }
+	 * Adds buttons to toolbar
+	 *
+	 * @param    array    array of arrays with the following values in this order:
+	 * @string    $acl        The Acl action to control
+	 * string    $task        The task to perform in the form of controllerName.controllerMethod
+	 * string    $icon        The image to display.
+	 * string    $title        The title of the button
+	 * bool    $listSelect    True if required to check that a standard list item is checked.
+	 */
+	public static function addButtonsToToolBar($buttons = array()) {
+		//global $AZMAILER;
+		if ($buttons && is_array($buttons) && count($buttons)) {
+			$canDo = self::getActions();
+			foreach ($buttons as &$button) {
+				if ($canDo->get($button[0])) {
+					\JToolBarHelper::custom($button[1], $button[2], $button[2], $button[3], (isset($button[4]) && $button[4] === true));
+				}
+			}
+		}
+	}
+
+	/**
+	 * Get the actions
+	 */
+	public static function getActions($messageId = 0) {
+		$user = \JFactory::getUser();
+		$result = new \JObject;
+
+		if (empty($messageId)) {
+			$assetName = 'com_azmailer';
+		} else {
+			$assetName = 'com_azmailer.message.' . (int)$messageId;
+		}
+
+		$actions = array(
+			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.delete'
+		);
+
+		foreach ($actions as $action) {
+			$result->set($action, $user->authorise($action, $assetName));
+		}
+
+		return $result;
 	}
 
 	/**
@@ -45,82 +69,32 @@ class AZMailerAdminInterfaceHelper {
 		global $AZMAILER;
 		$ctrl = $AZMAILER->getOption('controller');
 		$linkBase = 'index.php?option=' . $AZMAILER->getOption("com_name");
-	    $menu = AZMailerButtonToolbarHelper::getInstance('submenu');
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_CP'), $linkBase, ($ctrl=='cp'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_NEWSLETTER'), $linkBase.'&task=newsletter.display', ($ctrl=='newsletter'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_NLSUBSCRIBER'), $linkBase.'&task=subscriber.display', ($ctrl=='subscriber'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_MAILQUEUEMANAGER'), $linkBase.'&task=queuemanager.display', ($ctrl=='queuemanager'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_STATS'), $linkBase.'&task=statistics.display', ($ctrl=='statistics'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_CATEGORY'), $linkBase.'&task=category.display', ($ctrl=='category'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_LOCATION'), $linkBase.'&task=location.display', ($ctrl=='location'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_TEMPLATE'), $linkBase.'&task=template.display', ($ctrl=='template'));
-		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_SETTINGS'), $linkBase.'&task=settings.display', ($ctrl=='settings'));
-		return($menu->render());
+		$menu = AZMailerButtonToolbarHelper::getInstance('submenu');
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_CP'), $linkBase, ($ctrl == 'cp'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_NEWSLETTER'), $linkBase . '&task=newsletter.display', ($ctrl == 'newsletter'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_NLSUBSCRIBER'), $linkBase . '&task=subscriber.display', ($ctrl == 'subscriber'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_MAILQUEUEMANAGER'), $linkBase . '&task=queuemanager.display', ($ctrl == 'queuemanager'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_STATS'), $linkBase . '&task=statistics.display', ($ctrl == 'statistics'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_CATEGORY'), $linkBase . '&task=category.display', ($ctrl == 'category'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_LOCATION'), $linkBase . '&task=location.display', ($ctrl == 'location'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_TEMPLATE'), $linkBase . '&task=template.display', ($ctrl == 'template'));
+		$menu->appendButton(\JText::_('COM_AZMAILER_SUBMENU_SETTINGS'), $linkBase . '&task=settings.display', ($ctrl == 'settings'));
+		return ($menu->render());
 	}
 
 	/**
 	 * @param string $title
 	 * @param string $icon
 	 */
-	public static function setHeaderTitle($title='AZMailer', $icon='azmailer') {
-	    $document = \JFactory::getDocument();
-	    $document->setTitle($title);
-	    \JToolBarHelper::title($title, $icon);
-	}
-
-	/**
-	 * Get the actions
-	 */
-	public static function getActions($messageId = 0) {
-		$user	= \JFactory::getUser();
-		$result	= new \JObject;
-
-		if (empty($messageId)) {
-			$assetName = 'com_azmailer';
-		} else {
-			$assetName = 'com_azmailer.message.'.(int) $messageId;
-		}
-
-		$actions = array(
-			'core.admin', 'core.manage', 'core.create', 'core.edit', 'core.delete'
-		);
-
-		foreach ($actions as $action) {
-			$result->set($action,	$user->authorise($action, $assetName));
-		}
-
-		return $result;
+	public static function setHeaderTitle($title = 'AZMailer', $icon = 'azmailer') {
+		$document = \JFactory::getDocument();
+		$document->setTitle($title);
+		\JToolBarHelper::title($title, $icon);
 	}
 
 
 
 	/*-----------------------------------------------------------------------HTML---------*/
-	/**
-	 * @param      $label
-	 * @param      $data
-	 * @param null $atag_mask
-	 * @param bool $forceShow
-	 * @return string
-	 */
-	public static function showData($label,$data,$atag_mask=null,$forceShow=false) {
-	    $answer = "";
-	    if (!empty($data) || $forceShow) {
-		$answer .= '<tr>';
-		$answer .= '<td class="data_name">'.$label.'</td>';
-		$answer .= '<td class="data_val">';
-		if (is_null($atag_mask)) {
-		    $answer .= $data;
-		} else {
-		    $answer .= sprintf($atag_mask, $data) . $data . '</a>';
-		}
-		$answer .= '</td>';
-		$answer .= '</tr>';
-	    }
-
-	    if (!empty($answer)) {$answer.="\n";}
-	    return ($answer);
-	}
-
 
 	/**
 	 * @param null   $caption
@@ -134,21 +108,49 @@ class AZMailerAdminInterfaceHelper {
 	 * @param string $customField
 	 * @return string
 	 */
-	public static function getInputFileldRow($caption=null, $name=null, $default='', $size=40, $maxlength=128, $disabled=false, $readonly=false, $type='text', $customField='') {
+	public static function getInputFileldRow($caption = null, $name = null, $default = '', $size = 40, $maxlength = 128, $disabled = false, $readonly = false, $type = 'text', $customField = '') {
 		$answer = '';
-		if($name) {
-			$readonly = ($readonly?' readonly="readonly"':'');
-			$disabled = ($disabled?' disabled="disabled"':'');
-			$label = '<label for="'.$name.'">'.$caption.'</label>';
-			$errorSpan = '<span id="err_'.$name.'" class="jqerror"></span>';
-			if($type != 'custom') {
-				$field = '<input name="'.$name.'" id="'.$name.'" type="'.$type.'" size="'.$size.'" maxlength="'.$maxlength.'" value="'.$default.'"'.$readonly.$disabled.'/>';
+		if ($name) {
+			$readonly = ($readonly ? ' readonly="readonly"' : '');
+			$disabled = ($disabled ? ' disabled="disabled"' : '');
+			$label = '<label for="' . $name . '">' . $caption . '</label>';
+			$errorSpan = '<span id="err_' . $name . '" class="jqerror"></span>';
+			if ($type != 'custom') {
+				$field = '<input name="' . $name . '" id="' . $name . '" type="' . $type . '" size="' . $size . '" maxlength="' . $maxlength . '" value="' . $default . '"' . $readonly . $disabled . '/>';
 			} else {
 				$field = $customField;
 			}
 			$answer = self::showData($label, $field . $errorSpan);
 		}
-		return($answer);
+		return ($answer);
+	}
+
+	/**
+	 * @param      $label
+	 * @param      $data
+	 * @param null $atag_mask
+	 * @param bool $forceShow
+	 * @return string
+	 */
+	public static function showData($label, $data, $atag_mask = null, $forceShow = false) {
+		$answer = "";
+		if (!empty($data) || $forceShow) {
+			$answer .= '<tr>';
+			$answer .= '<td class="data_name">' . $label . '</td>';
+			$answer .= '<td class="data_val">';
+			if (is_null($atag_mask)) {
+				$answer .= $data;
+			} else {
+				$answer .= sprintf($atag_mask, $data) . $data . '</a>';
+			}
+			$answer .= '</td>';
+			$answer .= '</tr>';
+		}
+
+		if (!empty($answer)) {
+			$answer .= "\n";
+		}
+		return ($answer);
 	}
 
 	/**
@@ -164,23 +166,23 @@ class AZMailerAdminInterfaceHelper {
 	 *
 	 * @deprecated - use getInputFileldRow instead
 	 */
-	public static function getInputField($caption, $name, $default='', $size=40, $maxlength=128, $enabled=true, $nobr=false, $readonly=false) {
-	    $answer = '';
-	    $br = (!$nobr?"<br/>":"");
-	    $readonly = ($readonly?'readonly="readonly"':'');
-	    if (!empty($name)) {
-			if($enabled) {
-			    if (!empty($caption)) {
-				$answer .= '<label for="'.$name.'">'.$caption.'</label>';
-				$answer .= '<span id="err_'.$name.'" class="jqerror"></span>'."$br\n";
-			    }
-			    $answer .= '<input type="text" name="'.$name.'" id="'.$name.'" size="'.$size.'" maxlength="'.$maxlength.'" value="'.$default.'" '.$readonly.'/>'."$br\n";
+	public static function getInputField($caption, $name, $default = '', $size = 40, $maxlength = 128, $enabled = true, $nobr = false, $readonly = false) {
+		$answer = '';
+		$br = (!$nobr ? "<br/>" : "");
+		$readonly = ($readonly ? 'readonly="readonly"' : '');
+		if (!empty($name)) {
+			if ($enabled) {
+				if (!empty($caption)) {
+					$answer .= '<label for="' . $name . '">' . $caption . '</label>';
+					$answer .= '<span id="err_' . $name . '" class="jqerror"></span>' . "$br\n";
+				}
+				$answer .= '<input type="text" name="' . $name . '" id="' . $name . '" size="' . $size . '" maxlength="' . $maxlength . '" value="' . $default . '" ' . $readonly . '/>' . "$br\n";
 			} else {
-			    $answer .= '<label for="'.$name.'">'.$caption.'</label>'."$br\n";
-			    $answer .= '<input disabled="disabled" name="'.$name.'" id="'.$name.'" type="text" size="'.$size.'" maxlength="'.$maxlength.'" value="'.$default.'" '.$readonly.'/>'."$br\n";
+				$answer .= '<label for="' . $name . '">' . $caption . '</label>' . "$br\n";
+				$answer .= '<input disabled="disabled" name="' . $name . '" id="' . $name . '" type="text" size="' . $size . '" maxlength="' . $maxlength . '" value="' . $default . '" ' . $readonly . '/>' . "$br\n";
 			}
-	    }
-	    return ($answer);
+		}
+		return ($answer);
 	}
 
 	/**
@@ -188,23 +190,22 @@ class AZMailerAdminInterfaceHelper {
 	 * @param bool $zeroOption
 	 * @return array
 	 */
-	public static function getSelectOptions_YesNo($zeroOption=false) {
+	public static function getSelectOptions_YesNo($zeroOption = false) {
 		$lst = array();
-		if($zeroOption !== false) {
-			$lst[] = \JHTML::_('select.option', '0', \JText::_($zeroOption), 'id', 'data' );
+		if ($zeroOption !== false) {
+			$lst[] = \JHTML::_('select.option', '0', \JText::_($zeroOption), 'id', 'data');
 		}
-		$lst[] = \JHTML::_('select.option',  'Y', \JText::_("COM_AZMAILER_YES"), 'id', 'data' );
-		$lst[] = \JHTML::_('select.option',  'N', \JText::_("COM_AZMAILER_NO"), 'id', 'data' );
+		$lst[] = \JHTML::_('select.option', 'Y', \JText::_("COM_AZMAILER_YES"), 'id', 'data');
+		$lst[] = \JHTML::_('select.option', 'N', \JText::_("COM_AZMAILER_NO"), 'id', 'data');
 		return ($lst);
 	}
-
 
 
 	/*------------------------------------------------------------------------------------------------------------Header inclusions*/
 	public static function setHeaderIncludes() {
 		/** @var $AZMAILER \AZMailer\AZMailerCore */
 		global $AZMAILER;
-		if($AZMAILER->getOption('com_location') == "backend") {
+		if ($AZMAILER->getOption('com_location') == "backend") {
 			//ADD CSS
 			self::addAdditionalHeaderIncludes("css", "/assets/css/azmailer.css");
 			self::addAdditionalHeaderIncludes("css", "/assets/css/icons.css");
@@ -223,51 +224,51 @@ class AZMailerAdminInterfaceHelper {
 	}
 
 	/**
-	 * Add jQuery support
-	 * todo: jquery-1.7.1 is way too old - get a newer one
+	 * path is intended from admin-side component root: '/assets/css/azmailer.css'
+	 * @param string $type
+	 * @param null   $path
+	 * @param bool   $forceFirst
 	 */
-	public static function getJQueryLibrarySupport() {
-		if(IS_J3) {
-			\JHtml::_('jquery.framework');
-		} else {
-			if(\JFactory::getApplication()->get('jquery') !== true) {
-				//adding scripts in revesed order
-				self::addAdditionalHeaderIncludes("js", "/assets/js/jquery-noconflict.js", true);
-				self::addAdditionalHeaderIncludes("js", "/assets/js/jquery-1.7.1.min.js", true);
-				\JFactory::getApplication()->set('jquery', true);
+	public static function addAdditionalHeaderIncludes($type, $path, $forceFirst = false) {
+		/** @var $AZMAILER \AZMailer\AZMailerCore */
+		global $AZMAILER;
+		/** @var $document \JDocumentHTML */
+		$document = \JFactory::getDocument();
+		$inclUrl = $AZMAILER->getOption("com_uri_admin") . $path;
+		if ($type == "css") {
+			if (!$forceFirst) {
+				$document->addStyleSheet($inclUrl);
+			} else {
+				$head = $document->getHeadData();
+				$cssType = array('mime' => 'text/css', 'media' => null, 'attribs' => array());
+				$head['styleSheets'] = array_merge(array($inclUrl => $cssType), $head['styleSheets']);
+				$document->setHeadData($head);
+			}
+		} else if ($type == "js") {
+			if (!$forceFirst) {
+				$document->addScript($inclUrl);
+			} else {
+				$head = $document->getHeadData();
+				$jsType = array('mime' => 'text/javascript', 'defer' => false, 'async' => false);
+				$head['scripts'] = array_merge(array($inclUrl => $jsType), $head['scripts']);
+				$document->setHeadData($head);
 			}
 		}
 	}
 
 	/**
-	 * path is intended from admin-side component root: '/assets/css/azmailer.css'
-	 * @param string    $type
-	 * @param null      $path
-	 * @param bool      $forceFirst
+	 * Add jQuery support
+	 * todo: jquery-1.7.1 is way too old - get a newer one
 	 */
-	public static function addAdditionalHeaderIncludes($type, $path, $forceFirst=false) {
-		/** @var $AZMAILER \AZMailer\AZMailerCore */
-		global $AZMAILER;
-		/** @var $document \JDocumentHTML */
-		$document = \JFactory::getDocument();
-		$inclUrl = $AZMAILER->getOption("com_uri_admin").$path;
-		if($type == "css") {
-			if(!$forceFirst) {
-				$document->addStyleSheet($inclUrl);
-			} else {
-				$head = $document->getHeadData();
-				$cssType = array('mime'=>'text/css', 'media'=>null, 'attribs'=>array());
-				$head['styleSheets'] = array_merge(array($inclUrl => $cssType), $head['styleSheets']);
-				$document->setHeadData($head);
-			}
-		} else if ($type == "js") {
-			if(!$forceFirst) {
-				$document->addScript($inclUrl);
-			} else {
-				$head = $document->getHeadData();
-				$jsType = array('mime'=>'text/javascript', 'defer'=>false, 'async'=>false);
-				$head['scripts'] = array_merge(array($inclUrl => $jsType), $head['scripts']);
-				$document->setHeadData($head);
+	public static function getJQueryLibrarySupport() {
+		if (IS_J3) {
+			\JHtml::_('jquery.framework');
+		} else {
+			if (\JFactory::getApplication()->get('jquery') !== true) {
+				//adding scripts in revesed order
+				self::addAdditionalHeaderIncludes("js", "/assets/js/jquery-noconflict.js", true);
+				self::addAdditionalHeaderIncludes("js", "/assets/js/jquery-1.7.1.min.js", true);
+				\JFactory::getApplication()->set('jquery', true);
 			}
 		}
 	}

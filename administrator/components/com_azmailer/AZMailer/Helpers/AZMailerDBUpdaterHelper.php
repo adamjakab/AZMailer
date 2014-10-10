@@ -9,20 +9,26 @@ namespace AZMailer\Helpers;
  */
 defined('_JEXEC') or die('Restricted access');
 
+/**
+ * Class AZMailerDBUpdaterHelper
+ * @package AZMailer\Helpers
+ */
 class AZMailerDBUpdaterHelper {
 	private $tableClassesFolder = null;
 	private $db;
 	private $verbose = true;
 	private $AZMailerTables = array();
 	private $currentTable = null;
-	private $errorNum = 0;
-	private $errorMsg = "";
 
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->db = \JFactory::getDBO();
-		$this->tableClassesFolder = realpath(dirname(__DIR__).DS.'Tables');
+		$this->tableClassesFolder = realpath(dirname(__DIR__) . DS . 'Tables');
 		//$this->log("tableClassesFolder: " . $this->tableClassesFolder);
 	}
+
 
 	public function update($verbose = false) {
 		$this->verbose = $verbose;
@@ -41,34 +47,42 @@ class AZMailerDBUpdaterHelper {
 		return (true);
 	}
 
-	public function removeAllTables($verbose = false) {
-		$this->verbose = $verbose;
-		$this->log("AZMailerDBUpdaterHelper: ready to remove all tables!");
-		$this->getAZMailerTableClassNameList();
-		if (count($this->AZMailerTables) > 0) {
-			foreach ($this->AZMailerTables as $className) {
+	private function log($msg, $type = "info") {
+		if ($this->verbose) {
+			echo '<br /><span class="' . $type . '">' . $msg . '</span>';
+		}
+	}
+
+	private function getAZMailerTableClassNameList() {
+		$CFLIST = $this->getFolderFileList($this->tableClassesFolder, '/^[0-9]{1,2}_azmailer_[a-z0-9\-_]*\.php$/i');
+		//$this->log("CFLIST: " . print_r($CFLIST, true));
+		if (count($CFLIST)) {
+			foreach ($CFLIST as $CF) {
+				require_once($this->tableClassesFolder . DS . $CF);
+				$className = preg_replace(array('/^[0-9]{1,2}_/', '/\.php/'), array('tbl_', ''), $CF);
+				$this->log("classFile: " . $CF . " -->className: " . $className);
 				if (class_exists($className)) {
-					$this->currentTable = new $className();
-					$this->deleteTable();
+					array_push($this->AZMailerTables, $className);
 				}
 			}
 		}
-		return (true);
 	}
 
-	private function deleteTable() {
-		$tableName = '#__' . $this->currentTable->name;
-		$msg = 'DELETING TABLE: ' . $this->currentTable->name;
-		if ($this->_checkIfTableExists($tableName)) {
-			$sql = 'DROP TABLE ' . '`' . $tableName . '`';
-			$res = $this->___executeSql($sql);
-			$msg .= ($res?' - deleted.':' - error!');
-		} else {
-			$msg .= ' - already deleted.';
+	private function getFolderFileList($dir, $file_pattern = '/.*/') {
+		$answer = array();
+		if ($handle = opendir($dir)) {
+			while (false !== ($file = readdir($handle))) {
+				if (preg_match($file_pattern, $file) == 1) {
+					$answer[] = $file;
+				}
+			}
+			closedir($handle);
 		}
-		$this->log($msg);
+		if (count($answer) > 0) {
+			sort($answer);
+		}
+		return ($answer);
 	}
-
 
 	private function updateTable() {
 		$tableName = '#__' . $this->currentTable->name;
@@ -91,7 +105,7 @@ class AZMailerDBUpdaterHelper {
 				}
 				$sql = trim($sql, ","); //remove trailing comma
 				$sql .= ') AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;';
-				$res = $this->___executeSql($sql);
+				$this->___executeSql($sql);
 				$this->currentTable->isNewTable = true;
 			}
 		}
@@ -110,7 +124,7 @@ class AZMailerDBUpdaterHelper {
 						. '' . (!empty($column["Default"]) || $column["Default"] == "0" ? ' DEFAULT \'' . $column["Default"] . '\'' : '')
 						. ' ' . $column["Extra"]
 						. ';';
-					$res = $this->___executeSql($sql);
+					$this->___executeSql($sql);
 				} else {
 					//$this->log("COL EXISTS(CHECKING): " . $column["Field"] . " -> " . print_r($column, true));
 					$needsChange = false;
@@ -134,7 +148,7 @@ class AZMailerDBUpdaterHelper {
 							. '' . (!empty($column["Default"]) || $column["Default"] == "0" ? ' DEFAULT \'' . $column["Default"] . '\'' : '')
 							. ' ' . $column["Extra"]
 							. ';';
-						$res = $this->___executeSql($sql);
+						$this->___executeSql($sql);
 					}
 
 				}
@@ -146,7 +160,7 @@ class AZMailerDBUpdaterHelper {
 					$keyName = $this->currentTable->name . "_" . $keyColumn;
 					if (!$this->_checkIfTableKeyExists($tableName, $keyName)) {
 						$sql = 'ALTER TABLE `' . $tableName . '` ADD ' . ($keyUnique ? "UNIQUE" : "INDEX") . ' `' . $keyName . '` (' . $keyColumn . ');';
-						$res = $this->___executeSql($sql);
+						$this->___executeSql($sql);
 					}
 				}
 			}
@@ -168,7 +182,7 @@ class AZMailerDBUpdaterHelper {
 				if ($needsDrop) {
 					$this->log("DROPPING INDEX[$dbKeyName]");
 					$sql = 'ALTER TABLE `' . $tableName . '` DROP INDEX `' . $dbKeyName . '`';
-					$res = $this->___executeSql($sql);
+					$this->___executeSql($sql);
 				}
 			}
 
@@ -187,7 +201,7 @@ class AZMailerDBUpdaterHelper {
 				if ($needsDrop) {
 					//$this->log("COL[$dbColName] IS TO BE DROPPED");
 					$sql = 'ALTER TABLE `' . $tableName . '` DROP `' . $dbColName . '`';
-					$res = $this->___executeSql($sql);
+					$this->___executeSql($sql);
 				}
 			}
 
@@ -195,6 +209,45 @@ class AZMailerDBUpdaterHelper {
 		}
 
 
+	}
+
+	private function _checkIfTableExists($tablename) {
+		$tablename = str_replace('#__', $this->db->getPrefix(), $tablename);
+		$tblList = $this->db->getTableList();
+		return (in_array($tablename, $tblList));
+	}
+
+
+	//------------------------------------------------------------------------DB-SQL
+
+	private function ___executeSql($sql) {
+		$this->db->setQuery($sql);
+		$this->db->query();
+		$err = $this->db->getErrorNum();
+		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
+		return ($err == 0);
+	}
+
+	private function ___loadSqlMultipleResults($sql, $key = null) {
+		$this->db->setQuery($sql);
+		$res = $this->db->loadAssocList($key);
+		$err = $this->db->getErrorNum();
+		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
+		return (($err == 0 ? $res : ""));
+	}
+
+	private function _checkIfTableKeyExists($tablename, $keyName) {
+		$sql = 'SHOW INDEX FROM `' . $tablename . '` WHERE Key_name = "' . $keyName . '";';
+		$res = $this->___loadSqlSingleResult($sql);
+		return (!empty($res));
+	}
+
+	private function ___loadSqlSingleResult($sql) {
+		$this->db->setQuery($sql);
+		$res = $this->db->loadResult();
+		$err = $this->db->getErrorNum();
+		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
+		return (($err == 0 ? $res : ""));
 	}
 
 	private function populateTable() {
@@ -244,88 +297,41 @@ class AZMailerDBUpdaterHelper {
 						$cols = implode(", ", $columnArray);
 						$vals = implode(", ", $valueArray);
 						$sql = 'INSERT INTO `' . $tableName . '` (' . $cols . ') VALUES (' . $vals . ');';
-						$res = $this->___executeSql($sql);
+						$this->___executeSql($sql);
 					}
 				}
 			}
 		}
 	}
 
-
-	private function getAZMailerTableClassNameList() {
-		$CFLIST = $this->getFolderFileList($this->tableClassesFolder, '/^[0-9]{1,2}_azmailer_[a-z0-9\-_]*\.php$/i');
-		//$this->log("CFLIST: " . print_r($CFLIST, true));
-		if (count($CFLIST)) {
-			foreach ($CFLIST as $CF) {
-				require_once($this->tableClassesFolder . DS . $CF);
-				$className = preg_replace(array('/^[0-9]{1,2}_/', '/\.php/'), array('tbl_', ''), $CF);
-				$this->log("classFile: " . $CF . " -->className: " . $className);
-				if (class_exists($className)) {
-					array_push($this->AZMailerTables, $className);
-				}
-			}
-		}
-	}
-
-
-	//------------------------------------------------------------------------DB-SQL
-	private function _checkIfTableExists($tablename) {
-		$tablename = str_replace('#__', $this->db->getPrefix(), $tablename);
-		$tblList = $this->db->getTableList();
-		return(in_array($tablename, $tblList));
-	}
-
-	private function _checkIfTableKeyExists($tablename, $keyName) {
-		$sql = 'SHOW INDEX FROM `' . $tablename . '` WHERE Key_name = "' . $keyName . '";';
-		$res = $this->___loadSqlSingleResult($sql);
-		return (!empty($res));
-	}
-
-	private function ___loadSqlSingleResult($sql) {
-		$this->db->setQuery($sql);
-		$res = $this->db->loadResult();
-		$err = $this->db->getErrorNum();
-		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
-		return (($err == 0 ? $res : ""));
-	}
-
-	private function ___loadSqlMultipleResults($sql, $key = null) {
-		$this->db->setQuery($sql);
-		$res = $this->db->loadAssocList($key);
-		$err = $this->db->getErrorNum();
-		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
-		return (($err == 0 ? $res : ""));
-	}
-
-	private function ___executeSql($sql) {
-		$this->db->setQuery($sql);
-		$this->db->query();
-		$err = $this->db->getErrorNum();
-		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
-		return ($err == 0);
-	}
-
 	//-------------------------------------------------------------------------UTILS
-	private function getFolderFileList($dir, $file_pattern = '/.*/') {
-		$answer = array();
-		if ($handle = opendir($dir)) {
-			while (false !== ($file = readdir($handle))) {
-				if (preg_match($file_pattern, $file) == 1) {
-					$answer[] = $file;
+
+	public function removeAllTables($verbose = false) {
+		$this->verbose = $verbose;
+		$this->log("AZMailerDBUpdaterHelper: ready to remove all tables!");
+		$this->getAZMailerTableClassNameList();
+		if (count($this->AZMailerTables) > 0) {
+			foreach ($this->AZMailerTables as $className) {
+				if (class_exists($className)) {
+					$this->currentTable = new $className();
+					$this->deleteTable();
 				}
 			}
-			closedir($handle);
 		}
-		if (count($answer) > 0) {
-			sort($answer);
-		}
-		return ($answer);
+		return (true);
 	}
 
-	private function log($msg, $type = "info") {
-		if ($this->verbose) {
-			echo '<br /><span class="' . $type . '">' . $msg . '</span>';
+	private function deleteTable() {
+		$tableName = '#__' . $this->currentTable->name;
+		$msg = 'DELETING TABLE: ' . $this->currentTable->name;
+		if ($this->_checkIfTableExists($tableName)) {
+			$sql = 'DROP TABLE ' . '`' . $tableName . '`';
+			$res = $this->___executeSql($sql);
+			$msg .= ($res ? ' - deleted.' : ' - error!');
+		} else {
+			$msg .= ' - already deleted.';
 		}
+		$this->log($msg);
 	}
 }
 

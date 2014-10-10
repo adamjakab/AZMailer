@@ -7,8 +7,6 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerController;
-use \JFactory;
-use \JRequest;
 
 
 /**

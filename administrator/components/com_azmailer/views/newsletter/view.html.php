@@ -7,10 +7,10 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerView;
-use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
-use AZMailer\Helpers\AZMailerNewsletterHelper;
-use \AZMailer\Helpers\AZMailerDateHelper;
 use AZMailer\Entities\AZMailerNewsletter;
+use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
+use AZMailer\Helpers\AZMailerDateHelper;
+use AZMailer\Helpers\AZMailerNewsletterHelper;
 
 /**
  * Class AZMailerViewNewsletter
@@ -22,13 +22,11 @@ class AZMailerViewNewsletter extends AZMailerView {
 	 * @throws Exception
 	 */
 	public function display($tpl = null) {
-		global $AZMAILER;
-
 		$this->items = $this->get('Items');
-		foreach($this->items as &$item) {
+		foreach ($this->items as &$item) {
 			$item = new AZMailerNewsletter($item);
 		}
-		$totalRecords = count($this->items);
+
 		$this->filters = $this->get('Filters');
 		$this->pagination = $this->get('Pagination');
 		$this->state = $this->get('State');
@@ -53,7 +51,7 @@ class AZMailerViewNewsletter extends AZMailerView {
 		$JI = \JFactory::getApplication()->input;
 		$id = $JI->getInt("cid", 0);
 		$this->item = new AZMailerNewsletter($model->getSpecificItem($id));
-		$this->TITLE = ($this->item->get("id")?"Editing newsletter:".$this->item->get("nl_title"):"Creating new newsletter");
+		$this->TITLE = ($this->item->get("id") ? "Editing newsletter:" . $this->item->get("nl_title") : "Creating new newsletter");
 		$this->state = $this->get('State');
 		parent::display("edit");
 		//
@@ -63,17 +61,21 @@ class AZMailerViewNewsletter extends AZMailerView {
 			array("core.create", "newsletter.save", 'save', 'JTOOLBAR_SAVE', false), /*save&close*/
 			array("core.manage", "newsletter.display", 'cancel', 'JTOOLBAR_CANCEL', false), /*cancel*/
 		));
-		$JI->set("hidemainmenu",1);//blocks main-menu
+		$JI->set("hidemainmenu", 1);//blocks main-menu
 	}
 
-	public function save($isApply=false) {
+	public function apply() {
+		$this->save(true);
+	}
+
+	public function save($isApply = false) {
 		global $AZMAILER;
 		\JRequest::checkToken() or jexit('Invalid Token');
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;
 		$model->saveSpecificItem($JI->getArray($_POST));
-		if(!$isApply) {
+		if (!$isApply) {
 			$AZMAILER->getController()->setRedirect(JRoute::_('index.php?option=' . $AZMAILER->getOption("com_name") . '&task=newsletter.display', false));
 		} else {
 			$newid = $model->getState($model->getName() . '.id');
@@ -81,13 +83,9 @@ class AZMailerViewNewsletter extends AZMailerView {
 		}
 	}
 
-	public function apply() {
-		$this->save(true);
-	}
-
 	public function send() {
+		/** @var AZMailer\AZMailerCore */
 		global $AZMAILER;
-		$msg = "";
 		$JI = \JFactory::getApplication()->input;
 		$nlid = $JI->getInt("newsletter_id", 0);
 		$newsletter = AZMailerNewsletterHelper::getNewsletter($nlid);
@@ -95,9 +93,14 @@ class AZMailerViewNewsletter extends AZMailerView {
 			$newsletter = new AZMailerNewsletter($newsletter);
 			//
 			$NL_CATSEL = json_decode(base64_decode($newsletter->get("nl_sendto_selections")));
-			if (!is_object($NL_CATSEL)) {$NL_CATSEL = new stdClass();}
+			if (!is_object($NL_CATSEL)) {
+				$NL_CATSEL = new stdClass();
+			}
 			$NL_ADDITIONAL = json_decode(base64_decode($newsletter->get("nl_sendto_additional")));
-			if (!is_object($NL_ADDITIONAL)) {$NL_ADDITIONAL = new stdClass();$NL_ADDITIONAL->subscribers = array();}
+			if (!is_object($NL_ADDITIONAL)) {
+				$NL_ADDITIONAL = new stdClass();
+				$NL_ADDITIONAL->subscribers = array();
+			}
 			//
 			$NL_CONTACTS = array();
 			//LET'S ADD ADDITIONAL CONTACTS RIGHT AWAY
@@ -114,7 +117,7 @@ class AZMailerViewNewsletter extends AZMailerView {
 			$NL_CONTACTS = AZMailerNewsletterHelper::cleanupArrayOfObjectsFromDuplicates($NL_CONTACTS, "nls_email");
 			//
 			if (count($NL_CONTACTS)) {
-				foreach($NL_CONTACTS as $NLC) {
+				foreach ($NL_CONTACTS as $NLC) {
 					$newsletter->sendToSingleContact($NLC->nls_email, "newsletter", 1, $NLC->nls_firstname, $NLC->nls_lastname);
 				}
 				//we are finished so we register newsletter as sent and we can go home
@@ -131,7 +134,6 @@ class AZMailerViewNewsletter extends AZMailerView {
 		}
 		$AZMAILER->getController()->setRedirect('index.php?option=' . $AZMAILER->getOption("com_name") . '&task=newsletter.display', $msg);
 	}
-
 
 
 	public function delete() {
@@ -155,8 +157,6 @@ class AZMailerViewNewsletter extends AZMailerView {
 		$model->duplicateItem($cid);
 		$AZMAILER->getController()->setRedirect(JRoute::_('index.php?option=' . $AZMAILER->getOption("com_name") . '&task=newsletter.display', false));
 	}
-
-
 
 
 }

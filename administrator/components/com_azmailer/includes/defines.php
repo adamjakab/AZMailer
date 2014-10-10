@@ -25,14 +25,14 @@ defined('NL') || define('NL', "\n");
 /**
  * Combined.
  */
-defined('BRNL') || define('BRNL', BR.NL);
+defined('BRNL') || define('BRNL', BR . NL);
 
 /**
  * Joomla versions
  */
-\JLoader::import( 'cms.version.version' );
+\JLoader::import('cms.version.version');
 $version = new \JVersion();
-defined('IS_J3') || define('IS_J3', version_compare( $version->RELEASE, '3.0', '>='));
+defined('IS_J3') || define('IS_J3', version_compare($version->RELEASE, '3.0', '>='));
 unset($version);
 
 

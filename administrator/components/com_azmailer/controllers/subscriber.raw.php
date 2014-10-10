@@ -82,19 +82,19 @@ class AZMailerControllerSubscriber extends AZMailerController {
 		$answer = new \stdClass();
 		$answer->errors = array();
 		$JI = \JFactory::getApplication()->input;
-		$nlsid = $JI->getInt("id",0);
+		$nlsid = $JI->getInt("id", 0);
 		//FIRSTNAME
 		$firstname = $JI->getString("nls_firstname", "");
 		if (empty($firstname)) {
-			array_push($answer->errors, array("field"=>"nls_firstname", "message"=>JText::_("COM_AZMAILER_SUBSCR_ERR_NAME")));
+			array_push($answer->errors, array("field" => "nls_firstname", "message" => JText::_("COM_AZMAILER_SUBSCR_ERR_NAME")));
 		}
 		//EMAIL
 		$email = $JI->getString("nls_email", "");
 		if (!AZMailerSubscriberHelper::checkIfEmailSyntaxIsValid($email)) {
-			array_push($answer->errors, array("field"=>"nls_email", "message"=>JText::_("COM_AZMAILER_SUBSCR_ERR_MAIL")));
+			array_push($answer->errors, array("field" => "nls_email", "message" => JText::_("COM_AZMAILER_SUBSCR_ERR_MAIL")));
 		}
 		if (!AZMailerSubscriberHelper::checkIfNLSMailIsAvailable($email, $nlsid)) {
-			array_push($answer->errors, array("field"=>"nls_email", "message"=>JText::_("COM_AZMAILER_SUBSCR_ERR_MAIL_REGISTERED")));
+			array_push($answer->errors, array("field" => "nls_email", "message" => JText::_("COM_AZMAILER_SUBSCR_ERR_MAIL_REGISTERED")));
 		}
 		echo json_encode($answer);
 	}
@@ -104,20 +104,20 @@ class AZMailerControllerSubscriber extends AZMailerController {
 		$answer->errors = array();
 		$JI = \JFactory::getApplication()->input;
 		$answer->post = array();
-		$answer->post["uploadedfile"] = $JI->files->get('nls_contacts_file',null);
+		$answer->post["uploadedfile"] = $JI->files->get('nls_contacts_file', null);
 		$answer->post["defaults"] = array();
-		$answer->post["defaults"]["nls_overwrite_existing"] = $JI->getInt('nls_overwrite_existing',3);//merge by default
-		$answer->post["defaults"]["nls_blacklisted"] = $JI->getString('nls_blacklisted',"N");
-		$answer->post["defaults"]["nls_country_id"] = $JI->getInt('nls_country_id',0);
-		$answer->post["defaults"]["nls_region_id"] = $JI->getInt('nls_region_id',0);
-		$answer->post["defaults"]["nls_province_id"] = $JI->getInt('nls_province_id',0);
+		$answer->post["defaults"]["nls_overwrite_existing"] = $JI->getInt('nls_overwrite_existing', 3);//merge by default
+		$answer->post["defaults"]["nls_blacklisted"] = $JI->getString('nls_blacklisted', "N");
+		$answer->post["defaults"]["nls_country_id"] = $JI->getInt('nls_country_id', 0);
+		$answer->post["defaults"]["nls_region_id"] = $JI->getInt('nls_region_id', 0);
+		$answer->post["defaults"]["nls_province_id"] = $JI->getInt('nls_province_id', 0);
 		//nls_cat_1..5[] - passed as array of numbers
 		$rawPostData = $JI->getArray($_POST);
-		$answer->post["defaults"]["nls_cat_1"] = (isset($rawPostData["nls_cat_1"])?$rawPostData["nls_cat_1"]:array());
-		$answer->post["defaults"]["nls_cat_2"] = (isset($rawPostData["nls_cat_2"])?$rawPostData["nls_cat_2"]:array());
-		$answer->post["defaults"]["nls_cat_3"] = (isset($rawPostData["nls_cat_3"])?$rawPostData["nls_cat_3"]:array());
-		$answer->post["defaults"]["nls_cat_4"] = (isset($rawPostData["nls_cat_4"])?$rawPostData["nls_cat_4"]:array());
-		$answer->post["defaults"]["nls_cat_5"] = (isset($rawPostData["nls_cat_5"])?$rawPostData["nls_cat_5"]:array());
+		$answer->post["defaults"]["nls_cat_1"] = (isset($rawPostData["nls_cat_1"]) ? $rawPostData["nls_cat_1"] : array());
+		$answer->post["defaults"]["nls_cat_2"] = (isset($rawPostData["nls_cat_2"]) ? $rawPostData["nls_cat_2"] : array());
+		$answer->post["defaults"]["nls_cat_3"] = (isset($rawPostData["nls_cat_3"]) ? $rawPostData["nls_cat_3"] : array());
+		$answer->post["defaults"]["nls_cat_4"] = (isset($rawPostData["nls_cat_4"]) ? $rawPostData["nls_cat_4"] : array());
+		$answer->post["defaults"]["nls_cat_5"] = (isset($rawPostData["nls_cat_5"]) ? $rawPostData["nls_cat_5"] : array());
 		//
 		$answer = $this->model->importSubscribersFromUploadedFile($answer);
 		echo json_encode($answer);

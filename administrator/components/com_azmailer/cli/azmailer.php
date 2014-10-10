@@ -5,7 +5,7 @@
  */
 
 // Bootstrap the application(setup paths, libraries and class loader)
-require_once ("code/bootstrap.php");
+require_once("code/bootstrap.php");
 
 // Set all loggers to echo.
 \JLog::addLogger(array('logger' => 'echo'), JLog::ALL);
@@ -14,8 +14,8 @@ require_once ("code/bootstrap.php");
 try {
 	$application = JApplicationCli::getInstance('AZMailer\Cli\Application\AZMailerApplicationCli');
 	JFactory::$application = $application;
-    $application->execute();
+	$application->execute();
 } catch (Exception $e) {
-    fwrite(STDOUT, $e->getMessage() . "\n");
-    exit($e->getCode());
+	fwrite(STDOUT, $e->getMessage() . "\n");
+	exit($e->getCode());
 }

@@ -8,9 +8,9 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use \JFactory;
-use \JHtml;
-use \JText;
+use JFactory;
+use JHtml;
+use JText;
 
 /**
  * Category Helper Class
@@ -25,17 +25,29 @@ class AZMailerCategoryHelper {
 		$answer = "";
 		if (count($itemIdArray = json_decode($jsonArray))) {
 			$itemNameArray = array();
-			foreach($itemIdArray as $id) {
-				foreach(self::$categoryItemsList as $catItem) {
+			foreach ($itemIdArray as $id) {
+				foreach (self::$categoryItemsList as $catItem) {
 					if ($catItem->id == $id) {
 						$itemNameArray[] = $catItem->name;
 						break;
 					}
 				}
 			}
-			$answer = implode(", " ,$itemNameArray);
+			$answer = implode(", ", $itemNameArray);
 		};
-		return($answer);
+		return ($answer);
+	}
+
+	private static function checkLoadCategoryItems() {
+		if (!self::$categoryItemsList) {
+			$db = JFactory::getDbo();
+			$query = $db->getQuery(true);
+			$query->select('a.id, a.name, a.category_id');
+			$query->from('#__azmailer_category_item AS a');
+			$query->order("a.item_order ASC");
+			$db->setQuery($query);
+			self::$categoryItemsList = $db->loadObjectList();
+		}
 	}
 
 	public static function getCheckboxHtmlForSelectionCategory($cat_id) {
@@ -43,11 +55,11 @@ class AZMailerCategoryHelper {
 		self::checkLoadCategoryItems();
 		$cnt = 0;
 		$html = '';
-		$html .= '<fieldset><legend>'.$AZMAILER->getOption("category_name_".$cat_id).'</legend>';
-		foreach(self::$categoryItemsList as $catItem) {
-			if($catItem->category_id == $cat_id) {
+		$html .= '<fieldset><legend>' . $AZMAILER->getOption("category_name_" . $cat_id) . '</legend>';
+		foreach (self::$categoryItemsList as $catItem) {
+			if ($catItem->category_id == $cat_id) {
 				$cnt++;
-				$html .= '<input type="checkbox" name="nlsc_'.$cat_id.'" value="'.$catItem->id.'" />'.$catItem->name.'<br />';
+				$html .= '<input type="checkbox" name="nlsc_' . $cat_id . '" value="' . $catItem->id . '" />' . $catItem->name . '<br />';
 			}
 		}
 		if ($cnt == 0) {
@@ -57,16 +69,13 @@ class AZMailerCategoryHelper {
 		return ($html);
 	}
 
-
-
-
 	/**
 	 * TODO: Really we could use "self::$categoryItemsList" where we have already loaded all items
 	 * @param      $cat_id
 	 * @param bool $zeroOption
 	 * @return array
 	 */
-	public static function getSelectOptions_CatItems($cat_id, $zeroOption=false) {
+	public static function getSelectOptions_CatItems($cat_id, $zeroOption = false) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.id, a.name AS data');
@@ -75,10 +84,10 @@ class AZMailerCategoryHelper {
 		$query->order("a.item_order ASC");
 		$db->setQuery($query);
 		$lst = array();
-		if ($zeroOption!==false) {
-			$lst[] = JHTML::_('select.option',  '0', JText::_($zeroOption), 'id', 'data' );
+		if ($zeroOption !== false) {
+			$lst[] = JHTML::_('select.option', '0', JText::_($zeroOption), 'id', 'data');
 		}
-		$lst = array_merge( $lst, $db->loadObjectList() );
+		$lst = array_merge($lst, $db->loadObjectList());
 		return ($lst);
 	}
 
@@ -94,30 +103,31 @@ class AZMailerCategoryHelper {
 		return ($lst);
 	}
 
+	//-----------------------------------------------------------------------------------FOR XLS IMPORTER
+
 	public static function getCategoryIDForItem($itemId) {
 		$answer = false;
 		self::checkLoadCategoryItems();
-		foreach(self::$categoryItemsList as $catItem) {
-			if($catItem->id == $itemId) {
+		foreach (self::$categoryItemsList as $catItem) {
+			if ($catItem->id == $itemId) {
 				$answer = $catItem->category_id;
 				break;
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
 
-	//-----------------------------------------------------------------------------------FOR XLS IMPORTER
 	/**
 	 * Returns array for category item ids for the [1-5] category
-	 * @param int $cat_id [1-5]
+	 * @param int    $cat_id [1-5]
 	 * @param string $nameList
-	 * @param bool $registerIfNew
+	 * @param bool   $registerIfNew
 	 * @return array
 	 */
-	public static function getCategoryIdArrayByNames($cat_id, $nameList, $registerIfNew=false) {
+	public static function getCategoryIdArrayByNames($cat_id, $nameList, $registerIfNew = false) {
 		$answer = array();
 		if (!empty($cat_id) && !empty($nameList)) {
-			$catNames = explode("," , $nameList);
+			$catNames = explode(",", $nameList);
 			if (count($catNames)) {
 				foreach ($catNames as &$catName) {
 					$catName = strtolower(trim($catName));
@@ -144,16 +154,18 @@ class AZMailerCategoryHelper {
 						$query->where('LOWER(a.name) = ' . $db->quote($catName));
 						$db->setQuery($query);
 						$cid = $db->loadResult();
-						if(!$cid||empty($cid)) {$cid=0;}
-						if ($cid==0) {//creating new one
+						if (!$cid || empty($cid)) {
+							$cid = 0;
+						}
+						if ($cid == 0) {//creating new one
 							$data = array();
 							$data["id"] = null;
 							$data["category_id"] = $cat_id;
 							$data["item_order"] = ++$order;
 							$data["is_default"] = 0;
 							$data["name"] = ucfirst($catName);
-							$table  = \JTable::getInstance('azmailer_category_item', 'Table');
-							if ($table->bind( $data )) {
+							$table = \JTable::getInstance('azmailer_category_item', 'Table');
+							if ($table->bind($data)) {
 								if ($table->check()) {
 									if ($table->store()) {
 										$db = $table->getDBO();
@@ -169,8 +181,11 @@ class AZMailerCategoryHelper {
 				}
 			}
 		}
-		return($answer);
+		return ($answer);
 	}
+
+
+	//-----------------------------------------------------------------------------------PRIVATE
 
 	/**
 	 * @param $cat_id
@@ -184,22 +199,8 @@ class AZMailerCategoryHelper {
 		$query->where('a.category_id = ' . $cat_id);
 		$db->setQuery($query);
 		$max = $db->loadResult();
-		$max = ($max&&$max>0?$max:1);
-		return($max);
-	}
-
-
-	//-----------------------------------------------------------------------------------PRIVATE
-	private static function checkLoadCategoryItems() {
-		if (!self::$categoryItemsList) {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery(true);
-			$query->select('a.id, a.name, a.category_id');
-			$query->from('#__azmailer_category_item AS a');
-			$query->order("a.item_order ASC");
-			$db->setQuery($query);
-			self::$categoryItemsList = $db->loadObjectList();
-		}
+		$max = ($max && $max > 0 ? $max : 1);
+		return ($max);
 	}
 
 }

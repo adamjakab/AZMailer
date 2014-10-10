@@ -6,6 +6,7 @@
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
+use AZMailer\Core\AZMailerException;
 use AZMailer\Core\AZMailerView;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 use AZMailer\Helpers\AZMailerEditorHelper;
@@ -15,53 +16,48 @@ use AZMailer\Helpers\AZMailerEditorHelper;
  */
 class AZMailerViewEditor extends AZMailerView {
 	/**
-	 * @param null $tpl
-	 * @return mixed|void
+	 * @var object $params
 	 */
-	function display($tpl = null) {
-		/*nothing here*/
-	}
+	protected $params;
 
 	/**
-	 * @param null $tpl
-	 * @return object
+	 * @return mixed|void
+	 * @throws AZMailerException
 	 */
-	function edit($tpl = null) {
-		global $AZMAILER;
+	function edit() {
+		/** @var AZMailerModelEditor $model */
 		$model = $this->getModel();
-		$P = JRequest::getVar('params', null);
-		try {
-			$this->params = json_decode(base64_decode($P)); /*(title, parent_type, parent_id, return_uri[base64encoded])*/
-		} catch (Exception $e) {
-			$AZMAILER->getController()->setRedirect('index.php?option=' . $AZMAILER->getOption("com_name"));
-			return JError::raiseWarning(500, "EDITOR PARAMETERS ERROR");
-		}
+
+		$JI = JFactory::getApplication()->input;
+		$P = $JI->getString("params");
+
+		/*(title, parent_type, parent_id, return_uri[base64encoded])*/
+		$this->params = json_decode(base64_decode($P));
+
 		if (gettype($this->params) != "object") {
-			$AZMAILER->getController()->setRedirect('index.php?option=' . $AZMAILER->getOption("com_name"));
-			return JError::raiseWarning(500, "EDITOR PARAMETERS ERROR");
+			throw new AZMailerException("EDITOR PARAMETERS ERROR", 500);
 		}
-		//
+
 		$this->params->id = AZMailerEditorHelper::getBlobIdByParent($this->params->parent_type, $this->params->parent_id);
 		$this->item = $model->getSpecificItem($this->params->id);
 		$this->state = $this->get('State');
-		parent::display("edit");
-		//
+
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_EDITOR"), "editor");
 		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(
 			array("core.create", "editor.save", 'save', 'JTOOLBAR_SAVE', false), /*save&close*/
 			array("core.manage", "editor.cancel", 'cancel', 'JTOOLBAR_CANCEL', false), /*cancel*/
 		));
-		JRequest::setVar('hidemainmenu', 1); //blocks main-menu
+		$JI->set("hidemainmenu", 1);
+		return (parent::display("edit"));
 	}
+
 
 	function quickEdit($tpl = null) {
 		parent::display("quickedit");
 	}
 
 
-
 	function save($tpl = null, $closeEdit = true) {
-		global $AZMAILER;
 		$model = $this->getModel();
 		$data = JRequest::get('post');
 		$data["htmlblob"] = JRequest::getVar('htmlblob', '', 'post', 'string', JREQUEST_ALLOWHTML);
@@ -98,9 +94,9 @@ class AZMailerViewEditor extends AZMailerView {
 		$rootPath = JPATH_SITE . DS . 'images/';
 
 		$JURI = \JUri::getInstance();
-		$uriHost = ($JURI->isSSL()?"https://":"http://") . $JURI->getHost();
-		$uriSiteBase = str_replace("administrator/","", str_replace($uriHost, '', $JURI->base()));
-		$rootUriImg = 'http://' .  $JURI->getHost() . $uriSiteBase . "images/";
+		$uriHost = ($JURI->isSSL() ? "https://" : "http://") . $JURI->getHost();
+		$uriSiteBase = str_replace("administrator/", "", str_replace($uriHost, '', $JURI->base()));
+		$rootUriImg = 'http://' . $JURI->getHost() . $uriSiteBase . "images/";
 		//$rootURI = 'http://' . $_SERVER['SERVER_NAME'] . str_replace(JPATH_ROOT,JPATH_SITE,"") . '/images/';
 
 		$opts = array(

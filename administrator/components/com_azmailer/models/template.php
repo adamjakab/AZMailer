@@ -7,12 +7,9 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerModel;
-use AZMailer\Helpers\AZMailerTemplateHelper;
 use AZMailer\Helpers\AZMailerNewsletterHelper;
-use \JFactory;
-use \JTable;
-use \JText;
-use \JComponentHelper;
+use AZMailer\Helpers\AZMailerTemplateHelper;
+use JComponentHelper;
 
 /**
  * Template Model
@@ -27,52 +24,6 @@ class AZMailerModelTemplate extends AZMailerModel {
 		}
 		parent::__construct($config);
 	}
-
-	protected function getListQuery() {
-		$db = JFactory::getDBO();
-		$query = $db->getQuery(true);
-		//
-		// Select the required fields from the table.
-		$query->select(
-			$this->getState(
-				'list.select',
-				'b.htmlblob, a.*'
-			)
-		);
-		$query->from($db->quoteName('#__azmailer_template') . ' AS a');
-		$query->leftJoin('#__azmailer_blob AS b ON (b.parent_type="template" AND b.parent_id = a.id)');
-
-		//Search
-		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			$search = $db->Quote('%' . $db->escape($search, true) . '%');
-			$query->where('(a.tpl_name LIKE ' . $search . ' OR a.tpl_code LIKE ' . $search . ' OR a.tpl_title LIKE ' . $search . ')');
-		}
-
-		//ORDERING
-		$orderCol = $this->state->get('list.ordering', 'id');
-		$orderDirn = $this->state->get('list.direction', 'ASC');
-		$query->order($db->escape($orderCol . ' ' . $orderDirn));
-		//
-		return $query;
-	}
-
-	/**
-	 * Method to auto-populate the model state.
-	 * Note. Calling getState in this method will result in recursion.
-	 */
-	protected function populateState($ordering = "id", $direction = "ASC") {
-		//Filters
-		$this->setState('filter.search', $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', "STRING"));
-
-		//Component parameters
-		$params = JComponentHelper::getParams('com_azmailer');
-		$this->setState('params', $params);
-
-		//
-		parent::populateState($ordering, $direction);
-	}
-
 
 	public function getSpecificItem($id = null) {
 		$item = $this->_getSpecificItem($id);
@@ -130,9 +81,53 @@ class AZMailerModelTemplate extends AZMailerModel {
 		return (count($errors) == 0);
 	}
 
-
 	public function getTable($type = null, $prefix = null, $config = array()) {
 		return JTable::getInstance(($type ? $type : 'azmailer_template'), ($prefix ? $prefix : 'Table'), $config);
+	}
+
+	protected function getListQuery() {
+		$db = JFactory::getDBO();
+		$query = $db->getQuery(true);
+		//
+		// Select the required fields from the table.
+		$query->select(
+			$this->getState(
+				'list.select',
+				'b.htmlblob, a.*'
+			)
+		);
+		$query->from($db->quoteName('#__azmailer_template') . ' AS a');
+		$query->leftJoin('#__azmailer_blob AS b ON (b.parent_type="template" AND b.parent_id = a.id)');
+
+		//Search
+		$search = $this->getState('filter.search');
+		if (!empty($search)) {
+			$search = $db->Quote('%' . $db->escape($search, true) . '%');
+			$query->where('(a.tpl_name LIKE ' . $search . ' OR a.tpl_code LIKE ' . $search . ' OR a.tpl_title LIKE ' . $search . ')');
+		}
+
+		//ORDERING
+		$orderCol = $this->state->get('list.ordering', 'id');
+		$orderDirn = $this->state->get('list.direction', 'ASC');
+		$query->order($db->escape($orderCol . ' ' . $orderDirn));
+		//
+		return $query;
+	}
+
+	/**
+	 * Method to auto-populate the model state.
+	 * Note. Calling getState in this method will result in recursion.
+	 */
+	protected function populateState($ordering = "id", $direction = "ASC") {
+		//Filters
+		$this->setState('filter.search', $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', "STRING"));
+
+		//Component parameters
+		$params = JComponentHelper::getParams('com_azmailer');
+		$this->setState('params', $params);
+
+		//
+		parent::populateState($ordering, $direction);
 	}
 }
 

@@ -8,8 +8,6 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use AZMailer\Helpers\AZMailerCategoryHelper;
-use AZMailer\Helpers\AZMailerLocationHelper;
 
 /**
  * Subscriber Helper Class
@@ -18,16 +16,6 @@ use AZMailer\Helpers\AZMailerLocationHelper;
  */
 class AZMailerSubscriberHelper {
 
-
-	public static function getNewsletterSubscriberByMail($email) {
-		$db = \JFactory::getDbo();
-		$query = $db->getQuery(true);
-		$query->select('a.*');
-		$query->from('#__azmailer_subscriber AS a');
-		$query->where('a.nls_email = ' . $db->quote($db->escape(strtolower(trim($email)), true), false));
-		$db->setQuery($query);
-		return($db->loadObject());
-	}
 
 	/**
 	 * very special case when for attachment download only email is supplied - should only be admin
@@ -41,10 +29,10 @@ class AZMailerSubscriberHelper {
 		$query->from('#__users AS a');
 		$query->where('a.email = ' . $db->quote($db->escape(strtolower(trim($email)), true), false));
 		$db->setQuery($query);
-		return(($db->loadResult()==1));
+		return (($db->loadResult() == 1));
 	}
 
-	public static function checkIfNLSMailIsAvailable($email, $id=0) {
+	public static function checkIfNLSMailIsAvailable($email, $id = 0) {
 		$NLS = self::getNewsletterSubscriberByMail($email);
 		if ($NLS) {
 			if ($NLS->id == $id) {
@@ -58,134 +46,110 @@ class AZMailerSubscriberHelper {
 		return ($answer);
 	}
 
-	/**
-	 * TODO: names like "d'Annunzio" will be convertted to "d'annunzio" which is not ok - split first on "'" and check
-	 * @param array|\stdClass $data
-	 * @return bool|array|\stdClass
-	 */
-	public static function checkAndBeautifyNLSData($data) {
-		if(is_array($data)) {
-			if (self::checkIfEmailSyntaxIsValid(trim($data["nls_email"]))) {
-				$data["nls_email"] = strtolower(trim($data["nls_email"]));
-				$data["nls_firstname"] = ucwords(strtolower(trim($data["nls_firstname"])));
-				$data["nls_lastname"] = ucwords(strtolower(trim($data["nls_lastname"])));
-			} else {
-				$data = false;
-			}
-		} else if(is_object($data)) {
-			if (self::checkIfEmailSyntaxIsValid(trim($data->nls_email))) {
-				$data->nls_email = strtolower(trim($data->nls_email));
-				$data->nls_firstname = ucwords(strtolower(trim($data->nls_firstname)));
-				$data->nls_lastname = ucwords(strtolower(trim($data->nls_lastname)));
-			} else {
-				$data = false;
-			}
-		}
-		return($data);
-	}
-
-	public static function checkIfEmailSyntaxIsValid($mail='') {
-		$answer = true;
-		$mailregex = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$';
-		if (!preg_match("/$mailregex/",strtolower($mail))) {
-			$answer = false;
-		}
-		return($answer);
+	public static function getNewsletterSubscriberByMail($email) {
+		$db = \JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('a.*');
+		$query->from('#__azmailer_subscriber AS a');
+		$query->where('a.nls_email = ' . $db->quote($db->escape(strtolower(trim($email)), true), false));
+		$db->setQuery($query);
+		return ($db->loadObject());
 	}
 
 	public static function countSubscribersByCategoryItem($categoryItemId) {
 		$answer = false;
 		$categoryId = AZMailerCategoryHelper::getCategoryIDForItem($categoryItemId);
-		if($categoryId) {
+		if ($categoryId) {
 			$db = \JFactory::getDbo();
 			$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber AS a'
-				.' WHERE a.nls_cat_'.$categoryId.' REGEXP "\"'.$categoryItemId. '\""';
+				. ' WHERE a.nls_cat_' . $categoryId . ' REGEXP "\"' . $categoryItemId . '\""';
 			$db->setQuery($sql);
 			$answer = $db->loadResult();
 		}
-		return($answer);
+		return ($answer);
 	}
 
 	public static function countSubscribersInCountry($country_id) {
 		$db = \JFactory::getDbo();
-		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_country_id = '.$country_id;
+		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_country_id = ' . $country_id;
 		$db->setQuery($sql);
-		return($db->loadResult());
+		return ($db->loadResult());
 	}
 
 	public static function countSubscribersInRegion($region_id) {
 		$db = \JFactory::getDbo();
-		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_region_id = '.$region_id;
+		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_region_id = ' . $region_id;
 		$db->setQuery($sql);
-		return($db->loadResult());
+		return ($db->loadResult());
 	}
 
 	public static function countSubscribersInProvince($province_id) {
 		$db = \JFactory::getDbo();
-		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_province_id = '.$province_id;
+		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_province_id = ' . $province_id;
 		$db->setQuery($sql);
-		return($db->loadResult());
-	}
-
-
-	//phpExcel import helper
-	/**
-	 * The column names in the uploaded xls file
-	 * @return array
-	 */
-	public static function getImportColumns() {
-		return(array(
-			"E-mail"=>null,
-			"Firstname"=>null,
-			"Lastname"=>null,
-			"Country"=>null,
-			"Region"=>null,
-			"Province"=>null,
-			"Category 1"=>null,
-			"Category 2"=>null,
-			"Category 3"=>null,
-			"Category 4"=>null,
-			"Category 5"=>null,
-			"Blacklist"=>null
-		));
+		return ($db->loadResult());
 	}
 
 	public static function getImportColumnsWithIndexes($sheetColumns) {
 		$importColumns = self::getImportColumns();
-		foreach($sheetColumns as $i => $sheetColumn) {
-			foreach($importColumns as $importColumnKey => $importColumnVal) {
-				if(strtolower($sheetColumn) == strtolower($importColumnKey)) {
+		foreach ($sheetColumns as $i => $sheetColumn) {
+			foreach ($importColumns as $importColumnKey => $importColumnVal) {
+				if (strtolower($sheetColumn) == strtolower($importColumnKey)) {
 					$importColumns[$importColumnKey] = $i;
 					break;
 				}
 			}
 		}
-		return($importColumns);
+		return ($importColumns);
 	}
 
-	public static function getImportColumnIndexByName($importColumns, $columnName) {
-		return((array_key_exists($columnName, $importColumns)?$importColumns[$columnName]:false));
+	/**
+	 * The column names in the uploaded xls file
+	 * @return array
+	 */
+	public static function getImportColumns() {
+		return (array(
+			"E-mail" => null,
+			"Firstname" => null,
+			"Lastname" => null,
+			"Country" => null,
+			"Region" => null,
+			"Province" => null,
+			"Category 1" => null,
+			"Category 2" => null,
+			"Category 3" => null,
+			"Category 4" => null,
+			"Category 5" => null,
+			"Blacklist" => null
+		));
 	}
+
+
+	//phpExcel import helper
 
 	public static function getImportCellValue($objWorksheet, $importColumns, $rowIndex, $columnName) {
 		$answer = false;
 		$cellIndex = self::getImportColumnIndexByName($importColumns, $columnName);
-		if ($cellIndex!==false) {
+		if ($cellIndex !== false) {
 			$cell = $objWorksheet->getCellByColumnAndRow($cellIndex, $rowIndex);
 			$CV = trim($cell->getValue());
-			if($columnName == "E-mail") {
-				$CV_STRICT = preg_replace('#[^(\x20-\x7F)]*#','', @iconv('Windows-1252', 'ASCII//TRANSLIT', $CV));
+			if ($columnName == "E-mail") {
+				$CV_STRICT = preg_replace('#[^(\x20-\x7F)]*#', '', @iconv('Windows-1252', 'ASCII//TRANSLIT', $CV));
 				$answer = $CV_STRICT;
 			} else if ($columnName == "Blacklist") {
 				//will return 0/1 if set or false if empty
-				$CV_STRICT = preg_replace('#[^(\x20-\x7F)]*#','', @iconv('Windows-1252', 'ASCII//TRANSLIT', $CV));
-				$answer = (preg_match('/^[y1]$/i', $CV_STRICT)?"Y":$answer);
-				$answer = (preg_match('/^[n0]$/i', $CV_STRICT)?"N":$answer);
+				$CV_STRICT = preg_replace('#[^(\x20-\x7F)]*#', '', @iconv('Windows-1252', 'ASCII//TRANSLIT', $CV));
+				$answer = (preg_match('/^[y1]$/i', $CV_STRICT) ? "Y" : $answer);
+				$answer = (preg_match('/^[n0]$/i', $CV_STRICT) ? "N" : $answer);
 			} else {
 				$answer = $CV;
 			}
 		}
-		return($answer);
+		return ($answer);
+	}
+
+	public static function getImportColumnIndexByName($importColumns, $columnName) {
+		return ((array_key_exists($columnName, $importColumns) ? $importColumns[$columnName] : false));
 	}
 
 	/**
@@ -197,21 +161,23 @@ class AZMailerSubscriberHelper {
 	 * @return array
 	 *
 	 * defaultValues: Array(
-				[nls_overwrite_existing] => 3
-				[nls_blacklisted] => N
-				[nls_country_id] => 1
-				[nls_region_id] => 0
-				[nls_province_id] => 0
-				[nls_cat_1] => Array([0] => 1)
-				[nls_cat_2] => Array()
-				[nls_cat_3] => Array()
-				[nls_cat_4] => Array()
-				[nls_cat_5] => Array()
-			)
+	 * [nls_overwrite_existing] => 3
+	 * [nls_blacklisted] => N
+	 * [nls_country_id] => 1
+	 * [nls_region_id] => 0
+	 * [nls_province_id] => 0
+	 * [nls_cat_1] => Array([0] => 1)
+	 * [nls_cat_2] => Array()
+	 * [nls_cat_3] => Array()
+	 * [nls_cat_4] => Array()
+	 * [nls_cat_5] => Array()
+	 * )
 	 */
 	public static function checkAndCleanUpXlsImportedData($imports, $defaultValues) {
-		if(!is_array($imports)||!count($imports)) {return $imports;};
-		foreach($imports as $import) {
+		if (!is_array($imports) || !count($imports)) {
+			return $imports;
+		};
+		foreach ($imports as $import) {
 			$import->valid = false;//we will set this to the real res value at the end === $ok
 			$import->validationMessage = "Unchecked";
 			/** @var \stdClass $originalData */
@@ -219,7 +185,7 @@ class AZMailerSubscriberHelper {
 			$cleandata = new \stdClass();
 
 			//CHECK MAIL
-			if(self::checkIfEmailSyntaxIsValid($originalData->nls_email)) {
+			if (self::checkIfEmailSyntaxIsValid($originalData->nls_email)) {
 				$cleandata->nls_email = $originalData->nls_email;
 			} else {
 				$import->validationMessage = "Invalid E-mail";
@@ -229,11 +195,11 @@ class AZMailerSubscriberHelper {
 			//CHECK FIRSTNAME & LASTNAME (we need at least one of them to put it into firstname)
 			$firstname = $originalData->nls_firstname;
 			$lastname = $originalData->nls_lastname;
-			if(empty($firstname)&&empty($lastname)) {
+			if (empty($firstname) && empty($lastname)) {
 				$import->validationMessage = "No name supplied";
 				continue;
 			}
-			if(empty($firstname)) {//if only last name supplied we move it to firstname
+			if (empty($firstname)) {//if only last name supplied we move it to firstname
 				$firstname = $lastname;
 				$lastname = "";
 			}
@@ -241,9 +207,9 @@ class AZMailerSubscriberHelper {
 			$cleandata->nls_lastname = $lastname;
 
 			//CHECK COUNTRY
-			if(!empty($originalData->nls_country_name)) {
+			if (!empty($originalData->nls_country_name)) {
 				$res = AZMailerLocationHelper::getCountryIdByName($originalData->nls_country_name, true);
-				if(!$res) {
+				if (!$res) {
 					$import->validationMessage = "Unable to register subscriber in country";
 					continue;
 				}
@@ -253,9 +219,9 @@ class AZMailerSubscriberHelper {
 			}
 
 			//CHECK REGION
-			if(!empty($originalData->nls_region_name)) {
+			if (!empty($originalData->nls_region_name)) {
 				$res = AZMailerLocationHelper::getRegionIdByName($originalData->nls_region_name, $cleandata->nls_country_id, true);
-				if(!$res) {
+				if (!$res) {
 					$import->validationMessage = "Unable to register subscriber in region";
 					continue;
 				}
@@ -265,9 +231,9 @@ class AZMailerSubscriberHelper {
 			}
 
 			//CHECK PROVINCE
-			if(!empty($originalData->nls_province_name)) {
+			if (!empty($originalData->nls_province_name)) {
 				$res = AZMailerLocationHelper::getProvinceIdByName($originalData->nls_province_name, $cleandata->nls_region_id, true);
-				if(!$res) {
+				if (!$res) {
 					$import->validationMessage = "Unable to register subscriber in province";
 					continue;
 				}
@@ -278,31 +244,41 @@ class AZMailerSubscriberHelper {
 
 			//CHECK CATEGORY 1
 			$res = AZMailerCategoryHelper::getCategoryIdArrayByNames(1, $originalData->nls_cat_1_lst, true);
-			if(!count($res)) {$res = $defaultValues["nls_cat_1"];}
+			if (!count($res)) {
+				$res = $defaultValues["nls_cat_1"];
+			}
 			$cleandata->nls_cat_1 = $res;
 
 			//CHECK CATEGORY 2
 			$res = AZMailerCategoryHelper::getCategoryIdArrayByNames(2, $originalData->nls_cat_2_lst, true);
-			if(!count($res)) {$res = $defaultValues["nls_cat_2"];}
+			if (!count($res)) {
+				$res = $defaultValues["nls_cat_2"];
+			}
 			$cleandata->nls_cat_2 = $res;
 
 			//CHECK CATEGORY 3
 			$res = AZMailerCategoryHelper::getCategoryIdArrayByNames(3, $originalData->nls_cat_3_lst, true);
-			if(!count($res)) {$res = $defaultValues["nls_cat_3"];}
+			if (!count($res)) {
+				$res = $defaultValues["nls_cat_3"];
+			}
 			$cleandata->nls_cat_3 = $res;
 
 			//CHECK CATEGORY 4
 			$res = AZMailerCategoryHelper::getCategoryIdArrayByNames(4, $originalData->nls_cat_4_lst, true);
-			if(!count($res)) {$res = $defaultValues["nls_cat_4"];}
+			if (!count($res)) {
+				$res = $defaultValues["nls_cat_4"];
+			}
 			$cleandata->nls_cat_4 = $res;
 
 			//CHECK CATEGORY 5
 			$res = AZMailerCategoryHelper::getCategoryIdArrayByNames(5, $originalData->nls_cat_5_lst, true);
-			if(!count($res)) {$res = $defaultValues["nls_cat_5"];}
+			if (!count($res)) {
+				$res = $defaultValues["nls_cat_5"];
+			}
 			$cleandata->nls_cat_5 = $res;
 
 			//BLACKLIST
-			$cleandata->nls_blacklisted = ($originalData->nls_blacklisted===false?$defaultValues["nls_blacklisted"]:$originalData->nls_blacklisted);
+			$cleandata->nls_blacklisted = ($originalData->nls_blacklisted === false ? $defaultValues["nls_blacklisted"] : $originalData->nls_blacklisted);
 
 			//if we got here then import is valid
 			$import->valid = true;
@@ -312,6 +288,41 @@ class AZMailerSubscriberHelper {
 			//$import->data = $cleandata;
 		}
 		return $imports;
+	}
+
+	public static function checkIfEmailSyntaxIsValid($mail = '') {
+		$answer = true;
+		$mailregex = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$';
+		if (!preg_match("/$mailregex/", strtolower($mail))) {
+			$answer = false;
+		}
+		return ($answer);
+	}
+
+	/**
+	 * TODO: names like "d'Annunzio" will be convertted to "d'annunzio" which is not ok - split first on "'" and check
+	 * @param array|\stdClass $data
+	 * @return bool|array|\stdClass
+	 */
+	public static function checkAndBeautifyNLSData($data) {
+		if (is_array($data)) {
+			if (self::checkIfEmailSyntaxIsValid(trim($data["nls_email"]))) {
+				$data["nls_email"] = strtolower(trim($data["nls_email"]));
+				$data["nls_firstname"] = ucwords(strtolower(trim($data["nls_firstname"])));
+				$data["nls_lastname"] = ucwords(strtolower(trim($data["nls_lastname"])));
+			} else {
+				$data = false;
+			}
+		} else if (is_object($data)) {
+			if (self::checkIfEmailSyntaxIsValid(trim($data->nls_email))) {
+				$data->nls_email = strtolower(trim($data->nls_email));
+				$data->nls_firstname = ucwords(strtolower(trim($data->nls_firstname)));
+				$data->nls_lastname = ucwords(strtolower(trim($data->nls_lastname)));
+			} else {
+				$data = false;
+			}
+		}
+		return ($data);
 	}
 
 }

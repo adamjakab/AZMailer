@@ -19,5 +19,5 @@ class AZMailerControllerTemplate extends AZMailerController {
 	 */
 	public function __construct($config = array()) {
 		parent::__construct($config);
-    }
+	}
 }

@@ -7,10 +7,8 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerView;
-use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 use AZMailer\Entities\AZMailerQueueItem;
-use \JError;
-use \JText;
+use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 
 /**
  * Class AZMailerViewQueuemanager
@@ -22,11 +20,10 @@ class AZMailerViewQueuemanager extends AZMailerView {
 	 * @throws Exception
 	 */
 	public function display($tpl = null) {
-		global $AZMAILER;
 
 		$this->items = $this->get('Items');
 
-		foreach($this->items as &$item) {
+		foreach ($this->items as &$item) {
 			$item = new AZMailerQueueItem($item);
 		}
 

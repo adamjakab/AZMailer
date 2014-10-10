@@ -10,5 +10,5 @@
 //-- No direct access
 defined('_JEXEC') or die('Restricted access');
 ?>
-<h1><?php echo $this->greeting; ?></h1>
-<p><?php echo $this->message; ?></p>
+<h1>Error!</h1>
+<p>The task you have requested does not exist!</p>

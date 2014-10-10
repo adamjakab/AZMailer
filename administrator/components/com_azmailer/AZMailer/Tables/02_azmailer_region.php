@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted access');
  * @license GNU/GPL
  **/
 require_once 'AZMailerTableInfo.php';
+
 class tbl_azmailer_region extends AZMailerTableInfo {
 	public function __construct() {
 		parent::__construct();
@@ -31,7 +32,7 @@ class tbl_azmailer_region extends AZMailerTableInfo {
 
 	private function getData() {
 		$answer = array();
-		return($answer);
+		return ($answer);
 	}
 
 	/*

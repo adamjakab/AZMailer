@@ -8,7 +8,7 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use \JFactory;
+use JFactory;
 
 /**
  * Editor Helper Class

@@ -19,8 +19,8 @@ class AZMailerViewTemplate extends AZMailerView {
 	 * @return mixed|void
 	 * @throws Exception
 	 */
-	function display($tpl=null) {
-		global $AZMAILER;
+	function display($tpl = null) {
+
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state = $this->get('State');
@@ -37,7 +37,6 @@ class AZMailerViewTemplate extends AZMailerView {
 	}
 
 	function edit() {
-		global $AZMAILER;
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;
@@ -53,11 +52,14 @@ class AZMailerViewTemplate extends AZMailerView {
 			array("core.create", "template.duplicate", 'save-copy', 'JTOOLBAR_SAVE_AS_COPY', false), /*save_as_copy*/
 			array("core.manage", "template.display", 'cancel', 'JTOOLBAR_CANCEL', false), /*cancel*/
 		));
-		$JI->set("hidemainmenu",1);//blocks main-menu
+		$JI->set("hidemainmenu", 1);//blocks main-menu
 	}
 
+	function apply() {
+		$this->save(true);
+	}
 
-	function save($isApply=false) {
+	function save($isApply = false) {
 		global $AZMAILER;
 		\JRequest::checkToken() or jexit('Invalid Token');
 		$model = $this->getModel();
@@ -70,10 +72,6 @@ class AZMailerViewTemplate extends AZMailerView {
 			$newid = $model->getState($model->getName() . '.id');
 			$AZMAILER->getController()->setRedirect(\JRoute::_('index.php?option=' . $AZMAILER->getOption("com_name") . '&task=template.edit&cid=' . $newid, false));
 		}
-	}
-
-	function apply() {
-		$this->save(true);
 	}
 
 	function duplicate() {

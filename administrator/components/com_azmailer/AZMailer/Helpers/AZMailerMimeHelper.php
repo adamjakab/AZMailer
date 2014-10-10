@@ -1,6 +1,8 @@
 <?php
 namespace AZMailer\Helpers;
+
 use AZMailer\Core\AZMailerPostman;
+
 /**
  * @package    AZMailer
  * @subpackage Helpers
@@ -50,60 +52,6 @@ class AZMailerMimeHelper {
 
 	static public $qpkeys = array("\x00", "\x01", "\x02", "\x03", "\x04", "\x05", "\x06", "\x07", "\x08", "\x09", "\x0A", "\x0B", "\x0C", "\x0D", "\x0E", "\x0F", "\x10", "\x11", "\x12", "\x13", "\x14", "\x15", "\x16", "\x17", "\x18", "\x19", "\x1A", "\x1B", "\x1C", "\x1D", "\x1E", "\x1F", "\x7F", "\x80", "\x81", "\x82", "\x83", "\x84", "\x85", "\x86", "\x87", "\x88", "\x89", "\x8A", "\x8B", "\x8C", "\x8D", "\x8E", "\x8F", "\x90", "\x91", "\x92", "\x93", "\x94", "\x95", "\x96", "\x97", "\x98", "\x99", "\x9A", "\x9B", "\x9C", "\x9D", "\x9E", "\x9F", "\xA0", "\xA1", "\xA2", "\xA3", "\xA4", "\xA5", "\xA6", "\xA7", "\xA8", "\xA9", "\xAA", "\xAB", "\xAC", "\xAD", "\xAE", "\xAF", "\xB0", "\xB1", "\xB2", "\xB3", "\xB4", "\xB5", "\xB6", "\xB7", "\xB8", "\xB9", "\xBA", "\xBB", "\xBC", "\xBD", "\xBE", "\xBF", "\xC0", "\xC1", "\xC2", "\xC3", "\xC4", "\xC5", "\xC6", "\xC7", "\xC8", "\xC9", "\xCA", "\xCB", "\xCC", "\xCD", "\xCE", "\xCF", "\xD0", "\xD1", "\xD2", "\xD3", "\xD4", "\xD5", "\xD6", "\xD7", "\xD8", "\xD9", "\xDA", "\xDB", "\xDC", "\xDD", "\xDE", "\xDF", "\xE0", "\xE1", "\xE2", "\xE3", "\xE4", "\xE5", "\xE6", "\xE7", "\xE8", "\xE9", "\xEA", "\xEB", "\xEC", "\xED", "\xEE", "\xEF", "\xF0", "\xF1", "\xF2", "\xF3", "\xF4", "\xF5", "\xF6", "\xF7", "\xF8", "\xF9", "\xFA", "\xFB", "\xFC", "\xFD", "\xFE", "\xFF");
 	static public $qpvrep = array("=00", "=01", "=02", "=03", "=04", "=05", "=06", "=07", "=08", "=09", "=0A", "=0B", "=0C", "=0D", "=0E", "=0F", "=10", "=11", "=12", "=13", "=14", "=15", "=16", "=17", "=18", "=19", "=1A", "=1B", "=1C", "=1D", "=1E", "=1F", "=7F", "=80", "=81", "=82", "=83", "=84", "=85", "=86", "=87", "=88", "=89", "=8A", "=8B", "=8C", "=8D", "=8E", "=8F", "=90", "=91", "=92", "=93", "=94", "=95", "=96", "=97", "=98", "=99", "=9A", "=9B", "=9C", "=9D", "=9E", "=9F", "=A0", "=A1", "=A2", "=A3", "=A4", "=A5", "=A6", "=A7", "=A8", "=A9", "=AA", "=AB", "=AC", "=AD", "=AE", "=AF", "=B0", "=B1", "=B2", "=B3", "=B4", "=B5", "=B6", "=B7", "=B8", "=B9", "=BA", "=BB", "=BC", "=BD", "=BE", "=BF", "=C0", "=C1", "=C2", "=C3", "=C4", "=C5", "=C6", "=C7", "=C8", "=C9", "=CA", "=CB", "=CC", "=CD", "=CE", "=CF", "=D0", "=D1", "=D2", "=D3", "=D4", "=D5", "=D6", "=D7", "=D8", "=D9", "=DA", "=DB", "=DC", "=DD", "=DE", "=DF", "=E0", "=E1", "=E2", "=E3", "=E4", "=E5", "=E6", "=E7", "=E8", "=E9", "=EA", "=EB", "=EC", "=ED", "=EE", "=EF", "=F0", "=F1", "=F2", "=F3", "=F4", "=F5", "=F6", "=F7", "=F8", "=F9", "=FA", "=FB", "=FC", "=FD", "=FE", "=FF");
-
-	static public function unique($add = null) {
-		return md5(microtime(true) . $add);
-	}
-
-	static public function is_printable($str = null) {
-		if (!is_string($str)) {
-			AZMailerPostman::logThis("AZMailerMime::is_printable: invalid argument type");
-			return (false);
-		}
-		$contain = implode('', self::$qpkeys);
-		return (strcspn($str, $contain) == strlen($str));
-	}
-
-	static public function qp_encode($str = null, $len = null, $end = null) {
-		if (!is_string($str)) {
-			AZMailerPostman::logThis("AZMailerMime::qp_encode: invalid argument type");
-			return (false);
-		}
-		if ($len == null) {
-			$len = self::MLEN;
-		} else if (!(is_int($len) && $len > 1)) {
-			AZMailerPostman::logThis("AZMailerMime::qp_encode: invalid line length value");
-			return (false);
-		}
-		if ($end == null) {
-			$end = self::LE;
-		} else if (!is_string($end)) {
-			AZMailerPostman::logThis("AZMailerMime::qp_encode: invalid line end value");
-			return (false);
-		}
-		if ($str == '') {
-			return $str;
-		}
-
-		$out = array();
-		foreach (explode($end, $str) as $line) {
-			if ($line == '')
-				$out[] = '';
-			else {
-				$line = str_replace('=', '=3D', $line);
-				$line = str_replace(self::$qpkeys, self::$qpvrep, $line);
-				preg_match_all('/.{1,' . $len . '}([^=]{0,2})?/', $line, $match);
-				$mcnt = count($match[0]);
-				for ($i = 0; $i < $mcnt; $i++) {
-					$line = (substr($match[0][$i], -1) == ' ') ? substr($match[0][$i], 0, -1) . '=20' : $match[0][$i];
-					if (($i + 1) < $mcnt)
-						$line .= '=';
-					$out[] = $line;
-				}
-			}
-		}
-		return implode($end, $out);
-	}
 
 	static public function encode_header($str = null, $charset = null, $encoding = null, $len = null, $end = null) {
 		if (!is_string($str)) {
@@ -191,6 +139,56 @@ class AZMailerMimeHelper {
 		}
 	}
 
+	static public function is_printable($str = null) {
+		if (!is_string($str)) {
+			AZMailerPostman::logThis("AZMailerMime::is_printable: invalid argument type");
+			return (false);
+		}
+		$contain = implode('', self::$qpkeys);
+		return (strcspn($str, $contain) == strlen($str));
+	}
+
+	static public function qp_encode($str = null, $len = null, $end = null) {
+		if (!is_string($str)) {
+			AZMailerPostman::logThis("AZMailerMime::qp_encode: invalid argument type");
+			return (false);
+		}
+		if ($len == null) {
+			$len = self::MLEN;
+		} else if (!(is_int($len) && $len > 1)) {
+			AZMailerPostman::logThis("AZMailerMime::qp_encode: invalid line length value");
+			return (false);
+		}
+		if ($end == null) {
+			$end = self::LE;
+		} else if (!is_string($end)) {
+			AZMailerPostman::logThis("AZMailerMime::qp_encode: invalid line end value");
+			return (false);
+		}
+		if ($str == '') {
+			return $str;
+		}
+
+		$out = array();
+		foreach (explode($end, $str) as $line) {
+			if ($line == '')
+				$out[] = '';
+			else {
+				$line = str_replace('=', '=3D', $line);
+				$line = str_replace(self::$qpkeys, self::$qpvrep, $line);
+				preg_match_all('/.{1,' . $len . '}([^=]{0,2})?/', $line, $match);
+				$mcnt = count($match[0]);
+				for ($i = 0; $i < $mcnt; $i++) {
+					$line = (substr($match[0][$i], -1) == ' ') ? substr($match[0][$i], 0, -1) . '=20' : $match[0][$i];
+					if (($i + 1) < $mcnt)
+						$line .= '=';
+					$out[] = $line;
+				}
+			}
+		}
+		return implode($end, $out);
+	}
+
 	static public function decode_header($str = null) {
 		if (!is_string($str)) {
 			AZMailerPostman::logThis("AZMailerMime::decode_header: invalid argument type");
@@ -228,33 +226,6 @@ class AZMailerMimeHelper {
 			}
 		}
 		return $arr;
-	}
-
-	static public function decode_content($str = null, $encoding = null) {
-		if (!is_string($str)) {
-			AZMailerPostman::logThis("AZMailerMime::decode_content: invalid content type");
-			return (false);
-		}
-		if ($encoding == null) {
-			$encoding = '7bit';
-		} else if (!is_string($encoding)) {
-			AZMailerPostman::logThis("AZMailerMime::decode_content: invalid encoding type");
-			return (false);
-		} else {
-			$encoding = strtolower($encoding);
-			if (!isset(self::$mencarr[$encoding])) {
-				AZMailerPostman::logThis("AZMailerMime::decode_content: invalid encoding value");
-				return (false);
-			}
-		}
-		if ($encoding == 'base64') {
-			$str = trim(AZMailerPostmanHelper::str_clear($str));
-			return base64_decode($str);
-		} else if ($encoding == 'quoted-printable') {
-			return quoted_printable_decode($str);
-		} else {
-			return $str;
-		}
 	}
 
 	static public function message($content = null, $type = null, $name = null, $charset = null, $encoding = null, $disposition = null, $id = null, $len = null, $end = null) {
@@ -349,6 +320,19 @@ class AZMailerMimeHelper {
 		return array('header' => $header, 'content' => $content);
 	}
 
+	static public function fix_eol($str = null) {
+		if (!(is_string($str) && $str != '')) {
+			AZMailerPostman::logThis("AZMailerMime::fix_eol: invalid content value");
+			return (false);
+		}
+		$str = str_replace("\r\n", "\n", $str);
+		$str = str_replace("\r", "\n", $str);
+		if (self::LE != "\n") {
+			$str = str_replace("\n", self::LE, $str);
+		}
+		return $str;
+	}
+
 	static public function compose($text = null, $html = null, $attach = null, $uniq = null, $end = null) {
 		if ($text == null && $html == null) {
 			AZMailerPostman::logThis("AZMailerMime::message: message is not set");
@@ -405,7 +389,7 @@ class AZMailerMimeHelper {
 			$uniq = ($uniq == null) ? 0 : intval($uniq);
 			$boundary1 = '=_1.' . self::unique($uniq++);
 			$boundary2 = '=_2.' . self::unique($uniq++);
-			$boundary3 = '=_3.' . self::unique($uniq++);
+			$boundary3 = '=_3.' . self::unique($uniq);
 			$disp['inline'] = $disp['attachment'] = false;
 			if ($attach != null) {
 				foreach ($attach as $darr) {
@@ -556,6 +540,7 @@ class AZMailerMimeHelper {
 					$val1 = ltrim($exp1[1]);
 					if (strlen($name) > 1 && AZMailerPostmanHelper::is_alpha($name, true, '-') && $val1 != '') {
 						$name = ucfirst($name);
+						$exp2 = array();
 						$hadd = array();
 						if (substr(strtolower($name), 0, 8) == 'content-') {
 							$exp2 = explode('; ', $val1);
@@ -571,7 +556,7 @@ class AZMailerMimeHelper {
 								}
 							}
 						}
-						$val2 = (count($hadd) > 0) ? trim($exp2[0]) : $val1;
+						$val2 = (count($hadd)&&count($exp2)) ? trim($exp2[0]) : $val1;
 						$arr[] = array('name' => $name, 'value' => $val2, 'content' => $hadd);
 					}
 				}
@@ -585,24 +570,16 @@ class AZMailerMimeHelper {
 		}
 	}
 
-	static public function split_message($str = null) {
-		if (!(is_string($str) && $str != '')) {
-			AZMailerPostman::logThis("AZMailerMime::split_message: invalid message value");
-			return (false);
-		}
-		$ret = false;
-		if (strpos($str, "\r\n\r\n")) {
-			$ret = explode("\r\n\r\n", $str, 2);
-		} else if (strpos($str, "\n\n")) {
-			$ret = explode("\n\n", $str, 2);
-		}
-		if ($ret) {
-			return array('header' => trim($ret[0]), 'content' => $ret[1]);
-		} else {
-			return false;
-		}
+	static public function unique($add = null) {
+		return md5(microtime(true) . $add);
 	}
 
+	/**
+	 * @param string $str
+	 * @param array  $headers
+	 * @param array  $body
+	 * @return bool
+	 */
 	static public function split_mail($str = null, &$headers, &$body) {
 		$headers = $body = false;
 		if (!$part = self::split_message($str))
@@ -629,6 +606,25 @@ class AZMailerMimeHelper {
 			$body = self::_parts($part['content'], $boundary, strtolower(substr($type, strlen('multipart/'))));
 		if (count($body) == 0)
 			$body[] = self::_content($str);
+		return true;
+	}
+
+	static public function split_message($str = null) {
+		if (!(is_string($str) && $str != '')) {
+			AZMailerPostman::logThis("AZMailerMime::split_message: invalid message value");
+			return (false);
+		}
+		$ret = false;
+		if (strpos($str, "\r\n\r\n")) {
+			$ret = explode("\r\n\r\n", $str, 2);
+		} else if (strpos($str, "\n\n")) {
+			$ret = explode("\n\n", $str, 2);
+		}
+		if ($ret) {
+			return array('header' => trim($ret[0]), 'content' => $ret[1]);
+		} else {
+			return false;
+		}
 	}
 
 	static private function _parts($str = null, $boundary = null, $multipart = null) {
@@ -718,17 +714,31 @@ class AZMailerMimeHelper {
 		return $body;
 	}
 
-	static public function fix_eol($str = null) {
-		if (!(is_string($str) && $str != '')) {
-			AZMailerPostman::logThis("AZMailerMime::fix_eol: invalid content value");
+	static public function decode_content($str = null, $encoding = null) {
+		if (!is_string($str)) {
+			AZMailerPostman::logThis("AZMailerMime::decode_content: invalid content type");
 			return (false);
 		}
-		$str = str_replace("\r\n", "\n", $str);
-		$str = str_replace("\r", "\n", $str);
-		if (self::LE != "\n") {
-			$str = str_replace("\n", self::LE, $str);
+		if ($encoding == null) {
+			$encoding = '7bit';
+		} else if (!is_string($encoding)) {
+			AZMailerPostman::logThis("AZMailerMime::decode_content: invalid encoding type");
+			return (false);
+		} else {
+			$encoding = strtolower($encoding);
+			if (!isset(self::$mencarr[$encoding])) {
+				AZMailerPostman::logThis("AZMailerMime::decode_content: invalid encoding value");
+				return (false);
+			}
 		}
-		return $str;
+		if ($encoding == 'base64') {
+			$str = trim(AZMailerPostmanHelper::str_clear($str));
+			return base64_decode($str);
+		} else if ($encoding == 'quoted-printable') {
+			return quoted_printable_decode($str);
+		} else {
+			return $str;
+		}
 	}
 
 }

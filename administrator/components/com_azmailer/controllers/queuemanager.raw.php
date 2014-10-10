@@ -7,8 +7,8 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerController;
-use AZMailer\Helpers\AZMailerQueuemanagerHelper;
 use AZMailer\Entities\AZMailerQueueItem;
+use AZMailer\Helpers\AZMailerQueuemanagerHelper;
 
 /**
  * Controller for QueueManager - RAW REQUESTS

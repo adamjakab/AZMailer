@@ -10,14 +10,34 @@ namespace AZMailer\Core;
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.modellist');
 
-use AZMailer\Core\AZMailerPagination;
-
 class AZMailerModel extends \JModelList {
 	/*
 	protected $errors = array();
 	public function getErrors() {
 	return($this->errors);
 	}*/
+
+	/**
+	 * Override of Method to get a AZMailerPagination(JPagination) object for the data set. - REMOVING ALL option
+	 *
+	 * @return  AZMailerPagination  A JPagination object for the data set.
+	 *
+	 * @since   11.1
+	 */
+	public function getPagination() {
+		// Get a storage key.
+		$store = $this->getStoreId('getPagination');
+		// Try to load the data from internal storage.
+		if (!isset($this->cache[$store])) {
+			// Create the pagination object.
+			jimport('joomla.html.pagination');
+			$limit = (int)$this->getState('list.limit') - (int)$this->getState('list.links');
+			$page = new AZMailerPagination($this->getTotal(), $this->getStart(), $limit);
+			// Add the object to the internal cache.
+			$this->cache[$store] = $page;
+		}
+		return $this->cache[$store];
+	}
 
 	protected function _getSpecificItem($id = null) {
 		$id = (int)$id;
@@ -106,28 +126,6 @@ class AZMailerModel extends \JModelList {
 		$this->setState($this->getName() . '.new', $isNew);
 
 		return true;
-	}
-
-	/**
-	 * Override of Method to get a AZMailerPagination(JPagination) object for the data set. - REMOVING ALL option
-	 *
-	 * @return  AZMailerPagination  A JPagination object for the data set.
-	 *
-	 * @since   11.1
-	 */
-	public function getPagination() {
-		// Get a storage key.
-		$store = $this->getStoreId('getPagination');
-		// Try to load the data from internal storage.
-		if (!isset($this->cache[$store])) {
-			// Create the pagination object.
-			jimport('joomla.html.pagination');
-			$limit = (int) $this->getState('list.limit') - (int) $this->getState('list.links');
-			$page = new AZMailerPagination($this->getTotal(), $this->getStart(), $limit);
-			// Add the object to the internal cache.
-			$this->cache[$store] = $page;
-		}
-		return $this->cache[$store];
 	}
 
 }

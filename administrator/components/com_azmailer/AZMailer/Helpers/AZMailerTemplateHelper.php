@@ -8,7 +8,7 @@ namespace AZMailer\Helpers;
  * @license    GNU/GPL
  */
 defined('_JEXEC') or die('Restricted access');
-use \JFactory;
+use JFactory;
 
 /**
  * Template Helper Class
@@ -17,7 +17,7 @@ use \JFactory;
  */
 class AZMailerTemplateHelper {
 
-    public static function getTemplateIdByCode($tplCode) {
+	public static function getTemplateIdByCode($tplCode) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.id');
@@ -25,8 +25,8 @@ class AZMailerTemplateHelper {
 		$query->where('a.tpl_code = ' . $db->quote($tplCode, true));
 		$db->setQuery($query);
 		$id = (int)$db->loadResult();
-		return($id);
-    }
+		return ($id);
+	}
 
 	public static function getTemplateById($tplid) {
 		$db = \JFactory::getDbo();
@@ -36,10 +36,10 @@ class AZMailerTemplateHelper {
 		$query->where('a.id = ' . $db->quote($tplid, true));
 		$db->setQuery($query);
 		$tpl = $db->loadObject();
-		return($tpl);
+		return ($tpl);
 	}
 
-	public static function getSelectOptions_TemplatesForType($tplType, $zeroOption=false) {
+	public static function getSelectOptions_TemplatesForType($tplType, $zeroOption = false) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
 		$query->select('a.id, a.tpl_name as data');
@@ -56,10 +56,7 @@ class AZMailerTemplateHelper {
 	}
 
 
-
-
 }
-
 
 
 /*

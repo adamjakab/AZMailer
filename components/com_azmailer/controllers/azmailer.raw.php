@@ -11,7 +11,6 @@ use AZMailer\Helpers\AZMailerNewsletterHelper;
 use AZMailer\Helpers\AZMailerLocationHelper;
 use AZMailer\Helpers\AZMailerSubscriberHelper;
 use AZMailer\Helpers\AZMailerQueuemanagerHelper;
-use AZMailer\Helpers\AZMailerCategoryHelper;
 use AZMailer\Entities\AZMailerSubscriber;
 use AZMailer\Entities\AZMailerQueueItem;
 
@@ -161,6 +160,7 @@ class AZMailerControllerAZMailer extends \JControllerLegacy {
 	 * we need a helper for this
 	 */
 	public function getAttachment() {
+		/** @var AZMailer\AZMailerCore */
 		global $AZMAILER;
 		$JI = \JFactory::getApplication()->input;
 		$CTRL = $JI->getString("ctrl", "");
@@ -232,7 +232,7 @@ class AZMailerControllerAZMailer extends \JControllerLegacy {
 			);
 			header('Content-Type: ' . $fileType);
 			if (!in_array($fileType, $mimesOpenInBrowser)) {
-				header("Content-disposition: attachment;filename=$fileName");
+				header("Content-disposition: attachment;filename=" . $filename);
 			}
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');

@@ -17,13 +17,13 @@ class AZMailerException extends \Exception {
 	 * @param int        $code
 	 * @param \Exception $previous
 	 */
-	public function __construct($message="", $code=0, \Exception $previous = null) {
+	public function __construct($message = "", $code = 0, \Exception $previous = null) {
 		parent::__construct($message, $code, $previous);
 	}
 
 	public function getFormattedErrorMessage() {
 		$answer = '';
-		$answer .= '<h3>('.$this->getCode() . ') ' . $this->getMessage().'</h3>';
-		return($answer);
+		$answer .= '<h3>(' . $this->getCode() . ') ' . $this->getMessage() . '</h3>';
+		return ($answer);
 	}
 }

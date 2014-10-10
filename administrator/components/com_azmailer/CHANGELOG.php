@@ -20,32 +20,31 @@ defined('_JEXEC') || die('=;)');
  * CHANGELOG
  * {@source}
  */
-function CHANGELOG()
-{
-/*
+function CHANGELOG() {
+	/*
 
-____
-___________________________________________
-_______________________________________________
+	____
+	___________________________________________
+	_______________________________________________
 
-This is the changelog for AZMailer
+	This is the changelog for AZMailer
 
-Please be patient =;)
-_______________________________________________
-_______________________________________________
+	Please be patient =;)
+	_______________________________________________
+	_______________________________________________
 
-Legend:
+	Legend:
 
- * -> Security Fix
- # -> Bug Fix
- + -> Addition
- ^ -> Change
- - -> Removed
- ! -> Note
-______________________________________________
+	 * -> Security Fix
+	 # -> Bug Fix
+	 + -> Addition
+	 ^ -> Change
+	 - -> Removed
+	 ! -> Note
+	______________________________________________
 
-09-Feb-2013 Adam Jakab
- ! Startup
+	09-Feb-2013 Adam Jakab
+	 ! Startup
 
-*/
+	*/
 }//--This is the END
