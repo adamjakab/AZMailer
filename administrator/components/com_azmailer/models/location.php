@@ -80,16 +80,16 @@ class AZMailerModelLocation extends AZMailerModel {
 					if ($table->save($data)) {
 						$answer = true;
 					} else {
-						$this->setError("Error - Save failed: " . print_r($table->getErrors(), true));
+						\JFactory::getApplication()->enqueueMessage("Error - Save failed: " . print_r($table->getErrors(), true));
 					}
 				} else {
-					$this->setError("Error - Unknown Type ( $add_what )!");
+					\JFactory::getApplication()->enqueueMessage("Error - Unknown Type ( $add_what )!");
 				}
 			} else {
-				$this->setError('Error - Name is empty!');
+				\JFactory::getApplication()->enqueueMessage('Error - Name is empty!');
 			}
 		} else {
-			$this->setError("Error - Unknown Type ( $add_what )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Type ( $add_what )!");
 		}
 		return ($answer);
 	}
@@ -114,16 +114,16 @@ class AZMailerModelLocation extends AZMailerModel {
 					if ($table->save($data)) {
 						$answer = true;
 					} else {
-						$this->setError("Error - Save failed: " . print_r($table->getErrors(), true));
+						\JFactory::getApplication()->enqueueMessage("Error - Save failed: " . print_r($table->getErrors(), true));
 					}
 				} else {
-					$this->setError("Error - Name is empty!");
+					\JFactory::getApplication()->enqueueMessage("Error - Name is empty!");
 				}
 			} else {
-				$this->setError("Error - undefined object ID( $id )!");
+				\JFactory::getApplication()->enqueueMessage("Error - undefined object ID( $id )!");
 			}
 		} else {
-			$this->setError("Error - Unknown Type ( $change_what )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Type ( $change_what )!");
 		}
 		return ($answer);
 	}
@@ -148,7 +148,7 @@ class AZMailerModelLocation extends AZMailerModel {
 					if ($table->delete($id)) {
 						$answer = true;
 					} else {
-						$this->setError("Error - Delete failed: " . print_r($table->getErrors(), true));
+						\JFactory::getApplication()->enqueueMessage("Error - Delete failed: " . print_r($table->getErrors(), true));
 						$answer = false;
 					}
 				} else {

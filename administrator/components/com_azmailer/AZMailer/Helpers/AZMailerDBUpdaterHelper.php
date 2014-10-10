@@ -251,25 +251,37 @@ class AZMailerDBUpdaterHelper {
 	 * @return bool
 	 */
 	private function ___executeSql($sql) {
-		$this->db->setQuery($sql);
-		$this->db->query();
-		$err = $this->db->getErrorNum();
-		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
-		return ($err == 0);
+		$hasErrors = false;
+		$msg = "OK";
+		try{
+			$this->db->setQuery($sql);
+			$this->db->execute();
+		} catch (\Exception $e) {
+			$hasErrors = true;
+			$msg = $e->getMessage();
+		}
+		$this->log(strip_tags($sql) . " <b>RES:</b> " . $msg);
+		return ($hasErrors===false);
 	}
 
-	//todo: return emty array instead of empty string
+	//todo: return empty array instead of empty string
 	/**
 	 * @param \JDatabaseQuery|string $sql - The SQL statement to set either as a JDatabaseQuery object or a string.
 	 * @param string $key
 	 * @return mixed|string
 	 */
 	private function ___loadSqlMultipleResults($sql, $key = null) {
-		$this->db->setQuery($sql);
-		$res = $this->db->loadAssocList($key);
-		$err = $this->db->getErrorNum();
-		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
-		return (($err == 0 ? $res : ""));
+		$hasErrors = false;
+		$msg = "OK";
+		try {
+			$this->db->setQuery($sql);
+			$res = $this->db->loadAssocList($key);
+		} catch (\Exception $e) {
+			$hasErrors = true;
+			$msg = $e->getMessage();
+		}
+		$this->log(strip_tags($sql) . " <b>RES:</b> " . $msg);
+		return ($hasErrors===false);
 	}
 
 	/**
@@ -288,11 +300,17 @@ class AZMailerDBUpdaterHelper {
 	 * @return mixed|string
 	 */
 	private function ___loadSqlSingleResult($sql) {
-		$this->db->setQuery($sql);
-		$res = $this->db->loadResult();
-		$err = $this->db->getErrorNum();
-		$this->log(strip_tags($sql) . " <b>RES($err):</b> " . ($err == 0 ? "OK" : $this->db->getErrorMsg()));
-		return (($err == 0 ? $res : ""));
+		$hasErrors = false;
+		$msg = "OK";
+		try {
+			$this->db->setQuery($sql);
+			$res = $this->db->loadResult();
+		} catch (\Exception $e) {
+			$hasErrors = true;
+			$msg = $e->getMessage();
+		}
+		$this->log(strip_tags($sql) . " <b>RES:</b> " . $msg);
+		return ($hasErrors===false);
 	}
 
 	private function populateTable() {

@@ -32,14 +32,8 @@ class AZMailerViewCp extends AZMailerView {
 	 * @return bool|mixed|void
 	 */
 	function display($tpl = null) {
-		// Check for model errors
-		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
 		/** @var AZMailerModelCp $model */
 		$model = $this->getModel();
-
 		$this->cpbuttons = $model->getCpButtons();
 		$this->cpinfo = $model->getCpInfo();
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_CP"), "azmailer");

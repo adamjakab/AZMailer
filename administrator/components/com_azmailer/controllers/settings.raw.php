@@ -48,7 +48,7 @@ class AZMailerControllerSettings extends AZMailerController {
 		$paramName = $JI->getString("paramName", null);
 		$answer = new stdClass();
 		$answer->result = $this->model->getParamEditForm($paramName);
-		$answer->errors = $this->model->getErrors();
+		$answer->errors = array();
 		echo json_encode($answer);
 	}
 
@@ -58,7 +58,7 @@ class AZMailerControllerSettings extends AZMailerController {
 		$paramValue = $JI->getString("paramValue", null);
 		$answer = new stdClass();
 		$answer->result = $this->model->submitParamEditForm($paramName, $paramValue);
-		$answer->errors = $this->model->getErrors();
+		$answer->errors = array();
 		echo json_encode($answer);
 	}
 

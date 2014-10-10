@@ -13,9 +13,9 @@ $item = &$this->item;
 		<legend><?php /*echo $TITLE;*/ ?></legend>
 		<table class="admintable" style="width:100%;">
 			<?php
-			echo AZMailerAdminInterfaceHelper::showData(JText::_('COM_AZMAILER_TEMPLATE_CODE'), AZMailerAdminInterfaceHelper::getInputField("", "tpl_code", $item->tpl_code, 30, 64, true, false, ($item->tpl_code == "default")));
-			echo AZMailerAdminInterfaceHelper::showData(JText::_('COM_AZMAILER_NAME'), AZMailerAdminInterfaceHelper::getInputField("", "tpl_name", $item->tpl_name, 80, 255));
-			echo AZMailerAdminInterfaceHelper::showData(JText::_('COM_AZMAILER_TEMPLATE_DEFAULT_TITLE'), AZMailerAdminInterfaceHelper::getInputField("", "tpl_title", $item->tpl_title, 80, 255));
+			echo AZMailerAdminInterfaceHelper::getInputFileldRow(JText::_('COM_AZMAILER_TEMPLATE_CODE'), "tpl_code", $item->tpl_code, 30, 64, false, ($item->tpl_code == "default"));
+			echo AZMailerAdminInterfaceHelper::getInputFileldRow(JText::_('COM_AZMAILER_NAME'), "tpl_name", $item->tpl_name, 80, 255);
+			echo AZMailerAdminInterfaceHelper::getInputFileldRow(JText::_('COM_AZMAILER_TEMPLATE_DEFAULT_TITLE'), "tpl_title", $item->tpl_title, 80, 255);
 			?>
 		</table>
 	</fieldset>

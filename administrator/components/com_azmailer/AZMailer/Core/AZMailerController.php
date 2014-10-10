@@ -9,7 +9,6 @@ namespace AZMailer\Core;
  */
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
-use JRequest as JRequest;
 
 /**
  * Class AZMailerController
@@ -33,7 +32,8 @@ class AZMailerController extends \JControllerLegacy {
 	public function display($cachable = false, $urlparams = false) {
 		global $AZMAILER;
 		$view = $this->getView($AZMAILER->getOption("controller"), 'html', '');
-		$tmpl = JRequest::getVar('tmpl', 'default');
+		$JI = \JFactory::getApplication()->input;
+		$tmpl = $JI->getString("tmpl", "default");
 		if ( ($model = $this->getModel($AZMAILER->getOption("controller"))) ) {
 			/** @var \JModelLegacy $model */
 			$view->setModel($model, true);

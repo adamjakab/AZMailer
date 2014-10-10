@@ -155,38 +155,6 @@ class AZMailerAdminInterfaceHelper {
 	}
 
 	/**
-	 * @param        $caption
-	 * @param        $name
-	 * @param string $default
-	 * @param int    $size
-	 * @param int    $maxlength
-	 * @param bool   $enabled
-	 * @param bool   $nobr
-	 * @param bool   $readonly
-	 * @return string
-	 *
-	 * @deprecated - use getInputFileldRow instead
-	 */
-	public static function getInputField($caption, $name, $default = '', $size = 40, $maxlength = 128, $enabled = true, $nobr = false, $readonly = false) {
-		$answer = '';
-		$br = (!$nobr ? "<br/>" : "");
-		$readonly = ($readonly ? 'readonly="readonly"' : '');
-		if (!empty($name)) {
-			if ($enabled) {
-				if (!empty($caption)) {
-					$answer .= '<label for="' . $name . '">' . $caption . '</label>';
-					$answer .= '<span id="err_' . $name . '" class="jqerror"></span>' . "$br\n";
-				}
-				$answer .= '<input type="text" name="' . $name . '" id="' . $name . '" size="' . $size . '" maxlength="' . $maxlength . '" value="' . $default . '" ' . $readonly . '/>' . "$br\n";
-			} else {
-				$answer .= '<label for="' . $name . '">' . $caption . '</label>' . "$br\n";
-				$answer .= '<input disabled="disabled" name="' . $name . '" id="' . $name . '" type="text" size="' . $size . '" maxlength="' . $maxlength . '" value="' . $default . '" ' . $readonly . '/>' . "$br\n";
-			}
-		}
-		return ($answer);
-	}
-
-	/**
 	 * GENERIC YES/NO OPTIONS
 	 * @param bool $zeroOption
 	 * @return array

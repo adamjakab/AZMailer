@@ -46,15 +46,10 @@ class AZMailerModelQueuemanager extends AZMailerModel {
 			if ($table->delete($cid)) {
 				$delcnt++;
 			} else {
-				$this->setError($table->getError());
+				\JFactory::getApplication()->enqueueMessage("Delete error on table " . $table->name);
 			}
 		}
-		$errors = $this->getErrors();
-		if (count($errors)) {
-			\JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
-		return (count($errors) == 0);
+		return (true);
 	}
 
 	/**

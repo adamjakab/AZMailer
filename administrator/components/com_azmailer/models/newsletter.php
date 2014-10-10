@@ -49,9 +49,7 @@ class AZMailerModelNewsletter extends AZMailerModel {
 		if (empty($data["nl_title_internal"])) {
 			$data["nl_title_internal"] = $data["nl_title"];
 		}
-		//save
-		$this->_saveSpecificItem($data);
-		return (count($this->getErrors()) == 0);
+		return ($this->_saveSpecificItem($data));
 	}
 
 	/**
@@ -71,7 +69,8 @@ class AZMailerModelNewsletter extends AZMailerModel {
 			$cid = array_pop($cidArray);
 			$table->load($cid);
 			if ($table->nl_send_date > (AZMailerDateHelper::now() - $canDeleteAfterSeconds)) {
-				JError::raiseWarning(500, \JText::sprintf('COM_AZMAILER_NEWSLETTER_MSG_DELETED_NOT', $table->nl_title, $canDeleteAfterDays));
+				//JError::raiseWarning(500, \JText::sprintf('COM_AZMAILER_NEWSLETTER_MSG_DELETED_NOT', $table->nl_title, $canDeleteAfterDays));
+				\JFactory::getApplication()->enqueueMessage(\JText::sprintf('COM_AZMAILER_NEWSLETTER_MSG_DELETED_NOT', $table->nl_title, $canDeleteAfterDays), "warning");
 			} else {
 				//DELETE NEWSLETTER STATISTICS
 				AZMailerStatisticsHelper::deleteStatisticsForNewsletter($cid);
@@ -81,18 +80,10 @@ class AZMailerModelNewsletter extends AZMailerModel {
 				AZMailerNewsletterHelper::deleteAttachmentsForNewsletter($cid);
 				if ($table->delete($cid)) {//OK newsletter deleted
 					\JFactory::getApplication()->enqueueMessage("deleted newsletter: " . $table->nl_title);
-				} else {
-					$this->setError($table->getError());
-					break;
 				}
 			}
 		}
-		$errors = $this->getErrors();
-		if (count($errors)) {
-			JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
-		return (count($errors) == 0);
+		return (true);
 	}
 
 	/**
@@ -134,7 +125,7 @@ class AZMailerModelNewsletter extends AZMailerModel {
 			$table->nl_template_substitutions = $NEWSUBSTITUTIONS;
 			$table->nl_attachments = $NEWATTACHMENTS;
 			if (!$table->store()) {
-				\JFactory::getApplication()->enqueueMessage($table->getError(), "error");
+				\JFactory::getApplication()->enqueueMessage("Save failed", "error");
 				return false;
 			}
 			\JFactory::getApplication()->enqueueMessage(\JText::_("COM_AZMAILER_NEWSLETTER_MSG_DUPLICATED"));

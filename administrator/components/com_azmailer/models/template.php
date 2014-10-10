@@ -41,7 +41,7 @@ class AZMailerModelTemplate extends AZMailerModel {
 	 * @return bool
 	 */
 	public function saveSpecificItem($data) {
-		JRequest::checkToken() or jexit('Invalid Token');
+		\JSession::checkToken() or jexit('Invalid Token');
 		$data["tpl_code"] = str_replace(" ", "_", $data["tpl_code"]);
 		//check for duplicated template code
 		$codeVerified = false;
@@ -53,14 +53,7 @@ class AZMailerModelTemplate extends AZMailerModel {
 				$data["tpl_code"] = '_' . $data["tpl_code"];
 			}
 		}
-		//
-		$this->_saveSpecificItem($data);
-		$errors = $this->getErrors();
-		if (count($errors)) {
-			JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
-		return (count($errors) == 0);
+		return($this->_saveSpecificItem($data));
 	}
 
 	/**
@@ -78,21 +71,16 @@ class AZMailerModelTemplate extends AZMailerModel {
 					if ($table->delete($cid)) {
 						$delcnt++;
 					} else {
-						$this->setError($table->getError());
+						\JFactory::getApplication()->enqueueMessage("Error while deleting from table " . $table->name);
 					}
 				} else {
-					$this->setError(JText::sprintf('COM_AZMAILER_TEMPLATE_ERR_DELETE_USED', $table->tpl_code));
+					\JFactory::getApplication()->enqueueMessage(JText::sprintf('COM_AZMAILER_TEMPLATE_ERR_DELETE_USED', $table->tpl_code));
 				}
 			} else {
-				$this->setError(JText::_('COM_AZMAILER_TEMPLATE_ERR_DELETE_ISDEFAULT'));
+				\JFactory::getApplication()->enqueueMessage(JText::_('COM_AZMAILER_TEMPLATE_ERR_DELETE_ISDEFAULT'));
 			}
 		}
-		$errors = $this->getErrors();
-		if (count($errors)) {
-			JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
-		return (count($errors) == 0);
+		return(true);
 	}
 
 	/**

@@ -20,7 +20,6 @@ class AZMailerViewTemplate extends AZMailerView {
 	 * @throws Exception
 	 */
 	function display($tpl = null) {
-
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state = $this->get('State');
@@ -37,11 +36,15 @@ class AZMailerViewTemplate extends AZMailerView {
 	}
 
 	function edit() {
+		/** @var AZMailerModelTemplate $model */
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;
 		$id = $JI->getInt("cid", 0);
 		$this->item = $model->getSpecificItem($id);
+		if(!$this->item) {
+			$this->item = $model->getTable();
+		}
 		$this->state = $this->get('State');
 		parent::display("edit");
 		//
@@ -65,7 +68,7 @@ class AZMailerViewTemplate extends AZMailerView {
 	 */
 	function save($isApply = false) {
 		global $AZMAILER;
-		\JRequest::checkToken() or jexit('Invalid Token');
+		\JSession::checkToken() or jexit('Invalid Token');
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;

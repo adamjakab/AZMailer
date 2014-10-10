@@ -25,9 +25,9 @@ class AZMailerApplicationCli extends \JApplicationCli {
 	/**
 	 * @param \JInputCli   $input
 	 * @param Registry $config
-	 * @param \JDispatcher $dispatcher
+	 * @param \JEventDispatcher $dispatcher
 	 */
-	public function __construct(\JInputCli $input = null, Registry $config = null, \JDispatcher $dispatcher = null) {
+	public function __construct(\JInputCli $input = null, Registry $config = null, \JEventDispatcher $dispatcher = null) {
 		parent::__construct($input, $config, $dispatcher);
 		//now we have configuration read in:
 		//$this->out("Verbose:" . $this->config->get('verbose'));

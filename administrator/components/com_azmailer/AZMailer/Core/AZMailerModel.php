@@ -48,33 +48,28 @@ class AZMailerModel extends \JModelList {
 	/**
 	 * Returns a specific item ... duh!?
 	 * @param integer $id
-	 * @return object
+	 * @return object|bool
 	 * @throws \Exception
 	 */
 	protected function _getSpecificItem($id = null) {
+		$answer = false;
 		$id = (int)$id;
 		$table = $this->getTable();
 		if ($table) {
 			if ($id > 0) {
-				$return = $table->load($id);
-				if ($return === false && $table->getError()) {
-					$this->setError($table->getError());
-					return false;
+				$table->load($id);
+				$properties = $table->getProperties(true);
+				$answer = \JArrayHelper::toObject($properties, 'JObject');
+				if (property_exists($answer, 'params')) {
+					$registryClassName = '\JRegistry';
+					/** @var \JRegistry|\Joomla\Registry\Registry $registry */
+					$registry = new $registryClassName;
+					$registry->loadString($answer->params);
+					$answer->params = $registry->toArray();
 				}
 			}
-			$properties = $table->getProperties(1);
-			$item = \JArrayHelper::toObject($properties, 'JObject');
-			if (property_exists($item, 'params')) {
-				$registryClassName = '\JRegistry';
-				/** @var \JRegistry|\Joomla\Registry\Registry $registry */
-				$registry = new $registryClassName;
-				$registry->loadString($item->params);
-				$item->params = $registry->toArray();
-			}
-			return ($item);
-		} else {
-			die("Table not found!");
 		}
+		return ($answer);
 	}
 
 	/**
@@ -83,8 +78,11 @@ class AZMailerModel extends \JModelList {
 	 * @throws \Exception
 	 */
 	protected function _saveSpecificItem($data) {
-		// Initialise variables;
-		$dispatcher = \JDispatcher::getInstance();
+		if (IS_J3) {
+			$dispatcher = \JEventDispatcher::getInstance();//J!3
+		} else {
+			$dispatcher = \JDispatcher::getInstance();//J!25
+		}
 		$table = $this->getTable();
 		$key = $table->getKeyName();
 		$pk = (!empty($data[$key])) ? $data[$key] : (int)$this->getState($this->getName() . '.id');
@@ -103,26 +101,22 @@ class AZMailerModel extends \JModelList {
 
 			// Bind the data.
 			if (!$table->bind($data)) {
-				$this->setError($table->getError());
+				\JFactory::getApplication()->enqueueMessage("Bind error on table " . $table->name);
 				return false;
 			}
 
 			// Check the data.
 			if (!$table->check()) {
-				$this->setError($table->getError());
+				\JFactory::getApplication()->enqueueMessage("Check error on table " . $table->name);
 				return false;
 			}
 
 			// Trigger the onContentBeforeSave event.
 			$result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $isNew));
-			if (in_array(false, $result, true)) {
-				$this->setError($table->getError());
-				return false;
-			}
 
 			// Store the data.
 			if (!$table->store()) {
-				$this->setError($table->getError());
+				\JFactory::getApplication()->enqueueMessage("Store error on table " . $table->name);
 				return false;
 			}
 
@@ -132,7 +126,7 @@ class AZMailerModel extends \JModelList {
 			// Trigger the onContentAfterSave event.
 			$dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $isNew));
 		} catch (\Exception $e) {
-			$this->setError($e->getMessage());
+			\JFactory::getApplication()->enqueueMessage($e->getMessage());
 
 			return false;
 		}

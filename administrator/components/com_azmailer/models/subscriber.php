@@ -62,9 +62,7 @@ class AZMailerModelSubscriber extends AZMailerModel {
 		$data["nls_cat_3"] = json_encode(isset($data["nls_cat_3"]) ? $data["nls_cat_3"] : array());
 		$data["nls_cat_4"] = json_encode(isset($data["nls_cat_4"]) ? $data["nls_cat_4"] : array());
 		$data["nls_cat_5"] = json_encode(isset($data["nls_cat_5"]) ? $data["nls_cat_5"] : array());
-		//save
-		$this->_saveSpecificItem($data);
-		return (count($this->getErrors()) == 0);
+		return($this->_saveSpecificItem($data));
 	}
 
 	/**
@@ -79,16 +77,9 @@ class AZMailerModelSubscriber extends AZMailerModel {
 			$table->load($cid);
 			if ($table->delete($cid)) {
 				$delcnt++;
-			} else {
-				$this->setError($table->getError());
 			}
 		}
-		$errors = $this->getErrors();
-		if (count($errors)) {
-			\JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
-		return (count($errors) == 0);
+		return true;
 	}
 
 	/**

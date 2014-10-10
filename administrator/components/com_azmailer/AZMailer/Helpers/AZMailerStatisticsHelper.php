@@ -24,7 +24,7 @@ class AZMailerStatisticsHelper {
 		$db = \JFactory::getDbo();
 		$sql = 'DELETE FROM #__azmailer_newsletter_stat WHERE stat_nl_id = ' . $nlid;
 		$db->setQuery($sql);
-		$db->query();
+		$db->execute();
 	}
 
 	/**

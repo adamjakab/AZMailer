@@ -43,13 +43,13 @@ class AZMailerModelCategory extends AZMailerModel {
 				if ($table->save($data)) {
 					$answer = true;
 				} else {
-					$this->setError("Error - Save failed: " . print_r($table->getErrors(), true));
+					\JFactory::getApplication()->enqueueMessage("Error - Save failed", "error");
 				}
 			} else {
-				$this->setError(JText::_('COM_AZMAILER_CATEGORY_MOD_ERR_EMPTY'));
+				\JFactory::getApplication()->enqueueMessage(JText::_('COM_AZMAILER_CATEGORY_MOD_ERR_EMPTY'));
 			}
 		} else {
-			$this->setError("Error - Unknown Category ( $catIndex )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Category ( $catIndex )!");
 		}
 		return ($answer);
 	}
@@ -81,13 +81,13 @@ class AZMailerModelCategory extends AZMailerModel {
 				if ($table->save($data)) {
 					$answer = true;
 				} else {
-					$this->setError("Error - Save failed: " . print_r($table->getErrors(), true));
+					\JFactory::getApplication()->enqueueMessage("Error - Save failed in table " . $table->name);
 				}
 			} else {
-				$this->setError("Error - Nome or ID is empty!");
+				\JFactory::getApplication()->enqueueMessage("Error - Nome or ID is empty!");
 			}
 		} else {
-			$this->setError("Error - Unknown Category ( $catIndex )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Category ( $catIndex )!");
 		}
 		return ($answer);
 	}
@@ -105,13 +105,13 @@ class AZMailerModelCategory extends AZMailerModel {
 				if ($table->delete($id)) {
 					$answer = true;
 				} else {
-					$this->setError("Error - Delete failed: " . print_r($table->getErrors(), true));
+					\JFactory::getApplication()->enqueueMessage("Error - Delete failed!");
 				}
 			} else {
-				$this->setError("Error - ID is empty!");
+				\JFactory::getApplication()->enqueueMessage("Error - ID is empty!");
 			}
 		} else {
-			$this->setError("Error - Unknown Category ( $catIndex )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Category ( $catIndex )!");
 		}
 		return ($answer);
 	}
@@ -133,13 +133,13 @@ class AZMailerModelCategory extends AZMailerModel {
 				if ($table->save($data)) {
 					$answer = true;
 				} else {
-					$this->setError("Error - Save failed: " . print_r($table->getErrors(), true));
+					\JFactory::getApplication()->enqueueMessage("Error - Save failed!");
 				}
 			} else {
-				$this->setError("Error - ID is empty!");
+				\JFactory::getApplication()->enqueueMessage("Error - ID is empty!");
 			}
 		} else {
-			$this->setError("Error - Unknown Category ( $catIndex )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Category ( $catIndex )!");
 		}
 		return ($answer);
 	}
@@ -168,10 +168,10 @@ class AZMailerModelCategory extends AZMailerModel {
 				}
 				$answer = true;
 			} else {
-				$this->setError("Error - Order is undefined!");
+				\JFactory::getApplication()->enqueueMessage("Error - Order is undefined!");
 			}
 		} else {
-			$this->setError("Error - Unknown Category ( $catIndex )!");
+			\JFactory::getApplication()->enqueueMessage("Error - Unknown Category ( $catIndex )!");
 		}
 		return ($answer);
 	}

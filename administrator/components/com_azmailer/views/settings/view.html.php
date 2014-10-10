@@ -21,10 +21,6 @@ class AZMailerViewSettings extends AZMailerView {
 	function display($tpl = null) {
 		$this->items = array();
 		$this->state = $this->get('State');
-		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
 		//
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_SETTINGS"), "paramconfig");
 		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(

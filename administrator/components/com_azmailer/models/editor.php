@@ -34,15 +34,8 @@ class AZMailerModelEditor extends AZMailerModel {
 	 * @return bool
 	 */
 	public function saveSpecificItem($data) {
-		JRequest::checkToken() or jexit('Invalid Token');
-		//do some checks
-		$this->_saveSpecificItem($data);
-		$errors = $this->getErrors();
-		if (count($errors)) {
-			JError::raiseError(500, implode('<br />', $errors));
-			return false;
-		}
-		return (count($errors) == 0);
+		\JSession::checkToken() or jexit('Invalid Token');
+		return ($this->_saveSpecificItem($data));
 	}
 
 	/**

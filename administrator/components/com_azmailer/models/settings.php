@@ -31,10 +31,10 @@ class AZMailerModelSettings extends AZMailerModel {
 			if (AZMailerComponentParamHelper::keyExists($paramName)) {
 				$answer = AZMailerComponentParamHelper::getParamEditForm($paramName);
 			} else {
-				$this->setError("Error - Unknown parameter name ( $paramName )!");
+				\JFactory::getApplication()->enqueueMessage("Error - Unknown parameter name ( $paramName )!");
 			}
 		} else {
-			$this->setError("Error - No parameter name supplied!");
+			\JFactory::getApplication()->enqueueMessage("Error - No parameter name supplied!");
 		}
 		return ($answer);
 	}
@@ -50,14 +50,14 @@ class AZMailerModelSettings extends AZMailerModel {
 			if (AZMailerComponentParamHelper::keyExists($paramName)) {
 				$answer = AZMailerComponentParamHelper::submitParamEditForm($paramName, $paramValue);
 				if ($answer !== true) {
-					$this->setError("Error - $answer");
+					\JFactory::getApplication()->enqueueMessage("Error - $answer");
 					$answer = '';
 				}
 			} else {
-				$this->setError("Error - Unknown parameter name ( $paramName )!");
+				\JFactory::getApplication()->enqueueMessage("Error - Unknown parameter name ( $paramName )!");
 			}
 		} else {
-			$this->setError("Error - No parameter name supplied!");
+			\JFactory::getApplication()->enqueueMessage("Error - No parameter name supplied!");
 		}
 		return ($answer);
 	}
