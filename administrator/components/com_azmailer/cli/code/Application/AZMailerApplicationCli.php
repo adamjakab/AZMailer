@@ -3,12 +3,14 @@
 namespace AZMailer\Cli\Application;
 
 use AZMailer\Cli\Model\AZMailerCron;
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die('Restricted access');
 /**
  * @package     AZMailer
  * @subpackage  Cli\Application
  */
+
 // Allow the application to run as long as is necessary.
 ini_set('max_execution_time', 0);
 
@@ -17,8 +19,15 @@ ini_set('max_execution_time', 0);
  * @package AZMailer\Cli\Application
  */
 class AZMailerApplicationCli extends \JApplicationCli {
+	/** @var Registry */
+	protected $config;
 
-	public function __construct(\JInputCli $input = null, \JRegistry $config = null, \JDispatcher $dispatcher = null) {
+	/**
+	 * @param \JInputCli   $input
+	 * @param Registry $config
+	 * @param \JDispatcher $dispatcher
+	 */
+	public function __construct(\JInputCli $input = null, Registry $config = null, \JDispatcher $dispatcher = null) {
 		parent::__construct($input, $config, $dispatcher);
 		//now we have configuration read in:
 		//$this->out("Verbose:" . $this->config->get('verbose'));

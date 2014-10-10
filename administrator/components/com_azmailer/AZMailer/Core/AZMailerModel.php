@@ -10,12 +10,13 @@ namespace AZMailer\Core;
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.modellist');
 
+//use Joomla\Registry\Registry;
+
+/**
+ * Class AZMailerModel
+ * @package AZMailer\Core
+ */
 class AZMailerModel extends \JModelList {
-	/*
-	protected $errors = array();
-	public function getErrors() {
-	return($this->errors);
-	}*/
 
 	/**
 	 * Override of Method to get a AZMailerPagination(JPagination) object for the data set. - REMOVING ALL option
@@ -39,6 +40,12 @@ class AZMailerModel extends \JModelList {
 		return $this->cache[$store];
 	}
 
+	/**
+	 * Returns a specific item ... duh!?
+	 * @param integer $id
+	 * @return object
+	 * @throws \Exception
+	 */
 	protected function _getSpecificItem($id = null) {
 		$id = (int)$id;
 		$table = $this->getTable();
@@ -53,7 +60,9 @@ class AZMailerModel extends \JModelList {
 			$properties = $table->getProperties(1);
 			$item = \JArrayHelper::toObject($properties, 'JObject');
 			if (property_exists($item, 'params')) {
-				$registry = new \JRegistry;
+				$registryClassName = '\JRegistry';
+				/** @var \JRegistry|\Joomla\Registry\Registry $registry */
+				$registry = new $registryClassName;
 				$registry->loadString($item->params);
 				$item->params = $registry->toArray();
 			}

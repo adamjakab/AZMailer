@@ -12,7 +12,7 @@ JHtml::_('behavior.tooltip');
 global $AZMAILER;
 
 
-/** @var $params \JRegistry AZMailer Settings params */
+/** @var $params \Joomla\Registry\Registry AZMailer Settings params */
 $params = $this->state->get('params');
 
 $listOrder = $this->escape($this->state->get('list.ordering'));

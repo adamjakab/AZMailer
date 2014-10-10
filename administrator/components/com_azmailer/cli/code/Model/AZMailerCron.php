@@ -3,7 +3,7 @@ namespace AZMailer\Cli\Model;
 
 use AZMailer\Core\AZMailerQueueManager;
 use AZMailer\Helpers\AZMailerDateHelper;
-
+use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -12,12 +12,16 @@ defined('_JEXEC') or die('Restricted access');
  * @subpackage  Cli\Model
  */
 class AZMailerCron {
+	/** @var Registry  */
 	private $config;
 	private $cronVars;
 	private $taskList = array();
 	private $currentTask = null;
 
-	function __construct($cliAppConf = null) {
+	/**
+	 * @param Registry $cliAppConf
+	 */
+	function __construct(Registry $cliAppConf = null) {
 		$this->config = $cliAppConf;
 
 		$this->cronVars = array();
