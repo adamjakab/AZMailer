@@ -38,7 +38,8 @@ class AZMailerAdminInterfaceHelper {
 	}
 
 	/**
-	 * Get the actions
+	 * @param int $messageId
+	 * @return \JObject
 	 */
 	public static function getActions($messageId = 0) {
 		$user = \JFactory::getUser();

@@ -117,6 +117,8 @@ class AZMailerModelTemplate extends AZMailerModel {
 	/**
 	 * Method to auto-populate the model state.
 	 * Note. Calling getState in this method will result in recursion.
+	 * @param string $ordering
+	 * @param string $direction
 	 */
 	protected function populateState($ordering = "id", $direction = "ASC") {
 		//Filters

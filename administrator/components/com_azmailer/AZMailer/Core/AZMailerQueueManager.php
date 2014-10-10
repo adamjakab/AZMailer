@@ -189,8 +189,10 @@ class AZMailerQueueManager {
 
 	/**
 	 * Call this function if you want to send a mail queue item right away ONLY PRI === 0
-	 * DO NOT USE THIS FOR SENDING MAILS IN HIGHER PRIORITY -
+	 * DO NOT USE THIS FOR SENDING MAILS IN HIGHER PRIORITY
 	 * THIS DOES NOT CHECK/BLOCK MAIL QUEUE
+	 * @param integer $MQIID
+	 * @return boolean
 	 */
 	public function sendZeroPriorityMail($MQIID) {
 		$MQI = $this->getSingleMailQueueItem($MQIID);
