@@ -15,6 +15,10 @@ use AZMailer\Helpers\AZMailerStatisticsHelper;
  * Newsletter Model
  */
 class AZMailerModelNewsletter extends AZMailerModel {
+
+	/**
+	 * @param array $config
+	 */
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
@@ -50,6 +54,11 @@ class AZMailerModelNewsletter extends AZMailerModel {
 		return (count($this->getErrors()) == 0);
 	}
 
+	/**
+	 * @param array $cidArray
+	 * @return boolean
+	 * @throws Exception
+	 */
 	public function removeSpecificItems($cidArray) {
 		global $AZMAILER;
 		$PSIAD = (int)$AZMAILER->getOption('mq_purge_sent_items_after_days');
@@ -86,6 +95,12 @@ class AZMailerModelNewsletter extends AZMailerModel {
 		return (count($errors) == 0);
 	}
 
+	/**
+	 * @param string  $type
+	 * @param string  $prefix
+	 * @param array $config
+	 * @return JTable|mixed
+	 */
 	public function getTable($type = null, $prefix = null, $config = array()) {
 		return JTable::getInstance(($type ? $type : 'azmailer_newsletter'), ($prefix ? $prefix : 'Table'), $config);
 	}
@@ -130,6 +145,9 @@ class AZMailerModelNewsletter extends AZMailerModel {
 		}
 	}
 
+	/**
+	 * @return \JDatabaseQuery
+	 */
 	protected function getListQuery() {
 		$db = \JFactory::getDBO();
 		$query = $db->getQuery(true);
@@ -157,6 +175,10 @@ class AZMailerModelNewsletter extends AZMailerModel {
 		return $query;
 	}
 
+	/**
+	 * @param string $ordering
+	 * @param string $direction
+	 */
 	protected function populateState($ordering = "id", $direction = "ASC") {
 		//Filters
 		$this->setState('filter.search', $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', "STRING"));

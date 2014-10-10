@@ -7,7 +7,14 @@ defined('_JEXEC') or die('Restricted access');
  **/
 require_once 'AZMailerTableInfo.php';
 
+/**
+ * Class tbl_azmailer_blob
+ */
 class tbl_azmailer_blob extends AZMailerTableInfo {
+
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->name = 'azmailer_blob';
 		$this->pk = 'id';
@@ -18,6 +25,9 @@ class tbl_azmailer_blob extends AZMailerTableInfo {
 		$this->forceNewDataInsert_checkColumn = "";
 	}
 
+	/**
+	 * @return array
+	 */
 	private function getColumns() {
 		return (array(
 			array("Field" => "id", "Type" => "int(11) unsigned", "Null" => "NO", "Default" => "", "Extra" => "auto_increment"),
@@ -27,6 +37,9 @@ class tbl_azmailer_blob extends AZMailerTableInfo {
 		));
 	}
 
+	/**
+	 * @return array
+	 */
 	private function getData() {
 		$tplContent = file_get_contents(__DIR__ . DS . 'deftpl.html');
 		$answer = array(array(1, 'template', $tplContent));

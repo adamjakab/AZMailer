@@ -17,7 +17,11 @@ use JFactory;
  */
 class AZMailerEditorHelper {
 
-
+	/**
+	 * @param string $ptype
+	 * @param integer $pid
+	 * @return integer
+	 */
 	public static function getBlobIdByParent($ptype = null, $pid = null) {
 		$db = JFactory::getDbo();
 		$query = $db->getQuery(true);

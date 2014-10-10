@@ -24,7 +24,7 @@ class AZMailerViewEditor extends AZMailerView {
 	 * @return mixed|void
 	 * @throws AZMailerException
 	 */
-	function edit() {
+	public function edit() {
 		/** @var AZMailerModelEditor $model */
 		$model = $this->getModel();
 
@@ -52,37 +52,50 @@ class AZMailerViewEditor extends AZMailerView {
 	}
 
 
-	function quickEdit($tpl = null) {
+	/**
+	 * Launch the quick-edit interface
+	 */
+	public function quickEdit() {
 		parent::display("quickedit");
 	}
 
 
-	function save($tpl = null, $closeEdit = true) {
+	/**
+	 * @param string $tpl
+	 * @param bool $closeEdit
+	 */
+	public function save($tpl = null, $closeEdit = true) {
 		$model = $this->getModel();
 		$data = JRequest::get('post');
 		$data["htmlblob"] = JRequest::getVar('htmlblob', '', 'post', 'string', JREQUEST_ALLOWHTML);
-		//print_r($data);
-		//die();
 		$model->saveSpecificItem($data);
 		if ($closeEdit || !$closeEdit) {
 			$this->cancel($tpl);
 		}
 	}
 
-	function cancel($tpl = null) {
+	/**
+	 * Cancel edit and go back to where we came from
+	 */
+	public function cancel() {
 		global $AZMAILER;
 		$redirectUrl = base64_decode(JRequest::getVar('return_uri', null));
 		$AZMAILER->getController()->setRedirect($redirectUrl);
 	}
 
-
-	function elfinder($tpl = null) {
+	/**
+	 * Show Elfinder
+	 */
+	public function elfinder() {
 		$this->state = $this->get('State');
 		parent::display("elfinder");
 	}
 
-
-	function elfinder_conn() {
+	/**
+	 * Elfinder Ajax connection
+	 * @throws Exception
+	 */
+	public function elfinder_conn() {
 		global $AZMAILER;
 		$com_path = $AZMAILER->getOption("com_path_admin");
 		$efcp = $com_path . DS . 'assets' . DS . 'js' . DS . 'elfinder' . DS . 'php';

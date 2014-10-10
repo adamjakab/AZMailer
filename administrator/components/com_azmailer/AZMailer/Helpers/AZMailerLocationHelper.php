@@ -18,6 +18,10 @@ defined('_JEXEC') or die('Restricted access');
 class AZMailerLocationHelper {
 
 	//----------------------------------------------------------------------------------------------COUNTRIES
+	/**
+	 * @param bool|string $zeroOption
+	 * @return array
+	 */
 	public static function getSelectOptions_Countries($zeroOption = false) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -74,6 +78,11 @@ class AZMailerLocationHelper {
 
 
 	//-----------------------------------------------------------------------REGIONS
+	/**
+	 * @param string|bool $zeroOption
+	 * @param int  $country_id
+	 * @return array
+	 */
 	public static function getSelectOptions_Regions($zeroOption = false, $country_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -90,6 +99,10 @@ class AZMailerLocationHelper {
 		return ($lst);
 	}
 
+	/**
+	 * @param int $country_id
+	 * @return int
+	 */
 	public static function countRegionsInCountry($country_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -97,7 +110,7 @@ class AZMailerLocationHelper {
 		$query->from('#__azmailer_region AS a');
 		$query->where('a.country_id = ' . $country_id);
 		$db->setQuery($query);
-		return ($db->loadResult());
+		return ((int)$db->loadResult());
 	}
 
 	/**
@@ -144,6 +157,11 @@ class AZMailerLocationHelper {
 
 
 	//-------------------------------------------------------------------PROVINCES
+	/**
+	 * @param string|bool $zeroOption
+	 * @param int  $region_id
+	 * @return array
+	 */
 	public static function getSelectOptions_Provinces($zeroOption = false, $region_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -160,6 +178,10 @@ class AZMailerLocationHelper {
 		return ($lst);
 	}
 
+	/**
+	 * @param int $region_id
+	 * @return int
+	 */
 	public static function countProvincesInRegion($region_id = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -167,7 +189,7 @@ class AZMailerLocationHelper {
 		$query->from('#__azmailer_province AS a');
 		$query->where('a.region_id = ' . $region_id);
 		$db->setQuery($query);
-		return ($db->loadResult());
+		return ((int)$db->loadResult());
 	}
 
 	/**
@@ -214,6 +236,12 @@ class AZMailerLocationHelper {
 
 
 	//---------------------------------------------------------------------------------------------ALL
+	/**
+	 * @param int $cid
+	 * @param int $rid
+	 * @param int $pid
+	 * @return array
+	 */
 	public static function getCountryRegionProvince($cid = 0, $rid = 0, $pid = 0) {
 		$answer = array();
 		if ($cid) {

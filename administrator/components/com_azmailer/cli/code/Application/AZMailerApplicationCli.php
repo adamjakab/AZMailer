@@ -59,6 +59,11 @@ class AZMailerApplicationCli extends \JApplicationCli {
 		$this->out('For normal operation use: php /path/to/joomla/administrator/components/com_azmailer/cli/azmailer.php');
 	}
 
+	/**
+	 * @param string $text
+	 * @param bool $nl - add line break at end of line?
+	 * @return void
+	 */
 	public function out($text = '', $nl = true) {
 		if ($this->config->get('verbose')) {
 			parent::out($text, $nl);

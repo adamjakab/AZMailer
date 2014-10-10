@@ -32,6 +32,11 @@ class AZMailerSubscriberHelper {
 		return (($db->loadResult() == 1));
 	}
 
+	/**
+	 * @param string $email
+	 * @param integer $id
+	 * @return bool
+	 */
 	public static function checkIfNLSMailIsAvailable($email, $id = 0) {
 		$NLS = self::getNewsletterSubscriberByMail($email);
 		if ($NLS) {
@@ -46,6 +51,10 @@ class AZMailerSubscriberHelper {
 		return ($answer);
 	}
 
+	/**
+	 * @param string $email
+	 * @return mixed
+	 */
 	public static function getNewsletterSubscriberByMail($email) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -56,6 +65,10 @@ class AZMailerSubscriberHelper {
 		return ($db->loadObject());
 	}
 
+	/**
+	 * @param integer $categoryItemId
+	 * @return bool|mixed
+	 */
 	public static function countSubscribersByCategoryItem($categoryItemId) {
 		$answer = false;
 		$categoryId = AZMailerCategoryHelper::getCategoryIDForItem($categoryItemId);
@@ -69,6 +82,10 @@ class AZMailerSubscriberHelper {
 		return ($answer);
 	}
 
+	/**
+	 * @param integer $country_id
+	 * @return mixed
+	 */
 	public static function countSubscribersInCountry($country_id) {
 		$db = \JFactory::getDbo();
 		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_country_id = ' . $country_id;
@@ -76,6 +93,10 @@ class AZMailerSubscriberHelper {
 		return ($db->loadResult());
 	}
 
+	/**
+	 * @param integer $region_id
+	 * @return mixed
+	 */
 	public static function countSubscribersInRegion($region_id) {
 		$db = \JFactory::getDbo();
 		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_region_id = ' . $region_id;
@@ -83,6 +104,10 @@ class AZMailerSubscriberHelper {
 		return ($db->loadResult());
 	}
 
+	/**
+	 * @param integer $province_id
+	 * @return mixed
+	 */
 	public static function countSubscribersInProvince($province_id) {
 		$db = \JFactory::getDbo();
 		$sql = 'SELECT COUNT(*) FROM #__azmailer_subscriber WHERE nls_province_id = ' . $province_id;
@@ -90,6 +115,10 @@ class AZMailerSubscriberHelper {
 		return ($db->loadResult());
 	}
 
+	/**
+	 * @param array $sheetColumns
+	 * @return array
+	 */
 	public static function getImportColumnsWithIndexes($sheetColumns) {
 		$importColumns = self::getImportColumns();
 		foreach ($sheetColumns as $i => $sheetColumn) {
@@ -153,6 +182,11 @@ class AZMailerSubscriberHelper {
 		return ($answer);
 	}
 
+	/**
+	 * @param array $importColumns
+	 * @param string $columnName
+	 * @return bool
+	 */
 	public static function getImportColumnIndexByName($importColumns, $columnName) {
 		return ((array_key_exists($columnName, $importColumns) ? $importColumns[$columnName] : false));
 	}
@@ -295,6 +329,10 @@ class AZMailerSubscriberHelper {
 		return $imports;
 	}
 
+	/**
+	 * @param string $mail
+	 * @return bool
+	 */
 	public static function checkIfEmailSyntaxIsValid($mail = '') {
 		$answer = true;
 		$mailregex = '^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$';

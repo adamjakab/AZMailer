@@ -16,6 +16,10 @@ defined('_JEXEC') or die('Restricted access');
  */
 class AZMailerQueuemanagerHelper {
 
+	/**
+	 * @param integer $id
+	 * @return mixed
+	 */
 	public static function getMQIById($id) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -45,6 +49,9 @@ class AZMailerQueuemanagerHelper {
 		return ($answer);
 	}
 
+	/**
+	 * @return integer
+	 */
 	public static function countUnsentMails() {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -52,9 +59,14 @@ class AZMailerQueuemanagerHelper {
 		$query->from('#__azmailer_mail_queue_item AS a');
 		$query->where('a.mq_state = 0');
 		$db->setQuery($query);
-		return ($db->loadResult());
+		return ((int)$db->loadResult());
 	}
 
+	//todo: should this method be called 'setMailQueueState'??
+	/**
+	 * @param integer $state
+	 * @return bool
+	 */
 	public static function setMailQueue($state) {
 		$state = ($state == 1 ? $state : 0);
 		/** @var \JTable $MQS */
@@ -65,6 +77,10 @@ class AZMailerQueuemanagerHelper {
 		return ($MQS->save($data));
 	}
 
+	/**
+	 * @param string|bool $zeroOption
+	 * @return array
+	 */
 	public static function getSelectOptions_Type($zeroOption = false) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -80,6 +96,10 @@ class AZMailerQueuemanagerHelper {
 		return ($lst);
 	}
 
+	/**
+	 * @param string|bool $zeroOption
+	 * @return array
+	 */
 	public static function getSelectOptions_Priority($zeroOption = false) {
 		$lst = array();
 		if ($zeroOption !== false) {
@@ -94,6 +114,10 @@ class AZMailerQueuemanagerHelper {
 		return ($lst);
 	}
 
+	/**
+	 * @param string|bool $zeroOption
+	 * @return array
+	 */
 	public static function getSelectOptions_State($zeroOption = false) {
 		$lst = array();
 		if ($zeroOption !== false) {

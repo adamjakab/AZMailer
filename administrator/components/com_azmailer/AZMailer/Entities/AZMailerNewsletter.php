@@ -49,6 +49,14 @@ class AZMailerNewsletter extends AZMailerEntity {
 		}
 	}
 
+	/**
+	 * @param string $mail
+	 * @param string $type
+	 * @param int  $priority
+	 * @param string $firstname
+	 * @param string $lastname
+	 * @return \stdClass
+	 */
 	public function sendToSingleContact($mail = null, $type = null, $priority = 0, $firstname = null, $lastname = null) {
 		$answer = new \stdClass();
 		$answer->result = "";
@@ -108,10 +116,16 @@ class AZMailerNewsletter extends AZMailerEntity {
 
 	//------------------------------------------------PRIVATE
 
+	/**
+	 * @return bool
+	 */
 	public function save() {
 		return ($this->_save());
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function _save() {
 		$answer = false;
 		/** @var \JTable $table */

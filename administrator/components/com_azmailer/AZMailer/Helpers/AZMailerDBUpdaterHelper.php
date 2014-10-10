@@ -39,6 +39,10 @@ class AZMailerDBUpdaterHelper {
 	}
 
 
+	/**
+	 * @param bool $verbose
+	 * @return bool
+	 */
 	public function update($verbose = false) {
 		$this->verbose = $verbose;
 		$this->log("AZMailerDBUpdaterHelper: ready to update!");
@@ -56,6 +60,10 @@ class AZMailerDBUpdaterHelper {
 		return (true);
 	}
 
+	/**
+	 * @param string $msg
+	 * @param string $type
+	 */
 	private function log($msg, $type = "info") {
 		if ($this->verbose) {
 			echo '<br /><span class="' . $type . '">' . $msg . '</span>';
@@ -77,9 +85,14 @@ class AZMailerDBUpdaterHelper {
 		}
 	}
 
+	/**
+	 * @param string $dir
+	 * @param string $file_pattern - Regular Expression
+	 * @return array
+	 */
 	private function getFolderFileList($dir, $file_pattern = '/.*/') {
 		$answer = array();
-		if ($handle = opendir($dir)) {
+		if ( ($handle = opendir($dir)) ) {
 			while (false !== ($file = readdir($handle))) {
 				if (preg_match($file_pattern, $file) == 1) {
 					$answer[] = $file;
@@ -220,6 +233,10 @@ class AZMailerDBUpdaterHelper {
 
 	}
 
+	/**
+	 * @param string $tablename
+	 * @return bool
+	 */
 	private function _checkIfTableExists($tablename) {
 		$tablename = str_replace('#__', $this->db->getPrefix(), $tablename);
 		$tblList = $this->db->getTableList();
@@ -229,6 +246,10 @@ class AZMailerDBUpdaterHelper {
 
 	//------------------------------------------------------------------------DB-SQL
 
+	/**
+	 * @param \JDatabaseQuery|string $sql - The SQL statement to set either as a JDatabaseQuery object or a string.
+	 * @return bool
+	 */
 	private function ___executeSql($sql) {
 		$this->db->setQuery($sql);
 		$this->db->query();
@@ -237,6 +258,12 @@ class AZMailerDBUpdaterHelper {
 		return ($err == 0);
 	}
 
+	//todo: return emty array instead of empty string
+	/**
+	 * @param \JDatabaseQuery|string $sql - The SQL statement to set either as a JDatabaseQuery object or a string.
+	 * @param string $key
+	 * @return mixed|string
+	 */
 	private function ___loadSqlMultipleResults($sql, $key = null) {
 		$this->db->setQuery($sql);
 		$res = $this->db->loadAssocList($key);
@@ -245,12 +272,21 @@ class AZMailerDBUpdaterHelper {
 		return (($err == 0 ? $res : ""));
 	}
 
+	/**
+	 * @param $tablename
+	 * @param $keyName
+	 * @return bool
+	 */
 	private function _checkIfTableKeyExists($tablename, $keyName) {
 		$sql = 'SHOW INDEX FROM `' . $tablename . '` WHERE Key_name = "' . $keyName . '";';
 		$res = $this->___loadSqlSingleResult($sql);
 		return (!empty($res));
 	}
 
+	/**
+	 * @param \JDatabaseQuery|string $sql - The SQL statement to set either as a JDatabaseQuery object or a string.
+	 * @return mixed|string
+	 */
 	private function ___loadSqlSingleResult($sql) {
 		$this->db->setQuery($sql);
 		$res = $this->db->loadResult();
@@ -314,7 +350,10 @@ class AZMailerDBUpdaterHelper {
 	}
 
 	//-------------------------------------------------------------------------UTILS
-
+	/**
+	 * @param bool $verbose
+	 * @return bool
+	 */
 	public function removeAllTables($verbose = false) {
 		$this->verbose = $verbose;
 		$this->log("AZMailerDBUpdaterHelper: ready to remove all tables!");

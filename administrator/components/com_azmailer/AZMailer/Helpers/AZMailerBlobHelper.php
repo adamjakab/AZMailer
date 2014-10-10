@@ -17,6 +17,11 @@ use JFactory;
  */
 class AZMailerBlobHelper {
 
+	/**
+	 * @param string $type
+	 * @param integer $parentid
+	 * @return mixed
+	 */
 	public static function getBlob($type = null, $parentid = 0) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);

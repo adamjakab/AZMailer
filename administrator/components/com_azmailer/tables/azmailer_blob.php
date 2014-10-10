@@ -6,18 +6,25 @@
  **/
 defined('_JEXEC') or die('Restricted access');
 
-
+/**
+ * Class TableAzmailer_blob
+ */
 class TableAzmailer_blob extends JTable {
 	var $id = null;
 	var $parent_id = null;
 	var $parent_type = null;
 	var $htmlblob = null;
 
-
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_blob', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}

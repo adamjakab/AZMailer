@@ -15,10 +15,20 @@ defined('_JEXEC') or die('Restricted access');
  * @author jackisback
  */
 class AZMailerDateHelper {
+
+	/**
+	 * @param integer $ts
+	 * @param string $format
+	 * @return bool|string
+	 */
 	public static function convertToHumanReadableFormat($ts, $format = 'd/m/Y') {//if you want time use: 'd/m/Y G:i'
 		return (date($format, $ts));
 	}
 
+	/**
+	 * @param string $date
+	 * @return integer
+	 */
 	public static function convertFromHumanReadableFormat($date) {
 		//Convert Datetime from gg/mm/aaaa hh:mm:ss to timestamp
 		//MUST DO SOME DATE CHECKING HERE - IF INVALID LET'S USE NOW()
@@ -36,12 +46,20 @@ class AZMailerDateHelper {
 		return ($answer);
 	}
 
-	public static function getSecondsSince($ts = 0, $is_abs = true) {//is_abs=true will give difference always positive
+	/**
+	 * @param integer $ts
+	 * @param boolean $is_abs - if true will return difference as a positive integer
+	 * @return integer
+	 */
+	public static function getSecondsSince($ts = 0, $is_abs = true) {
 		$diff = $ts - self::now();
 		$diff = ($is_abs ? abs($diff) : $diff);
 		return ($diff);
 	}
 
+	/**
+	 * @return bool|string
+	 */
 	public static function now() {
 		return (date("U"));
 	}

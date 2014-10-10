@@ -7,7 +7,14 @@ defined('_JEXEC') or die('Restricted access');
  **/
 require_once 'AZMailerTableInfo.php';
 
+/**
+ * Class tbl_azmailer_template
+ */
 class tbl_azmailer_template extends AZMailerTableInfo {
+
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->name = 'azmailer_template';
 		$this->pk = 'id';
@@ -19,6 +26,9 @@ class tbl_azmailer_template extends AZMailerTableInfo {
 
 	}
 
+	/**
+	 * @return array
+	 */
 	private function getColumns() {
 		$answer = array(
 			array("Field" => "id", "Type" => "int(11) unsigned", "Null" => "NO", "Default" => "", "Extra" => "auto_increment"),
@@ -30,6 +40,9 @@ class tbl_azmailer_template extends AZMailerTableInfo {
 		return ($answer);
 	}
 
+	/**
+	 * @return array
+	 */
 	private function getData() {
 		$answer = array(
 			array('default', 'newsletter', 'Default Template', 'AZMailer Newsletter')

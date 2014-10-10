@@ -10,7 +10,10 @@ namespace AZMailer\Core;
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.html.pagination');
 
-
+/**
+ * Class AZMailerPagination
+ * @package AZMailer\Core
+ */
 class AZMailerPagination extends \JPagination {
 
 

@@ -6,7 +6,9 @@
  **/
 defined('_JEXEC') or die('Restricted access');
 
-
+/**
+ * Class TableAzmailer_mail_queue_item
+ */
 class TableAzmailer_mail_queue_item extends JTable {
 	var $id = null;
 	var $mq_date = null;
@@ -29,10 +31,16 @@ class TableAzmailer_mail_queue_item extends JTable {
 	var $mq_last_send_attempt_log = null;
 	var $mq_has_been_read = null;
 
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_mail_queue_item', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}

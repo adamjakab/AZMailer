@@ -6,7 +6,9 @@
  **/
 defined('_JEXEC') or die('Restricted access');
 
-
+/**
+ * Class TableAzmailer_template
+ */
 class TableAzmailer_template extends JTable {
 	var $id = null;
 	var $tpl_code = null;
@@ -14,11 +16,16 @@ class TableAzmailer_template extends JTable {
 	var $tpl_name = null;
 	var $tpl_title = null;
 
-
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_template', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}

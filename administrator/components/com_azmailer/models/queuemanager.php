@@ -12,6 +12,10 @@ use AZMailer\Core\AZMailerModel;
  * Queuemanager Model - for queue items
  */
 class AZMailerModelQueuemanager extends AZMailerModel {
+
+	/**
+	 * @param array $config
+	 */
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
@@ -29,6 +33,10 @@ class AZMailerModelQueuemanager extends AZMailerModel {
 		parent::__construct($config);
 	}
 
+	/**
+	 * @param array $cidArray
+	 * @return bool
+	 */
 	public function removeSpecificItems($cidArray) {
 		$delcnt = 0;
 		$table = $this->getTable();
@@ -49,10 +57,19 @@ class AZMailerModelQueuemanager extends AZMailerModel {
 		return (count($errors) == 0);
 	}
 
+	/**
+	 * @param string  $type
+	 * @param string  $prefix
+	 * @param array $config
+	 * @return JTable|mixed
+	 */
 	public function getTable($type = null, $prefix = null, $config = array()) {
 		return JTable::getInstance(($type ? $type : 'azmailer_mail_queue_item'), ($prefix ? $prefix : 'Table'), $config);
 	}
 
+	/**
+	 * @return JDatabaseQuery
+	 */
 	protected function getListQuery() {
 		$db = \JFactory::getDBO();
 		$query = $db->getQuery(true);
@@ -99,6 +116,10 @@ class AZMailerModelQueuemanager extends AZMailerModel {
 		return $query;
 	}
 
+	/**
+	 * @param string $ordering
+	 * @param string $direction
+	 */
 	protected function populateState($ordering = "mq_date", $direction = "DESC") {
 		//Filters
 		$this->setState('filter.search', $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search', '', "STRING"));

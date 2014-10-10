@@ -12,11 +12,16 @@ class TableAzmailer_province extends JTable {
 	var $province_name = null;
 	var $province_sigla = null;
 
-
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_province', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}

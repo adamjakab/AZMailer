@@ -17,7 +17,9 @@ use AZMailer\Entities\AZMailerQueueItem;
  */
 class AZMailerStatisticsHelper {
 
-
+	/**
+	 * @param integer $nlid
+	 */
 	public static function deleteStatisticsForNewsletter($nlid) {
 		$db = \JFactory::getDbo();
 		$sql = 'DELETE FROM #__azmailer_newsletter_stat WHERE stat_nl_id = ' . $nlid;

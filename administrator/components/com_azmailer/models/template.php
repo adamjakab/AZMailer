@@ -9,13 +9,15 @@ defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerModel;
 use AZMailer\Helpers\AZMailerNewsletterHelper;
 use AZMailer\Helpers\AZMailerTemplateHelper;
-use JComponentHelper;
 
 /**
  * Template Model
  */
 class AZMailerModelTemplate extends AZMailerModel {
 
+	/**
+	 * @param array $config
+	 */
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
@@ -25,11 +27,19 @@ class AZMailerModelTemplate extends AZMailerModel {
 		parent::__construct($config);
 	}
 
+	/**
+	 * @param integer $id
+	 * @return mixed
+	 */
 	public function getSpecificItem($id = null) {
 		$item = $this->_getSpecificItem($id);
 		return ($item);
 	}
 
+	/**
+	 * @param array $data
+	 * @return bool
+	 */
 	public function saveSpecificItem($data) {
 		JRequest::checkToken() or jexit('Invalid Token');
 		$data["tpl_code"] = str_replace(" ", "_", $data["tpl_code"]);
@@ -53,6 +63,10 @@ class AZMailerModelTemplate extends AZMailerModel {
 		return (count($errors) == 0);
 	}
 
+	/**
+	 * @param array $cidArray
+	 * @return bool
+	 */
 	public function removeSpecificItems($cidArray) {
 		$delcnt = 0;
 		$table = $this->getTable();
@@ -81,10 +95,19 @@ class AZMailerModelTemplate extends AZMailerModel {
 		return (count($errors) == 0);
 	}
 
+	/**
+	 * @param string $type
+	 * @param string  $prefix
+	 * @param array $config
+	 * @return JTable|mixed
+	 */
 	public function getTable($type = null, $prefix = null, $config = array()) {
 		return JTable::getInstance(($type ? $type : 'azmailer_template'), ($prefix ? $prefix : 'Table'), $config);
 	}
 
+	/**
+	 * @return JDatabaseQuery
+	 */
 	protected function getListQuery() {
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);

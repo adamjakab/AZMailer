@@ -18,6 +18,10 @@ use AZMailer\Entities\AZMailerSubscriber;
  */
 class AZMailerNewsletterHelper {
 
+	/**
+	 * @param integer $tplid
+	 * @return integer
+	 */
 	public static function countNewslettersWithTemplateId($tplid) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -29,12 +33,22 @@ class AZMailerNewsletterHelper {
 		return ($cnt);
 	}
 
+	/**
+	 * @param integer $tpl_id
+	 * @param string $tpl_subst - this is a base64 encoded json encoded stdClass object
+	 * @return mixed
+	 */
 	public static function getNewsletterSimpleTextVersion($tpl_id = 0, $tpl_subst = null) {
 		$txtver = strip_tags(self::getNewsletterSubstitutedContentFromTemplate($tpl_id, $tpl_subst));
 		$txtver = preg_replace("/(\r\n|\n|\r){2,}/m", "\n", $txtver);//remove double++ line breaks
 		return ($txtver);
 	}
 
+	/**
+	 * @param integer $tpl_id
+	 * @param string $tpl_subst - this is a base64 encoded json encoded stdClass object
+	 * @return string
+	 */
 	public static function getNewsletterSubstitutedContentFromTemplate($tpl_id = 0, $tpl_subst = null) {
 		/** @var \AZMailer\AZMailerCore $AZMAILER */
 		global $AZMAILER;
@@ -44,7 +58,7 @@ class AZMailerNewsletterHelper {
 			$html = (!is_null($blob) ? $blob->htmlblob : '<p></p>');
 			$html = preg_replace('/src="images\//i', 'src="/images/', $html);//fix images
 			//
-			$SUBSTITUTIONS = json_decode(base64_decode($tpl_subst));//this is a base64 encoded json string
+			$SUBSTITUTIONS = json_decode(base64_decode($tpl_subst));
 			if (!is_object($SUBSTITUTIONS)) {
 				$SUBSTITUTIONS = new \stdClass();
 			}
@@ -98,6 +112,11 @@ class AZMailerNewsletterHelper {
 		return ($html);
 	}
 
+	/**
+	 * @param string $nl_sendto_selections - a base64 + json encoded stdClass
+	 * @param $nl_sendto_additional - a base64 + json encoded stdClass
+	 * @return array
+	 */
 	public static function getNewsletterSendtoData($nl_sendto_selections, $nl_sendto_additional) {
 		global $AZMAILER;
 		$answer = array();
@@ -349,6 +368,10 @@ class AZMailerNewsletterHelper {
 		return ($file);
 	}
 
+	//todo: check this $qty and $unit - use array for units
+	/**
+	 * @return int
+	 */
 	public static function getMaxAllowedUploadSizeBytes() {
 		$value = ini_get('upload_max_filesize');
 		$value_length = strlen($value);
@@ -365,9 +388,13 @@ class AZMailerNewsletterHelper {
 				$qty *= 1073741824;
 				break;
 		}
-		return $qty;
+		return (int)$qty;
 	}
 
+	/**
+	 * @param \stdClass $file
+	 * @return \stdClass
+	 */
 	public static function uploadNewsletterAttachment($file) {
 		global $AZMAILER;
 		jimport('joomla.filesystem.file');
@@ -424,7 +451,9 @@ class AZMailerNewsletterHelper {
 	}
 
 	//todo: this will need to be moved when needed by others
-
+	/**
+	 * @return array
+	 */
 	public static function getAllowedAttachmentExtensions() {
 		global $AZMAILER;
 		$answer = array();
@@ -437,10 +466,13 @@ class AZMailerNewsletterHelper {
 				}
 			}
 		}
-		//$answer = $allowed_extensions;
 		return ($answer);
 	}
 
+	/**
+	 * @param int $nlid
+	 * @return mixed
+	 */
 	public static function getNewsletter($nlid) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -448,10 +480,14 @@ class AZMailerNewsletterHelper {
 		$query->from('#__azmailer_newsletter AS a');
 		$query->where('a.id = ' . $db->quote($nlid, true));
 		$db->setQuery($query);
-		$nl = $db->loadObject();
-		return ($nl);
+		return($db->loadObject());
 	}
 
+	/**
+	 * @param int $nlid
+	 * @param string $filename
+	 * @return \stdClass
+	 */
 	public static function removeNewsletterAttachment($nlid, $filename) {
 		$answer = new \stdClass();
 		$answer->errors = array();
@@ -493,7 +529,7 @@ class AZMailerNewsletterHelper {
 	}
 
 	/**
-	 * @param int    $nlid
+	 * @param int $nlid
 	 * @param string $email
 	 * @return \stdClass
 	 */
@@ -522,6 +558,12 @@ class AZMailerNewsletterHelper {
 	}
 
 	//todo: we need an unified link which can handle recognising user and checking if he should have access to that specific attachment
+	/**
+	 * @param int $nlid
+	 * @param \stdClass $attachment
+	 * @param string $email
+	 * @return string
+	 */
 	public static function getDownloadUrlForAttachment($nlid, $attachment, $email = null) {
 		global $AZMAILER;
 		$LNK = '#';
@@ -565,6 +607,10 @@ class AZMailerNewsletterHelper {
 	}
 
 
+	/**
+	 * @param string $CTRL
+	 * @return bool
+	 */
 	public static function checkAndGetValidMailToRemoveFromNewsletter($CTRL) {
 		$answer = false;
 		$CA = explode(":", $CTRL);
@@ -583,6 +629,10 @@ class AZMailerNewsletterHelper {
 	}
 
 	//TODO: Why is this here and not in AZMailerSubscriberHelper???
+	/**
+	 * @param string $email
+	 * @return bool
+	 */
 	public static function blacklistNewsletterSubscriber($email) {
 		$answer = false;
 		$NLS = AZMailerSubscriberHelper::getNewsletterSubscriberByMail($email);
@@ -595,10 +645,14 @@ class AZMailerNewsletterHelper {
 		return ($answer);
 	}
 
-
+	/**
+	 * @param array $arr
+	 * @param string $checkField
+	 * @return array
+	 */
 	public static function cleanupArrayOfObjectsFromDuplicates($arr, $checkField = "nls_email") {
 		$tmp = array();
-		while ($popped = array_pop($arr)) {
+		while ( ($popped = array_pop($arr)) ) {
 			if (!array_key_exists($popped->$checkField, $tmp)) {
 				$tmp[$popped->$checkField] = $popped;
 			}
@@ -607,6 +661,9 @@ class AZMailerNewsletterHelper {
 	}
 
 
+	/**
+	 * @param int $nlid
+	 */
 	public static function deleteImagesForNewsletter($nlid) {
 		jimport('joomla.filesystem.file');
 		$NL = self::getNewsletter($nlid);
@@ -623,6 +680,10 @@ class AZMailerNewsletterHelper {
 		}
 	}
 
+	/**
+	 * @param int $nlid
+	 * @return string
+	 */
 	public static function duplicateImagesForNewsletter($nlid) {
 		global $AZMAILER;
 		jimport('joomla.filesystem.file');
@@ -647,7 +708,10 @@ class AZMailerNewsletterHelper {
 		return ($NEWSUBSTITUTIONS);
 	}
 
-	//called by model when deleting
+	/**
+	 * called by model when deleting newletter
+	 * @param int $nlid
+	 */
 	public static function deleteAttachmentsForNewsletter($nlid) {
 		global $AZMAILER;
 		jimport('joomla.filesystem.file');
@@ -661,7 +725,11 @@ class AZMailerNewsletterHelper {
 		}
 	}
 
-	//called by model when duplicating
+	/**
+	 * //called by model when duplicating newsletter
+	 * @param int $nlid
+	 * @return string
+	 */
 	public static function duplicateAttachmentsForNewsletter($nlid) {
 		global $AZMAILER;
 		jimport('joomla.filesystem.file');

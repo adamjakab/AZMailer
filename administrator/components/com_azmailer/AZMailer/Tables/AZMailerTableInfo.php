@@ -27,11 +27,17 @@ class AZMailerTableInfo {
 	//
 	private $db;
 
-	//
+	/**
+	 * Constructor
+	 */
 	public function __construct() {
 		$this->db = \JFactory::getDBO();
 	}
 
+	/**
+	 * @param string|\JDatabaseQuery $sql - The SQL statement to set either as a JDatabaseQuery object or a string.
+	 * @return bool|mixed
+	 */
 	protected function ___loadSqlSingleResult($sql) {
 		try {
 			$this->db->setQuery($sql);

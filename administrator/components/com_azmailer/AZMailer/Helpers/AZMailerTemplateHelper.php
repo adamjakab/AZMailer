@@ -17,6 +17,10 @@ use JFactory;
  */
 class AZMailerTemplateHelper {
 
+	/**
+	 * @param string $tplCode
+	 * @return int
+	 */
 	public static function getTemplateIdByCode($tplCode) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -28,6 +32,10 @@ class AZMailerTemplateHelper {
 		return ($id);
 	}
 
+	/**
+	 * @param integer $tplid
+	 * @return mixed
+	 */
 	public static function getTemplateById($tplid) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -39,6 +47,11 @@ class AZMailerTemplateHelper {
 		return ($tpl);
 	}
 
+	/**
+	 * @param string $tplType
+	 * @param bool $zeroOption
+	 * @return array
+	 */
 	public static function getSelectOptions_TemplatesForType($tplType, $zeroOption = false) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);

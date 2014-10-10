@@ -139,6 +139,10 @@ class AZMailerQueueManager {
 		$this->error["message"] = 'OK';
 	}
 
+	/**
+	 * @param boolean|null $blocked
+	 * @return boolean
+	 */
 	private function updateMailQueueState($blocked = null) {
 		if ($this->checkIfQueueIsEnabled()) {
 			$MQS = \JTable::getInstance('azmailer_mail_queue_state', 'Table');
@@ -163,6 +167,9 @@ class AZMailerQueueManager {
 		return (true);
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function checkIfQueueIsEnabled() {
 		$MQS = \JTable::getInstance('azmailer_mail_queue_state', 'Table');
 		$MQS->load($this->MQID);
@@ -176,13 +183,18 @@ class AZMailerQueueManager {
 		}
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getError() {
 		return ($this->error);
 	}
 
 
 	//--------------------------------------------------------------------------------PRIVATE METHODS
-
+	/**
+	 * @return integer
+	 */
 	public function getSentMailCount() {
 		return ($this->sentMailCount);
 	}
@@ -201,6 +213,10 @@ class AZMailerQueueManager {
 		return ($MSRES);
 	}
 
+	/**
+	 * @param integer $MQIID
+	 * @return AZMailerQueueItem
+	 */
 	private function getSingleMailQueueItem($MQIID) {
 		$MQI = \JTable::getInstance('azmailer_mail_queue_item', 'Table');
 		$MQI->load($MQIID);
@@ -425,6 +441,10 @@ class AZMailerQueueManager {
 		$table->save($data);
 	}
 
+	/**
+	 * @param int $p
+	 * @return int
+	 */
 	private function countMaxAttemptsForPriorityLevel($p = 5) {
 		$answer = 0;
 		for ($i = 0; $i <= $p; $i++) {
@@ -433,6 +453,9 @@ class AZMailerQueueManager {
 		return ($answer);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function workQueue() {
 		if ($this->checkIfQueueIsEnabled()) {
 			if ($this->checkIfQueueIsUsable()) {
@@ -448,6 +471,9 @@ class AZMailerQueueManager {
 		return (false);
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function checkIfQueueIsUsable() {
 		$MQS = \JTable::getInstance('azmailer_mail_queue_state', 'Table');
 		$MQS->load($this->MQID);
@@ -510,6 +536,9 @@ class AZMailerQueueManager {
 		return ($db->loadColumn());
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function checkIfTimeIsUp() {
 		return (($this->AZNLMQM_startRuntime + $this->AZNLMQM_maxRuntime) < AZMailerDateHelper::now());
 	}

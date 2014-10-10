@@ -12,17 +12,20 @@ use AZMailer\Helpers\AZMailerSubscriberHelper;
  **/
 defined('_JEXEC') or die('RESTRICTED');
 
+/**
+ * Class AZMailerPostman
+ */
 class AZMailerPostman {
 	const CRLF = "\r\n";
-		const BLEN = 1024; //unknown error
+	const BLEN = 1024; //unknown error
 	static private $logs = array();
 	private $resultcode = 999; //this is the Mail Server Connection resource
-		private $resultmsg = "Unknown error"; //mx hosts array
-private $mxc = null;
-private $mxhosts = array();
+	private $resultmsg = "Unknown error"; //mx hosts array
+	private $mxc = null;
+	private $mxhosts = array();
 	private $mx_connection_timeout = 5;
 	private $ACCEPTABLEMXCODES = array("220", "250", "354");
-	private $php_required_functions = array("stream_socket_client", "fsockopen");
+	private $php_connection_methods = array("stream_socket_client", "fsockopen");
 	private $smtp_usable_methods = array();
 	private $MDATA = array(
 		"helo" => "",
@@ -39,12 +42,19 @@ private $mxhosts = array();
 		"attachments" => array()
 	);
 
+	/**
+	 * @param \stdClass $qs
+	 */
 	public function __construct($qs) {
 		self::$logs = array();//this is static so we must clean it on new instance
 		$this->logThis('AZMailerPostman: ' . Date("y-m-d G:i.s"));
 		$this->setup($qs);
 	}
 
+	/**
+	 * @param string $msg
+	 * @param bool $cleanupSpecialChars
+	 */
 	public static function logThis($msg, $cleanupSpecialChars = true) {
 		if (!empty($msg)) {
 			if ($cleanupSpecialChars) {
@@ -55,27 +65,31 @@ private $mxhosts = array();
 	}
 
 	//------------------------------------------------------------------------------MAIN PUBLIC FUNCTIONS
-
+	/**
+	 * @param \stdClass $qs
+	 */
 	private function setup($qs = null) {
-		if (!$qs) {
-			return;
-		}
-		//map quick setup date to MDATA
-		foreach ($qs as $sk => $sv) {
-			if (isset($this->MDATA[$sk])) {
-				if (method_exists($this, "set_" . $sk)) {
-					call_user_func_array(array($this, "set_" . $sk), array($sv));
+		if ($qs) {
+			//map quick setup date to MDATA
+			foreach ($qs as $sk => $sv) {
+				if (isset($this->MDATA[$sk])) {
+					if (method_exists($this, "set_" . $sk)) {
+						call_user_func_array(array($this, "set_" . $sk), array($sv));
+					}
 				}
 			}
+			$this->smtp_usable_methods = $this->smtp_get_connection_methods();
 		}
-		//check for php usable methods
-		$this->smtp_usable_methods = $this->smtp_get_connection_methods();
 	}
 
+	/**
+	 * Returns an array of usable(non disabled) functions ("stream_socket_client", "fsockopen")
+	 * @return array
+	 */
 	private function smtp_get_connection_methods() {
 		$answer = array();
 		$php_disabled_functions = ini_get('disable_functions');
-		foreach ($this->php_required_functions as $phpfunc) {
+		foreach ($this->php_connection_methods as $phpfunc) {
 			if (!preg_match('/' . $phpfunc . '/', $php_disabled_functions)) {
 				if (function_exists($phpfunc)) {
 					array_push($answer, $phpfunc);
@@ -86,7 +100,10 @@ private $mxhosts = array();
 	}
 
 	//------------------------------------------------------------------------------SETTERS
-
+	/**
+	 * @param string $key
+	 * @return mixed|bool
+	 */
 	public function getMailData($key) {
 		if (isset($this->MDATA[$key])) {
 			return ($this->MDATA[$key]);
@@ -94,6 +111,10 @@ private $mxhosts = array();
 		return (false);
 	}
 
+	/**
+	 * The main send method
+	 * @return bool
+	 */
 	public function sendMail() {
 		if (!$this->check_subject()) {
 			$this->setError(911, "sendMail[%s]: Mail subject is not set!");
@@ -121,6 +142,23 @@ private $mxhosts = array();
 		return ($res);
 	}
 
+	/**
+	 * @param integer $errNum
+	 * @param string $errMsg
+	 * @return integer
+	 */
+	private function setError($errNum, $errMsg) {
+		$this->resultcode = $errNum; //last server error code
+		$this->resultmsg = htmlspecialchars(sprintf($errMsg, $errNum));
+		$errMsg = '<font style="color:#ff0000">' . $this->resultmsg . '</font>';
+		$this->logThis($errMsg, false);
+		return ($errNum);
+	}
+
+	/**
+	 * @param string $subject
+	 * @return bool|string
+	 */
 	private function check_subject($subject = null) {
 		if (!$subject) {
 			$subject = $this->MDATA["subject"];
@@ -133,14 +171,10 @@ private $mxhosts = array();
 		return ($subject);
 	}
 
-	private function setError($errNum, $errMsg) {
-		$this->resultcode = $errNum; //last server error code
-		$this->resultmsg = htmlspecialchars(sprintf($errMsg, $errNum));
-		$errMsg = '<font style="color:#ff0000">' . $this->resultmsg . '</font>';
-		$this->logThis($errMsg, false);
-		return ($errNum);
-	}
-
+	/**
+	 * @param string $text
+	 * @return bool|string
+	 */
 	private function check_text($text = null) {
 		if (!$text) {
 			$text = $this->MDATA["text"];
@@ -152,6 +186,10 @@ private $mxhosts = array();
 		return ($text);
 	}
 
+	/**
+	 * @param string $html
+	 * @return bool|string
+	 */
 	private function check_html($html = null) {
 		if (!$html) {
 			$html = $this->MDATA["html"];
@@ -163,6 +201,10 @@ private $mxhosts = array();
 		return ($html);
 	}
 
+	/**
+	 * @param bool $keepConnection - if true, connection to server will not be destroyed after check(so it can be re-used)
+	 * @return bool
+	 */
 	public function controlRecipientMailAddress($keepConnection = false) {
 		if (!$this->check_helo()) {
 			$this->setError(908, "Postman Check[%s]: Undefined parameter HELO - unable continue!");
@@ -209,6 +251,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $helo
+	 * @return bool|string
+	 */
 	private function check_helo($helo = null) {
 		if (!$helo) {
 			$helo = $this->MDATA["helo"];
@@ -229,6 +275,10 @@ private $mxhosts = array();
 		return ($helo);
 	}
 
+	/**
+	 * @param string $from
+	 * @return bool|string
+	 */
 	private function check_from($from = null) {
 		if (!$from) {
 			$from = $this->MDATA["from"];
@@ -241,6 +291,10 @@ private $mxhosts = array();
 		return ($from);
 	}
 
+	/**
+	 * @param string $to
+	 * @return bool|string
+	 */
 	private function check_to($to = null) {
 		if (!$to) {
 			$to = $this->MDATA["to"];
@@ -253,9 +307,12 @@ private $mxhosts = array();
 		return ($to);
 	}
 
+	/**
+	 * @return bool|resource
+	 */
 	private function getConnectionResource() {
 		if (!$this->mxc) {
-			if ($this->mxhosts = $this->getMXHosts()) {
+			if ( ($this->mxhosts = $this->getMXHosts()) ) {
 				$this->mxc = $this->getMXConnectionResource($this->mxhosts);
 				if (!$this->mxc) {
 					$this->logThis("getConnectionResource[$this->resultcode] - All MX hosts failed - no available connection!");
@@ -264,9 +321,12 @@ private $mxhosts = array();
 				$this->setError(911, "getConnectionResource[%s] - No available MX host to use!");
 			}
 		}
-		return ($this->mxc);
+		return ($this->mxc?$this->mxc:false);
 	}
 
+	/**
+	 * @return array|bool
+	 */
 	private function getMXHosts() {
 		$answer = false;
 		if (!empty($this->MDATA["to"])) {
@@ -305,6 +365,10 @@ private $mxhosts = array();
 
 	//------------------------------------------------------------------------------CHECKERS (return correct data to set or FALSE if incorrect)
 
+	/**
+	 * @param array $mxhosts
+	 * @return bool|resource
+	 */
 	private function getMXConnectionResource($mxhosts) {
 		$handle = false;
 		foreach ($mxhosts as $mxhost) {
@@ -324,6 +388,11 @@ private $mxhosts = array();
 		return ($handle);
 	}
 
+	/**
+	 * @param string $host
+	 * @param integer $port
+	 * @return bool|resource
+	 */
 	private function smtp_connect($host, $port) {
 		$handle = false;
 		if (count($this->smtp_usable_methods) > 0) {
@@ -343,7 +412,7 @@ private $mxhosts = array();
 							break;
 						default:
 							$errno = 127;
-							$errstr = "Unknown connection method!";
+							$errstr = "Unknown connection method($connectionMethod)!";
 					}
 					if (!$handle) {
 						$this->setError($errno, $logMsg . "FAILED[%s] - " . $errstr);
@@ -360,17 +429,21 @@ private $mxhosts = array();
 				return (false);
 			}
 		} else {
-			$this->setError(951, "SMTP(CONN)[%s] - Server does NOT support any of these connection methods: " . implode(", ", $this->php_required_functions));
+			$this->setError(951, "SMTP(CONN)[%s] - Server does NOT support any of these connection methods: " . implode(", ", $this->php_connection_methods));
 			return (false);
 		}
 		return $handle;
 	}
 
-	private function smtp_read_from_handle($handle = null) {
+	/**
+	 * @param resource $handle
+	 * @return int - the smtp server response code
+	 */
+	private function smtp_read_from_handle($handle) {
 		if ($handle && is_resource($handle)) {
 			$resp = array();
 			do {
-				if ($response = fgets($handle, self::BLEN)) {
+				if ( ($response = fgets($handle, self::BLEN)) ) {
 					$resp[] = $response;
 					preg_match("/^([0-9]{3})/", $response, $matches);
 					if ($matches[1]) {
@@ -395,6 +468,12 @@ private $mxhosts = array();
 		return ($rcode);
 	}
 
+	/**
+	 * @param resource $handle
+	 * @param string $command
+	 * @param bool $traceCommand
+	 * @return bool
+	 */
 	private function smtp_command($handle, $command, $traceCommand = true) {
 		$answer = false;
 		if ($handle) {
@@ -412,6 +491,9 @@ private $mxhosts = array();
 		return ($answer);
 	}
 
+	/**
+	 * @param resource $handle
+	 */
 	private function smtp_disconnect($handle) {
 		if ($handle) {
 			if (!fwrite($handle, 'QUIT' . self::CRLF)) {
@@ -423,7 +505,13 @@ private $mxhosts = array();
 		}
 	}
 
-	private function smtp_send($handle = null, $mess = null) {
+	/**
+	 * Break up message into lines and pump it to the smtp server
+	 * @param resource $handle
+	 * @param string $mess
+	 * @return bool
+	 */
+	private function smtp_send($handle, $mess = null) {
 		$answer = false;
 		if ($this->smtp_command($handle, "DATA")) {
 			if ($this->smtp_read_from_handle($handle) == 354) {
@@ -462,6 +550,10 @@ private $mxhosts = array();
 		return ($answer);
 	}
 
+	/**
+	 * @param string $helo
+	 * @return bool
+	 */
 	public function set_helo($helo = null) {
 		$helo = $this->check_helo($helo);
 		if ($helo) {
@@ -473,6 +565,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $xmailer
+	 * @return bool
+	 */
 	public function set_xmailer($xmailer = null) {
 		$xmailer = $this->check_xmailer($xmailer);
 		if ($xmailer) {
@@ -484,6 +580,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $xmailer
+	 * @return bool|string
+	 */
 	private function check_xmailer($xmailer = null) {
 		if (!$xmailer) {
 			$xmailer = $this->MDATA["xmailer"];
@@ -500,6 +600,10 @@ private $mxhosts = array();
 		return ($xmailer);
 	}
 
+	/**
+	 * @param string $messageid
+	 * @return bool
+	 */
 	public function set_messageid($messageid = null) {
 		$messageid = $this->check_messageid($messageid);
 		if ($messageid) {
@@ -511,6 +615,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $messageid
+	 * @return bool|string
+	 */
 	private function check_messageid($messageid = null) {
 		if (!$messageid) {
 			$messageid = $this->MDATA["messageid"];
@@ -531,6 +639,10 @@ private $mxhosts = array();
 		return ($messageid);
 	}
 
+	/**
+	 * @param string $from
+	 * @return bool
+	 */
 	public function set_from($from = null) {
 		$from = $this->check_from($from);
 		if ($from) {
@@ -544,7 +656,10 @@ private $mxhosts = array();
 
 
 	//------------------------------------------------------------------------------OTHER PUBLIC FUNCTIONS
-
+	/**
+	 * @param string $fromname
+	 * @return bool
+	 */
 	public function set_fromname($fromname = null) {
 		$fromname = $this->check_fromname($fromname);
 		if ($fromname) {
@@ -556,6 +671,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $fromname
+	 * @return bool|string
+	 */
 	private function check_fromname($fromname = null) {
 		if (!$fromname) {
 			$fromname = $this->MDATA["fromname"];
@@ -572,6 +691,10 @@ private $mxhosts = array();
 		return ($fromname);
 	}
 
+	/**
+	 * @param string $to
+	 * @return bool
+	 */
 	public function set_to($to = null) {
 		$to = $this->check_to($to);
 		if ($to) {
@@ -583,6 +706,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $returnpath
+	 * @return bool
+	 */
 	public function set_returnpath($returnpath = null) {
 		$returnpath = $this->check_returnpath($returnpath);
 		if ($returnpath) {
@@ -595,8 +722,10 @@ private $mxhosts = array();
 	}
 
 
-	//------------------------------------------------------------------------------private utils
-
+	/**
+	 * @param string $returnpath
+	 * @return bool|string
+	 */
 	private function check_returnpath($returnpath = null) {
 		if (!$returnpath) {
 			$returnpath = $this->MDATA["returnpath"];
@@ -609,6 +738,10 @@ private $mxhosts = array();
 		return ($returnpath);
 	}
 
+	/**
+	 * @param string $subject
+	 * @return bool
+	 */
 	public function set_subject($subject = null) {
 		$subject = $this->check_subject($subject);
 		if ($subject) {
@@ -620,6 +753,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $text
+	 * @return bool
+	 */
 	public function set_text($text = null) {
 		$text = $this->check_text($text);
 		if ($text) {
@@ -631,6 +768,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param string $html
+	 * @return bool
+	 */
 	public function set_html($html = null) {
 		$html = $this->check_html($html);
 		if ($html) {
@@ -642,6 +783,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param array $headers
+	 * @return bool
+	 */
 	public function set_headers($headers = null) {
 		$headers = $this->check_headers($headers);
 		if ($headers) {
@@ -655,6 +800,10 @@ private $mxhosts = array();
 		}
 	}
 
+	/**
+	 * @param array $headers
+	 * @return array|bool
+	 */
 	private function check_headers($headers = null) {
 		if (!$headers) {
 			$headers = $this->MDATA["headers"];
@@ -681,6 +830,11 @@ private $mxhosts = array();
 		return ($validHeaders);
 	}
 
+	/**
+	 * @param string $headerName
+	 * @param string $headerValue
+	 * @return bool|\stdClass
+	 */
 	private function check_header($headerName = null, $headerValue = null) {
 		//header name
 		if (!is_string($headerName)) {
@@ -766,6 +920,13 @@ private $mxhosts = array();
 		return ($header);
 	}
 
+	/**
+	 * @param string $file
+	 * @param string $fileName
+	 * @param string $disposition
+	 * @param string $uid
+	 * @return bool
+	 */
 	public function add_attachment($file = null, $fileName = null, $disposition = null, $uid = null) {
 		if (!file_exists($file)) {
 			$this->logThis("add_attachment: File does not exist! - $file");
@@ -813,14 +974,23 @@ private $mxhosts = array();
 		return (true);
 	}
 
+	/**
+	 * @return array
+	 */
 	public function getLogs() {
 		return (self::$logs);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getResultCode() {
 		return ($this->resultcode);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getResultMessage() {
 		return ($this->resultmsg);
 	}

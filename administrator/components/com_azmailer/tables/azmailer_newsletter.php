@@ -23,10 +23,16 @@ class TableAzmailer_newsletter extends JTable {
 	var $nl_selectcount = null;
 	var $nl_sendcount = null;
 
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_newsletter', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}

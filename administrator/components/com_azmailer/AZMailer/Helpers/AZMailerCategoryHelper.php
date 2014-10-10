@@ -20,6 +20,10 @@ use JText;
 class AZMailerCategoryHelper {
 	private static $categoryItemsList;
 
+	/**
+	 * @param string $jsonArray
+	 * @return string
+	 */
 	public static function getCategoryItemsHumanReadableList($jsonArray) {
 		self::checkLoadCategoryItems();
 		$answer = "";
@@ -50,6 +54,10 @@ class AZMailerCategoryHelper {
 		}
 	}
 
+	/**
+	 * @param integer $cat_id
+	 * @return string
+	 */
 	public static function getCheckboxHtmlForSelectionCategory($cat_id) {
 		global $AZMAILER;
 		self::checkLoadCategoryItems();
@@ -91,6 +99,10 @@ class AZMailerCategoryHelper {
 		return ($lst);
 	}
 
+	/**
+	 * @param int $cat_id
+	 * @return mixed
+	 */
 	public static function getDefaultOptionsArrayForCategory($cat_id) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
@@ -104,7 +116,10 @@ class AZMailerCategoryHelper {
 	}
 
 	//-----------------------------------------------------------------------------------FOR XLS IMPORTER
-
+	/**
+	 * @param int $itemId
+	 * @return bool
+	 */
 	public static function getCategoryIDForItem($itemId) {
 		$answer = false;
 		self::checkLoadCategoryItems();

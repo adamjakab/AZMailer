@@ -67,6 +67,10 @@ class AZMailerViewNewsletter extends AZMailerView {
 		$this->save(true);
 	}
 
+	/**
+	 * @param bool $isApply
+	 * @throws Exception
+	 */
 	public function save($isApply = false) {
 		global $AZMAILER;
 		\JRequest::checkToken() or jexit('Invalid Token');

@@ -12,11 +12,19 @@ use AZMailer\Core\AZMailerPostman;
  */
 defined('_JEXEC') or die('Restricted access');
 
+/**
+ * Class AZMailerPostmanHelper
+ * @package AZMailer\Helpers
+ */
 class AZMailerPostmanHelper {
 	/* "base64" or "quoted-printable" */
 	static private $enc_body_txt = "base64";
 	static private $enc_body_htm = "base64";
 
+	/**
+	 * @param string $str
+	 * @return bool
+	 */
 	static public function is_valid_hostname($str = null) {
 		$answer = false;
 		$str = trim($str);
@@ -29,11 +37,19 @@ class AZMailerPostmanHelper {
 		return ($answer);
 	}
 
+	/**
+	 * @param string $str
+	 * @return bool
+	 */
 	static public function is_ipv4($str = null) {
 		$str = trim($str);
 		return (is_string($str) && !empty($str) && ip2long($str) && count(explode('.', $str)) === 4);
 	}
 
+	/**
+	 * @param array $MDATA
+	 * @return string
+	 */
 	static public function composeMessageData($MDATA = array()) {
 		$msgData = new \stdClass();
 		$msgData->headers = array();
@@ -179,7 +195,12 @@ class AZMailerPostmanHelper {
 	 *  Fifth Floor, Boston, MA 02110-1301, USA                                                *
 	 *                                                                                         *
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
-
+	/**
+	 * @param string $str
+	 * @param boolean $num
+	 * @param string $add
+	 * @return bool
+	 */
 	static public function is_alpha($str = null, $num = true, $add = '') {
 		if (!is_string($str)) {
 			AZMailerPostman::logThis("AZMailerPostmanHelper::is_alpha: invalid argument type");
@@ -218,6 +239,10 @@ class AZMailerPostmanHelper {
 		}
 	}
 
+	/**
+	 * @param string $name
+	 * @return string
+	 */
 	static public function mime_type($name = null) {
 		if (!is_string($name)) {
 			AZMailerPostman::logThis("AZMailerPostmanHelper::mime_type: invalid filename type");
@@ -289,6 +314,11 @@ class AZMailerPostmanHelper {
 		return $ret;
 	}
 
+	/**
+	 * @param string $str
+	 * @param array $addrep
+	 * @return bool|mixed|string
+	 */
 	static public function str_clear($str = null, $addrep = null) {
 		$rep = array("\r", "\n", "\t");
 		if (!is_string($str)) {

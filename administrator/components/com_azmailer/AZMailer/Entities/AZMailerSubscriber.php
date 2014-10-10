@@ -107,15 +107,24 @@ class AZMailerSubscriber extends AZMailerEntity {
 		return (true);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getFullName() {
 		$answer = $this->get("nls_firstname") . ' ' . $this->get("nls_lastname");
 		return ($answer);
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function getIsBlacklisted() {
 		return ((int)$this->get("nls_blacklisted") == 1);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getMailValidity() {
 		$answer = self::$VALIDITY_UNCONTROLLED;
 		$MVC = (int)$this->get("nls_mail_validation_code");
@@ -144,17 +153,24 @@ class AZMailerSubscriber extends AZMailerEntity {
 		return ($answer);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getCountryName() {
 		$this->getLocationData();
 		return ((isset($this->locationData["country"]->country_name) ? $this->locationData["country"]->country_name : ""));
 	}
 
+	//todo: rename this! - a getter with no return value is not a getter
 	private function getLocationData() {
 		if (!$this->locationData) {
 			$this->locationData = AZMailerLocationHelper::getCountryRegionProvince($this->get("nls_country_id"), $this->get("nls_region_id"), $this->get("nls_province_id"));
 		}
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getRegionName() {
 		$this->getLocationData();
 		return ((isset($this->locationData["region"]->region_name) ? $this->locationData["region"]->region_name : ""));
@@ -162,12 +178,18 @@ class AZMailerSubscriber extends AZMailerEntity {
 
 
 	//------------------------------------------------PRIVATE
-
+	/**
+	 * @return string
+	 */
 	public function getProvinceName() {
 		$this->getLocationData();
 		return ((isset($this->locationData["province"]->province_name) ? $this->locationData["province"]->province_name : ""));
 	}
 
+	/**
+	 * @param integer $categoryNumber
+	 * @return string
+	 */
 	public function getCategoryNamesList($categoryNumber = null) {
 		return (AZMailerCategoryHelper::getCategoryItemsHumanReadableList($this->get("nls_cat_" . $categoryNumber)));
 	}

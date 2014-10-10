@@ -21,6 +21,9 @@ class AZMailerException extends \Exception {
 		parent::__construct($message, $code, $previous);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getFormattedErrorMessage() {
 		$answer = '';
 		$answer .= '<h3>(' . $this->getCode() . ') ' . $this->getMessage() . '</h3>';

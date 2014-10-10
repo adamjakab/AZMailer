@@ -11,7 +11,10 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 use JRequest as JRequest;
 
-
+/**
+ * Class AZMailerController
+ * @package AZMailer\Core
+ */
 class AZMailerController extends \JControllerLegacy {
 	/**
 	 * @param array $config

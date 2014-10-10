@@ -13,10 +13,16 @@ class TableAzmailer_newsletter_stat extends JTable {
 	var $stat_date = null;
 	var $stat_client = null;
 
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_newsletter_stat', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}

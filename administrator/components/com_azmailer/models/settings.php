@@ -14,10 +14,17 @@ use AZMailer\Helpers\AZMailerComponentParamHelper;
  */
 class AZMailerModelSettings extends AZMailerModel {
 
+	/**
+	 * @param array $config
+	 */
 	public function __construct($config = array()) {
 		parent::__construct($config);
 	}
 
+	/**
+	 * @param string $paramName
+	 * @return string
+	 */
 	public function getParamEditForm($paramName) {
 		$answer = '';
 		if (!empty($paramName)) {
@@ -32,6 +39,11 @@ class AZMailerModelSettings extends AZMailerModel {
 		return ($answer);
 	}
 
+	/**
+	 * @param string $paramName
+	 * @param mixed $paramValue
+	 * @return bool|string
+	 */
 	public function submitParamEditForm($paramName, $paramValue) {
 		$answer = '';
 		if (!empty($paramName)) {

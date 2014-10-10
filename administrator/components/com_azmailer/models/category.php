@@ -7,13 +7,15 @@
  */
 defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerModel;
-use JComponentHelper;
 
 /**
  * Category Model
  */
 class AZMailerModelCategory extends AZMailerModel {
 
+	/**
+	 * @param array $config
+	 */
 	public function __construct($config = array()) {
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
@@ -23,6 +25,11 @@ class AZMailerModelCategory extends AZMailerModel {
 		parent::__construct($config);
 	}
 
+	/**
+	 * @param integer $catIndex
+	 * @param string $catName
+	 * @return bool
+	 */
 	public function addNew($catIndex = null, $catName = null) {
 		$answer = false;
 		if (!empty($catIndex) && in_array($catIndex, array(1, 2, 3, 4, 5))) {
@@ -47,10 +54,22 @@ class AZMailerModelCategory extends AZMailerModel {
 		return ($answer);
 	}
 
+	/**
+	 * @param string $type
+	 * @param string $prefix
+	 * @param array  $config
+	 * @return JTable|mixed
+	 */
 	public function getTable($type = 'azmailer_category_item', $prefix = 'Table', $config = array()) {
 		return JTable::getInstance($type, $prefix, $config);
 	}
 
+	/**
+	 * @param integer $catIndex
+	 * @param string $catName
+	 * @param integer $id
+	 * @return bool
+	 */
 	public function changeName($catIndex = null, $catName = null, $id = null) {
 		$answer = false;
 		if (!empty($catIndex) && in_array($catIndex, array(1, 2, 3, 4, 5))) {
@@ -73,6 +92,11 @@ class AZMailerModelCategory extends AZMailerModel {
 		return ($answer);
 	}
 
+	/**
+	 * @param int $catIndex
+	 * @param int $id
+	 * @return bool
+	 */
 	public function delete($catIndex = null, $id = null) {
 		$answer = false;
 		if (!empty($catIndex) && in_array($catIndex, array(1, 2, 3, 4, 5))) {
@@ -92,6 +116,12 @@ class AZMailerModelCategory extends AZMailerModel {
 		return ($answer);
 	}
 
+	/**
+	 * @param int $catIndex
+	 * @param int $id
+	 * @param int $is_default
+	 * @return bool
+	 */
 	public function setDefaultOption($catIndex = null, $id = null, $is_default = 0) {
 		$answer = false;
 		if (!empty($catIndex) && in_array($catIndex, array(1, 2, 3, 4, 5))) {
@@ -114,6 +144,11 @@ class AZMailerModelCategory extends AZMailerModel {
 		return ($answer);
 	}
 
+	/**
+	 * @param int $catIndex
+	 * @param string $serialized
+	 * @return bool
+	 */
 	public function saveOrderedItems($catIndex = null, $serialized = null) {
 		$answer = false;
 		if (!empty($catIndex) && in_array($catIndex, array(1, 2, 3, 4, 5))) {
@@ -141,6 +176,9 @@ class AZMailerModelCategory extends AZMailerModel {
 		return ($answer);
 	}
 
+	/**
+	 * @return \JDatabaseQuery
+	 */
 	protected function getListQuery() {
 		$db = JFactory::getDBO();
 		$query = $db->getQuery(true);

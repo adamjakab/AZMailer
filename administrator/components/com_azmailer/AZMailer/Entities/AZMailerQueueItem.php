@@ -52,6 +52,9 @@ class AZMailerQueueItem extends AZMailerEntity {
 		return ($answer);
 	}
 
+	/**
+	 * @return bool
+	 */
 	private function _setup() {
 		global $AZMAILER;
 
@@ -87,7 +90,9 @@ class AZMailerQueueItem extends AZMailerEntity {
 	}
 
 	//------------------------------------------------GETTERS
-
+	/**
+	 * @return bool
+	 */
 	private function _enqueue() {
 		$answer = false;
 		/** @var \JTable $table */
@@ -173,6 +178,12 @@ class AZMailerQueueItem extends AZMailerEntity {
 		}
 	}
 
+	/**
+	 * @param string $blob
+	 * @param array $substitutions
+	 * @param string $email
+	 * @return mixed
+	 */
 	private function doSubstitutionsOnBlob($blob, $substitutions = array(), $email = null) {
 		global $AZMAILER;
 		if (count($substitutions)) {
@@ -201,6 +212,9 @@ class AZMailerQueueItem extends AZMailerEntity {
 		return ($blob);
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getCombinedSender() {
 		return ("" .
 			($this->get("mq_from_name") ? $this->get("mq_from_name") : "") .
@@ -210,6 +224,9 @@ class AZMailerQueueItem extends AZMailerEntity {
 		);
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getState() {
 		if ($this->get("mq_state") == 1) {//SENT
 			return (self::$STATE_SENT);

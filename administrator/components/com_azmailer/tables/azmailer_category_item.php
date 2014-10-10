@@ -13,11 +13,16 @@ class TableAzmailer_category_item extends JTable {
 	var $is_default = null;
 	var $name = null;
 
-
+	/**
+	 * @param \JDatabaseDriver $_db
+	 */
 	function __construct(&$_db) {
 		parent::__construct('#__azmailer_category_item', 'id', $_db);
 	}
 
+	/**
+	 * @return bool
+	 */
 	function check() {
 		return true;
 	}
