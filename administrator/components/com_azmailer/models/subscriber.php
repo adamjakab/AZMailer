@@ -34,7 +34,9 @@ class AZMailerModelSubscriber extends AZMailerModel {
 	 * @return bool|object
 	 */
 	public function getSpecificItem($id = null) {
-		$item = $this->_getSpecificItem($id);
+		if(! ($item = $this->_getSpecificItem($id)) ) {
+			$item = $this->getTable();
+		}
 		return ($item);
 	}
 

@@ -46,6 +46,7 @@ class AZMailerViewNewsletter extends AZMailerView {
 	}
 
 	public function edit() {
+		/** @var AZMailerModelNewsletter $model */
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;
@@ -74,6 +75,7 @@ class AZMailerViewNewsletter extends AZMailerView {
 	public function save($isApply = false) {
 		global $AZMAILER;
 		\JSession::checkToken() or jexit('Invalid Token');
+		/** @var AZMailerModelNewsletter $model */
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;

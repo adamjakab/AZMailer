@@ -42,9 +42,6 @@ class AZMailerViewTemplate extends AZMailerView {
 		$JI = \JFactory::getApplication()->input;
 		$id = $JI->getInt("cid", 0);
 		$this->item = $model->getSpecificItem($id);
-		if(!$this->item) {
-			$this->item = $model->getTable();
-		}
 		$this->state = $this->get('State');
 		parent::display("edit");
 		//

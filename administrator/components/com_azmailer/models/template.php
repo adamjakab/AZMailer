@@ -32,7 +32,9 @@ class AZMailerModelTemplate extends AZMailerModel {
 	 * @return mixed
 	 */
 	public function getSpecificItem($id = null) {
-		$item = $this->_getSpecificItem($id);
+		if(! ($item = $this->_getSpecificItem($id)) ) {
+			$item = $this->getTable();
+		}
 		return ($item);
 	}
 
