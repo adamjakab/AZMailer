@@ -21,6 +21,7 @@ $BLOB = $item->htmlblob;
 		<input type="hidden" name="option" value="<?php echo $AZMAILER->getOption("com_name"); ?>"/>
 		<input type="hidden" name="task" value="<?php echo $AZMAILER->getOption("ctrl.task"); ?>"/>
 		<input type="hidden" name="id" value="<?php echo $item->id; ?>"/>
+		<input type="hidden" name="title" value="<?php echo $this->params->title; ?>"/>
 		<input type="hidden" name="parent_type" value="<?php echo $this->params->parent_type; ?>"/>
 		<input type="hidden" name="parent_id" value="<?php echo $this->params->parent_id; ?>"/>
 		<input type="hidden" name="return_uri" value="<?php echo $this->params->return_uri; ?>"/>

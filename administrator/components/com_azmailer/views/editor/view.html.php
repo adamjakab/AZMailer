@@ -16,7 +16,7 @@ use AZMailer\Helpers\AZMailerEditorHelper;
  */
 class AZMailerViewEditor extends AZMailerView {
 	/**
-	 * @var object $params
+	 * @var object $params - the decoded parameters
 	 */
 	protected $params;
 
@@ -44,6 +44,7 @@ class AZMailerViewEditor extends AZMailerView {
 
 		AZMailerAdminInterfaceHelper::setHeaderTitle(JText::_("COM_AZMAILER_TOOLBARTITLE_EDITOR"), "editor");
 		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(
+			array("core.create", "editor.apply", 'apply', 'JTOOLBAR_APPLY', false), /*save&stay*/
 			array("core.create", "editor.save", 'save', 'JTOOLBAR_SAVE', false), /*save&close*/
 			array("core.manage", "editor.cancel", 'cancel', 'JTOOLBAR_CANCEL', false), /*cancel*/
 		));
@@ -59,19 +60,40 @@ class AZMailerViewEditor extends AZMailerView {
 		parent::display("quickedit");
 	}
 
+	/**
+	 * Alias for save
+	 */
+	public function apply() {
+		$this->save(true);
+	}
 
 	/**
-	 * @param string $tpl
-	 * @param bool $closeEdit
+	 * @param bool $isApply - save&stay
 	 */
-	public function save($tpl = null, $closeEdit = true) {
+	public function save($isApply = false) {
+		/** @var \AZMailer\AZMailerCore $AZMAILER */
+		global $AZMAILER;
+		/** @var AZMailerModelEditor $model */
 		$model = $this->getModel();
 		$JI = \JFactory::getApplication()->input;
-		$data = JRequest::get('post');
-		$data["htmlblob"] = JRequest::getVar('htmlblob', '', 'post', 'string', JREQUEST_ALLOWHTML);
+		$data = $JI->getArray($_POST);
+		//
+		$filter = \JFilterInput::getInstance( array(), array(), 1, 1, 0 );
+		$JI = new \JInput( null, array('filter' => $filter) );
+		$unfilteredPostData = $JI->getArray($_POST);
+		//
+		$data["htmlblob"] = $unfilteredPostData["htmlblob"];
 		$model->saveSpecificItem($data);
-		if ($closeEdit || !$closeEdit) {
-			$this->cancel($tpl);
+		if (!$isApply) {
+			$this->cancel();
+		} else {
+			$ELP = new stdClass();
+			$ELP->title = $data["title"];
+			$ELP->parent_type = $data["parent_type"];
+			$ELP->parent_id = $data["parent_id"];
+			$ELP->return_uri = $data["return_uri"];
+			$EDITOR_LINK = AZMailerEditorHelper::getEditorLink($ELP, true);
+			$AZMAILER->getController()->setRedirect(JRoute::_($EDITOR_LINK, false));
 		}
 	}
 
@@ -79,6 +101,7 @@ class AZMailerViewEditor extends AZMailerView {
 	 * Cancel edit and go back to where we came from
 	 */
 	public function cancel() {
+		/** @var \AZMailer\AZMailerCore $AZMAILER */
 		global $AZMAILER;
 		$redirectUrl = base64_decode(\JFactory::getApplication()->input->getString('return_uri', ""));
 		$AZMAILER->getController()->setRedirect($redirectUrl);
@@ -97,6 +120,7 @@ class AZMailerViewEditor extends AZMailerView {
 	 * @throws Exception
 	 */
 	public function elfinder_conn() {
+		/** @var \AZMailer\AZMailerCore $AZMAILER */
 		global $AZMAILER;
 		$com_path = $AZMAILER->getOption("com_path_admin");
 		$efcp = $com_path . DS . 'assets' . DS . 'js' . DS . 'elfinder' . DS . 'php';
