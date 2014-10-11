@@ -42,7 +42,7 @@ $CURRENT_CATNAME = $params->get("category_name_" . $this->state->get('filter.cat
 		</div>
 	</fieldset>
 
-	<table class="adminlist table table-striped table-bordered">
+	<table class="adminlist table table-striped table-bordered table-hover">
 		<thead>
 		<th><?php echo JText::_('COM_AZMAILER_CATEGORY_TIT_ELEMENT_NAME'); ?></th>
 		<th width="30"><?php echo JText::_('COM_AZMAILER_CATEGORY_TIT_ELEMENT_PREDEF'); ?></th>

@@ -21,13 +21,13 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 			       value="<?php echo $this->escape($this->state->get('filter.search')); ?>"
 			       title="<?php echo JText::_('COM_AZMAILER_SEARCH'); ?>"
 			       placeholder="<?php echo JText::_('COM_AZMAILER_SEARCH'); ?>"/>
-			<button type="submit"><?php echo JText::_('COM_AZMAILER_SEARCH'); ?></button>
+			<button class="btn" type="submit"><?php echo JText::_('COM_AZMAILER_SEARCH'); ?></button>
 		</div>
 		<div class="filter-select fltrt">
 		</div>
 	</fieldset>
 
-	<table class="adminlist">
+	<table class="adminlist table table-striped table-bordered table-hover">
 		<thead>
 		<tr>
 			<th style="width:1%;"><input type="checkbox" name="checkall-toggle" value=""

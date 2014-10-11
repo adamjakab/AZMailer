@@ -25,7 +25,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
 		<div class="filter-select fltrt"></div>
 	</fieldset>
 
-	<table class="adminlist">
+	<table class="adminlist table table-striped table-bordered table-hover">
 		<thead>
 		<th width="1%"><input type="checkbox" name="checkall-toggle" value=""
 		                      title="<?php echo JText::_('COM_AZMAILER_CHECK_ALL'); ?>"

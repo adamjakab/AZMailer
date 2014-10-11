@@ -25,7 +25,7 @@ use AZMailer\Helpers\AZMailerQueuemanagerHelper;
 		<h3><?php echo JText::_("COM_AZMAILER_CP_INFO"); ?></h3>
 		<?php
 		$output = '';
-		$output .= '<table class="adminlist" style="border:1px solid #ababab;" cellpaggind="2" cellspacing="0">';
+		$output .= '<table class="adminlist table table-striped table-bordered table-hover" style="border:1px solid #ababab;" cellpaggind="2" cellspacing="0">';
 
 		//AZMailer Information
 		$k = 0;

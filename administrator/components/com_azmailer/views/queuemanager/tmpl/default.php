@@ -76,13 +76,13 @@ $SB_STATE = JHtml::_('select.genericlist', $lst, 'filter_state_sel', 'class="inp
 		</div>
 	</fieldset>
 
-	<table class="adminlist">
+	<table class="adminlist table table-striped table-bordered table-hover">
 		<thead>
 		<tr>
 			<th style="width:1%;"><input type="checkbox" name="checkall-toggle" value=""
 			                             title="<?php echo JText::_('COM_AZMAILER_CHECK_ALL'); ?>"
 			                             onclick="Joomla.checkAll(this)"/></th>
-			<th style="width:80px;"><?php echo JHTML::_('grid.sort', 'COM_AZMAILER_MQM_TIT_INSERT_DATE', 'mq_date', $listDirn, $listOrder); ?></th>
+			<th style="width:90px;"><?php echo JHTML::_('grid.sort', 'COM_AZMAILER_MQM_TIT_INSERT_DATE', 'mq_date', $listDirn, $listOrder); ?></th>
 			<th style="width:80px;"><?php echo JHTML::_('grid.sort', 'COM_AZMAILER_MQM_TIT_TYPE', 'mq_type', $listDirn, $listOrder); ?></th>
 			<th style="width:60px;"><?php echo JHTML::_('grid.sort', 'COM_AZMAILER_MQM_TIT_PRIORITY', 'mq_priority', $listDirn, $listOrder); ?></th>
 			<th style=""><?php echo JHTML::_('grid.sort', 'COM_AZMAILER_MQM_TIT_SENDER', 'mq_from', $listDirn, $listOrder); ?></th>

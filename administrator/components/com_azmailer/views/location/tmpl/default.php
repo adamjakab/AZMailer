@@ -25,21 +25,21 @@ $disabled = ("country" == $this->state->get('filter.location_type') ? ' disabled
 $onclick = ("country" == $this->state->get('filter.location_type') ? ' ' : ' onclick="document.getElementById(\'filter_location_type\').value=\'country\';this.form.submit();" ');
 $SWName = JText::_('COM_AZMAILER_LOCATION_COUNTRIES');
 $SHOW_WHAT_BUTTONS .= '<li style="float:left; margin: 0 5px 0 0;">'
-	. '<input type="button"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '/>'
+	. '<button class="btn btn-info"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '>'.$SWName.'</button>'
 	. '</li>';
 //REGION
 $disabled = ("region" == $this->state->get('filter.location_type') ? ' disabled="disabled" ' : ' ');
 $onclick = ("region" == $this->state->get('filter.location_type') ? ' ' : ' onclick="document.getElementById(\'filter_location_type\').value=\'region\';this.form.submit();" ');
 $SWName = JText::_('COM_AZMAILER_LOCATION_REGIONS');
 $SHOW_WHAT_BUTTONS .= '<li style="float:left; margin: 0 5px 0 0;">'
-	. '<input type="button"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '/>'
+	. '<button class="btn btn-info"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '>'.$SWName.'</button>'
 	. '</li>';
 //PROVINCE
 $disabled = ("province" == $this->state->get('filter.location_type') ? ' disabled="disabled" ' : ' ');
 $onclick = ("province" == $this->state->get('filter.location_type') ? ' ' : ' onclick="document.getElementById(\'filter_location_type\').value=\'province\';this.form.submit();" ');
 $SWName = JText::_('COM_AZMAILER_LOCATION_PROVINCES');
 $SHOW_WHAT_BUTTONS .= '<li style="float:left; margin: 0 5px 0 0;">'
-	. '<input type="button"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '/>'
+	. '<button class="btn btn-info"' . $disabled . 'value="' . $SWName . '" title="' . $SWName . '"' . $onclick . '>'.$SWName.'</button>'
 	. '</li>';
 
 $SHOW_WHAT_BUTTONS .= '</ul>';
@@ -70,7 +70,7 @@ $SHOW_WHAT_BUTTONS .= '</ul>';
 	</fieldset>
 
 
-	<table class="adminlist">
+	<table class="adminlist table table-striped table-bordered table-hover">
 		<thead>
 		<th width="50"><?php echo JHtml::_('grid.sort', 'COM_AZMAILER_LOCATION_SIGLA_SHORT', 'itemSigla', $listDirn, $listOrder); ?></th>
 		<th><?php echo JHtml::_('grid.sort', $currentTreeObjectName, 'itemName', $listDirn, $listOrder); ?></th>

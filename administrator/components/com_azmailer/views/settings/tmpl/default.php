@@ -6,11 +6,13 @@ global $AZMAILER;
 use AZMailer\Helpers\AZMailerAdminInterfaceHelper;
 use AZMailer\Helpers\AZMailerComponentParamHelper;
 
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn = $this->escape($this->state->get('list.direction'));
 $cols = 0;
 ?>
 <?php echo AZMailerAdminInterfaceHelper::displaySubmenu(); ?>
 <form action="<?php echo JRoute::_('index.php'); ?>" method="post" name="adminForm" id="adminForm">
-	<table class="adminlist">
+	<table class="adminlist table table-striped table-bordered table-hover">
 		<thead>
 		<tr>
 			<th width="250"><?php echo JText::_('COM_AZMAILER_SETTING_PCODE');
