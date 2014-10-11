@@ -2,7 +2,7 @@
 
 <extension type="component" version="2.5" method="upgrade">
   <name>AZMailer</name>
-  <creationDate>2014-10-04</creationDate>
+  <creationDate>2014-10-11</creationDate>
   <author>Adam Jakab</author>
   <authorEmail>support@jakabadambalazs.com</authorEmail>
   <authorUrl>http://devshed.jakabadambalazs.com</authorUrl>
