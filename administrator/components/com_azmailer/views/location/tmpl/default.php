@@ -145,7 +145,7 @@ $SHOW_WHAT_BUTTONS .= '</ul>';
 			return (false);
 		}
 		submitform(pressbutton);
-	}
+	};
 
 	jQuery(document).ready(function ($) {
 		$("#mDialog").dialog({

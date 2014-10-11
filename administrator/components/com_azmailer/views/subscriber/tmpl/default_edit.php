@@ -207,7 +207,7 @@ $TITLE = ($item->get("id") ? "Editing subscriber:" . $item->get("nls_email") : "
 		}
 		checkFormData(pressbutton);
 		//Joomla.submitform( pressbutton );
-	}
+	};
 
 	function checkFormData(pressbutton) {
 		jQuery.post("index.php", {
