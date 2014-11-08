@@ -187,13 +187,13 @@ class AZMailerCategoryHelper {
 							}
 						}
 						if ($cid) {
-							array_push($answer, $cid);
+							array_push($answer, (string)$cid);
 						}
 					}
 				}
 			}
 		}
-		return ($answer);
+		return (array_values($answer));
 	}
 
 

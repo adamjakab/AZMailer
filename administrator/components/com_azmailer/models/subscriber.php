@@ -304,6 +304,12 @@ class AZMailerModelSubscriber extends AZMailerModel {
 	 */
 	public function getSubscribersForCsvExport() {
 		$answer = array();
+		//export them all
+		$store = $this->getStoreId();
+		$this->cache[$store] = null;
+		$this->setState('list.start', 0);
+		$this->setState('list.limit', 0);
+		//
 		$items = $this->getItems();
 		if(!count($items)) return($answer);
 
