@@ -42,6 +42,7 @@ class AZMailerViewSubscriber extends AZMailerView {
 		AZMailerAdminInterfaceHelper::addButtonsToToolBar(array(
 			array("core.create", "subscriber.edit", 'new', 'JTOOLBAR_NEW', false),
 			array("core.create", "subscriber.import", 'import', 'COM_AZMAILER_TOOLBARBUTTON_IMPORT', false),
+			array("core.create", "subscriber.export", 'import', 'COM_AZMAILER_TOOLBARBUTTON_EXPORT', false),
 			array("core.delete", "subscriber.delete", 'delete', 'JTOOLBAR_DELETE', true)
 		));
 	}
@@ -101,7 +102,7 @@ class AZMailerViewSubscriber extends AZMailerView {
 	 */
 	public function delete() {
 		global $AZMAILER;
-		/** @var AZMailerModelQueuemanager $model */
+		/** @var AZMailerModelSubscriber $model */
 		$model = $this->getModel();
 		/** @var $JI \JInput */
 		$JI = \JFactory::getApplication()->input;
@@ -125,6 +126,33 @@ class AZMailerViewSubscriber extends AZMailerView {
 			array("core.manage", "subscriber.display", 'cancel', 'JTOOLBAR_CANCEL', false), /*cancel*/
 		));
 		$JI->set("hidemainmenu", 1);//blocks main-menu
+	}
+
+	/**
+	 * Export to csv
+	 */
+	public function export() {
+		/** @var AZMailerModelSubscriber $model */
+		$model = $this->getModel();
+		$csvData = $model->getSubscribersForCsvExport();
+		//var_dump($csvData);
+		//return;
+		$csvFileName = sha1(microtime()).".csv";
+		$csvFilePath = JPATH_ROOT."/tmp/".$csvFileName;
+		$fp = fopen($csvFilePath, 'w');
+		foreach ($csvData as $data) {
+			fputcsv($fp, $data);
+		}
+		fclose($fp);
+
+		//download
+		header('Content-Type: application/csv');
+		header('Content-Disposition: attachment; filename=subscribers.csv');
+		header('Pragma: no-cache');
+		readfile($csvFilePath);
+		//remove file and close app
+		unlink($csvFilePath);
+		\JFactory::getApplication()->close();
 	}
 
 

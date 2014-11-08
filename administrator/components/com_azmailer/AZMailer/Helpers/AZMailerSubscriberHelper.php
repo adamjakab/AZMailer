@@ -153,6 +153,30 @@ class AZMailerSubscriberHelper {
 		));
 	}
 
+	/**
+	 * This is for export when mapping db column names to human readable names (cerrisponding to the ones in IMPORT)
+	 * @return array
+	 */
+	public static function getColumnTitles() {
+		return (array(
+			"id" => "ID",
+			"nls_email" => "E-mail",
+			"nls_firstname" => "Firstname",
+			"nls_lastname" => "Lastname",
+			"nls_subscribe_date" => "Subscribe Date",
+			"nls_ip" => "IP",
+			"nls_country_id" => "Country",
+			"nls_region_id" => "Region",
+			"nls_province_id" => "Province",
+			"nls_cat_1" => "Category 1",
+			"nls_cat_2" => "Category 2",
+			"nls_cat_3" => "Category 3",
+			"nls_cat_4" => "Category 4",
+			"nls_cat_5" => "Category 5",
+			"nls_blacklisted" => "Blacklist",
+		));
+	}
+
 
 	/**
 	 * @param \PHPExcel_Worksheet $objWorksheet

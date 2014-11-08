@@ -38,6 +38,23 @@ class AZMailerLocationHelper {
 	}
 
 	/**
+	 * Used by exporter
+	 * @param $id
+	 * @return string
+	 */
+	public static function getCountryName($id) {
+		$db = \JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('country_name');
+		$query->from('#__azmailer_country');
+		$query->where('id = ' . $id);
+		$db->setQuery($query);
+		$answer = $db->loadResult();
+		return($answer);
+	}
+
+
+	/**
 	 * For Xls Importer
 	 * @param string $name
 	 * @param bool   $registerIfNew
@@ -78,6 +95,22 @@ class AZMailerLocationHelper {
 
 
 	//-----------------------------------------------------------------------REGIONS
+	/**
+	 * Used by exporter
+	 * @param $id
+	 * @return string
+	 */
+	public static function getRegionName($id) {
+		$db = \JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('region_name');
+		$query->from('#__azmailer_region');
+		$query->where('id = ' . $id);
+		$db->setQuery($query);
+		$answer = $db->loadResult();
+		return($answer);
+	}
+
 	/**
 	 * @param string|bool $zeroOption
 	 * @param int  $country_id
@@ -157,6 +190,22 @@ class AZMailerLocationHelper {
 
 
 	//-------------------------------------------------------------------PROVINCES
+	/**
+	 * Used by exporter
+	 * @param $id
+	 * @return string
+	 */
+	public static function getProvinceName($id) {
+		$db = \JFactory::getDbo();
+		$query = $db->getQuery(true);
+		$query->select('province_name');
+		$query->from('#__azmailer_province');
+		$query->where('id = ' . $id);
+		$db->setQuery($query);
+		$answer = $db->loadResult();
+		return($answer);
+	}
+
 	/**
 	 * @param string|bool $zeroOption
 	 * @param int  $region_id

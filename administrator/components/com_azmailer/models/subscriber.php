@@ -9,7 +9,8 @@ defined('_JEXEC') or die('Restricted access');
 use AZMailer\Core\AZMailerModel;
 use AZMailer\Helpers\AZMailerDateHelper;
 use AZMailer\Helpers\AZMailerSubscriberHelper;
-
+use AZMailer\Helpers\AZMailerLocationHelper;
+use AZMailer\Helpers\AZMailerCategoryHelper;
 //use AZMailer\Helpers\AZMailerTemplateHelper;
 
 /**
@@ -297,6 +298,58 @@ class AZMailerModelSubscriber extends AZMailerModel {
 		 * },
 		 * "result":"ok"}
 		 * */
+
+	/**
+	 * @return array
+	 */
+	public function getSubscribersForCsvExport() {
+		$answer = array();
+		$items = $this->getItems();
+		if(!count($items)) return($answer);
+
+		//add column header
+		$I0 = $items[0];
+		$colTitlesArr = AZMailerSubscriberHelper::getColumnTitles();
+		$colTitles = array();
+		foreach($I0 as $k=>$v) {
+			if($k=="nls_mail_validation_code") continue;
+			if($k=="nls_mail_validation_log") continue;
+			$colTitle = array_key_exists($k, $colTitlesArr) ? $colTitlesArr[$k] : $k;
+			$colTitles[$k] = $colTitle;
+		}
+		array_push($answer, $colTitles);
+
+		//the data
+		foreach($items as $item) {
+			$a = array();
+			foreach($item as $k=>$v) {
+				if($k=="nls_mail_validation_code") continue;
+				if($k=="nls_mail_validation_log") continue;
+				if ($k=="nls_subscribe_date") {
+					$v = AZMailerDateHelper::convertToHumanReadableFormat($v);
+				}
+				if ($k=="nls_country_id") {
+					$v = AZMailerLocationHelper::getCountryName($v);
+				}
+				if ($k=="nls_region_id") {
+					$v = AZMailerLocationHelper::getRegionName($v);
+				}
+				if ($k=="nls_province_id") {
+					$v = AZMailerLocationHelper::getProvinceName($v);
+				}
+				if (strpos($k, "nls_cat_") !== false) {
+					$v = AZMailerCategoryHelper::getCategoryItemsHumanReadableList($v);
+				}
+				if ($k=="nls_blacklisted") {
+					$v = ($v?"Y":"N");
+				}
+				$v = ($v===null?"":$v);
+				$a[$k] = $v;
+			}
+			array_push($answer, $a);
+		}
+		return($answer);
+	}
 
 	/**
 	 * @return JDatabaseQuery
