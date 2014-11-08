@@ -2,8 +2,8 @@
 
 <extension type="component" version="2.5" method="upgrade">
     <name>AZMailer</name>
-    <version>1.5.3</version>
-    <creationDate>2014-10-11</creationDate>
+    <version>1.5.4</version>
+    <creationDate>2014-11-08</creationDate>
     <author>Adam Jakab</author>
     <authorEmail>support@jakabadambalazs.com</authorEmail>
     <authorUrl>http://support.jakabadambalazs.com</authorUrl>
