@@ -188,7 +188,7 @@ class AZMailerSubscriberHelper {
 	 * @return bool
 	 */
 	public static function getImportColumnIndexByName($importColumns, $columnName) {
-		return ((array_key_exists($columnName, $importColumns) ? $importColumns[$columnName] : false));
+		return ((array_key_exists($columnName, $importColumns) && $importColumns[$columnName] !== null ? $importColumns[$columnName] : false));
 	}
 
 	/**
@@ -280,6 +280,7 @@ class AZMailerSubscriberHelper {
 			} else {
 				$cleandata->nls_province_id = $defaultValues["nls_province_id"];
 			}
+
 
 			//CHECK CATEGORY 1
 			$res = AZMailerCategoryHelper::getCategoryIdArrayByNames(1, $originalData->nls_cat_1_lst, true);

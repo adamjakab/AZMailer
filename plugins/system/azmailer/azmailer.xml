@@ -1,22 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <extension type="plugin" version="2.5" method="upgrade" group="system">
-  <name>System - AZMailer</name>
-  <creationDate>24-Feb-2014</creationDate>
-  <author>Adam Jakab</author>
-  <authorEmail>support@jakabadambalazs.com</authorEmail>
-  <authorUrl>http://devshed.jakabadambalazs.com</authorUrl>
-  <copyright>Copyright (C) Adam Jakab. All rights reserved.</copyright>
-  <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-  <version>1.5.1</version>
-  <description>Generic AZMailer System Plugin. Please, go to Plug-in Manager and enable &quot;System - AZMailer&quot; plugin.</description>
-  <files folder="site">
-    <folder>classes</folder>
-    <folder>install</folder>
-    <filename plugin="azmailer">azmailer.php</filename>
-    <filename>azmailer_CHANGELOG.php</filename>
-    <filename>index.html</filename>
-  </files>
-  <params />
-  <config />
+    <name>System - AZMailer</name>
+    <version>1.5.3</version>
+    <creationDate>2014-10-11</creationDate>
+    <author>Adam Jakab</author>
+    <authorEmail>support@jakabadambalazs.com</authorEmail>
+    <authorUrl>http://support.jakabadambalazs.com</authorUrl>
+    <copyright>Copyright (C) Adam Jakab. All rights reserved.</copyright>
+    <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+
+    <description>Generic AZMailer System Plugin. Please, go to Plug-in Manager and enable &quot;System - AZMailer&quot;
+        plugin.
+    </description>
+    <files folder="site">
+        <folder>classes</folder>
+        <folder>install</folder>
+        <filename plugin="azmailer">azmailer.php</filename>
+        <filename>azmailer_CHANGELOG.php</filename>
+        <filename>index.html</filename>
+    </files>
+    <params/>
+    <config/>
 </extension>

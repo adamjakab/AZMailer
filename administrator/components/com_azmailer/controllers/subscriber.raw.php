@@ -104,7 +104,11 @@ class AZMailerControllerSubscriber extends AZMailerController {
 		$answer->errors = array();
 		$JI = \JFactory::getApplication()->input;
 		$answer->post = array();
+
 		$answer->post["uploadedfile"] = $JI->files->get('nls_contacts_file', null);
+		//$answer->_files = $JI->files;
+
+
 		$answer->post["defaults"] = array();
 		$answer->post["defaults"]["nls_overwrite_existing"] = $JI->getInt('nls_overwrite_existing', 3);//merge by default
 		$answer->post["defaults"]["nls_blacklisted"] = $JI->getString('nls_blacklisted', "N");

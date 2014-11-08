@@ -27,7 +27,7 @@ class AZMailerModelCp extends AZMailerModel {
 			array("key" => JText::_('COM_AZMAILER_CP_COMPNAME'), "value" => $xmlData["name"]),
 			array("key" => JText::_('COM_AZMAILER_CP_VERSION'), "value" => $xmlData["version"]),
 			array("key" => JText::_('COM_AZMAILER_CP_RELDATE'), "value" => $xmlData["creationDate"]),
-			array("key" => JText::_('COM_AZMAILER_CP_AUTHOR'), "value" => '<a href="mailto:' . $xmlData["authorEmail"] . '">' . $xmlData["author"] . '</a>'),
+			array("key" => JText::_('COM_AZMAILER_CP_AUTHOR'), "value" => '<a href="http://devshed.jakabadambalazs.com" target="_blank">' . $xmlData["author"] . '</a>'),
 			array("key" => JText::_('COM_AZMAILER_CP_SUPPORT'), "value" => '<a href="' . $xmlData["authorUrl"] . '" target="_blank">' . $xmlData["authorUrl"] . '</a>'),
 			array("key" => JText::_('COM_AZMAILER_CP_LICENSE'), "value" => 'GNU/GPL2'),
 		);

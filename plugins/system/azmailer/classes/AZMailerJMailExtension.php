@@ -21,6 +21,10 @@
  */
 class AZMailerJMailExtension extends JMailOriginal {
 
+	/**
+	 * @return bool
+	 * @throws Exception
+	 */
 	public function Send() {
 		$JAPP = \JFactory::getApplication();
 
@@ -41,7 +45,7 @@ class AZMailerJMailExtension extends JMailOriginal {
 
 
 		//find and surround urls with a tag - this is quite weak
-		if($this->ContentType = 'text/plain') {
+		if( ($this->ContentType = 'text/plain') ) {
 			$MQSUBST["MAILBODY"] = preg_replace('@(?:[^"])(https?://?([-\w]+\.[-\w\.]+)+\w(:\d+)?(/([-\w/_\.]*(\?\S+)?)?)*)@i', ' <a href="$1">$1</a>', $MQSUBST["MAILBODY"]);
 		}
 
@@ -78,6 +82,10 @@ class AZMailerJMailExtension extends JMailOriginal {
 		return($answer);
 	}
 
+	/**
+	 * @param string $mail
+	 * @return mixed|string
+	 */
 	private function getUserFullNameByEmail($mail) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);

@@ -142,13 +142,11 @@ class AZMailerCategoryHelper {
 	public static function getCategoryIdArrayByNames($cat_id, $nameList, $registerIfNew = false) {
 		$answer = array();
 		if (!empty($cat_id) && !empty($nameList)) {
+			$nameList = str_replace(array('"',"'"),array("",""),$nameList);
 			$catNames = explode(",", $nameList);
 			if (count($catNames)) {
-				foreach ($catNames as &$catName) {
-					$catName = strtolower(trim($catName));
-				}
-				//try to get them all in one go
 				$db = \JFactory::getDbo();
+				//try to get them all in one go
 				$query = $db->getQuery(true);
 				$query->select('a.id');
 				$query->from('#__azmailer_category_item AS a');
@@ -161,7 +159,8 @@ class AZMailerCategoryHelper {
 					//we have category items that must be registered so we reset $answer and do it one by one
 					$answer = array();
 					$order = self::getHighestOrderNumberForCategory($cat_id);
-					foreach ($catNames as $catName) {
+					for ($i=0; $i<count($catNames); $i++) {
+						$catName = strtolower(trim($catNames[$i]));
 						$query = $db->getQuery(true);
 						$query->select('a.id');
 						$query->from('#__azmailer_category_item AS a');
@@ -169,10 +168,7 @@ class AZMailerCategoryHelper {
 						$query->where('LOWER(a.name) = ' . $db->quote($catName));
 						$db->setQuery($query);
 						$cid = $db->loadResult();
-						if (!$cid || empty($cid)) {
-							$cid = 0;
-						}
-						if ($cid == 0) {//creating new one
+						if (!$cid) {//creating new one
 							$data = array();
 							$data["id"] = null;
 							$data["category_id"] = $cat_id;
@@ -190,7 +186,7 @@ class AZMailerCategoryHelper {
 								}
 							}
 						}
-						if ($cid != 0) {
+						if ($cid) {
 							array_push($answer, $cid);
 						}
 					}
@@ -210,7 +206,7 @@ class AZMailerCategoryHelper {
 	private static function getHighestOrderNumberForCategory($cat_id) {
 		$db = \JFactory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('SELECT MAX(a.item_order)');
+		$query->select('MAX(a.item_order)');
 		$query->from('#__azmailer_category_item AS a');
 		$query->where('a.category_id = ' . $cat_id);
 		$db->setQuery($query);

@@ -191,7 +191,6 @@ class AZMailerModelSubscriber extends AZMailerModel {
 
 						//validate imports and merge with default values
 						$data->imports = AZMailerSubscriberHelper::checkAndCleanUpXlsImportedData($data->imports, $data->post["defaults"]);
-
 						//register subscribers - AZMailerSubscriber
 						$validImports = 0;
 						$importedSubscribers = 0;
